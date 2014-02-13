@@ -7,6 +7,20 @@ A userscript to make Drawception.com better: more drawing tools, tablet pressure
 
 [Discussion at Drawception.com forum](http://drawception.com/forums/general/11830/anbt-script/)
 
+## HOW TO USE
+
+- Chrome/Iron: (Recommended: all features, best performance)
+  - add the script in Tampermonkey addon 
+  - or open URL: chrome://extensions then drag and drop the .user.js file on it
+- Firefox: add the script in Greasemonkey addon
+- Opera 12.x: add the script in "site properties"
+- Other browsers/Single use:
+  - create a bookmark with the following URL:
+    `javascript:void($.ajax({dataType:"script",cache:!0,url:"//raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js"}))`
+    and follow it while being on drawception.com site; you can also use the shortened URL:
+    `javascript:void($.ajax({dataType:"script",cache:!0,url:"//goo.gl/a6rzzP"}))`
+
+
 ## FEATURES
 
 General:
