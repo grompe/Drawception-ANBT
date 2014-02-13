@@ -1,7 +1,7 @@
 Drawception-ANBT
 ================
 
-A userscript to make Drawception.com better
+A userscript to make Drawception.com better: more drawing tools, tablet pressure support, sandbox with palettes and uploading to imgur, like all, quick menu buttons with old browser support, and other enhancements.
 
 [![Public domain](http://i.creativecommons.org/p/zero/1.0/88x31.png)](http://creativecommons.org/publicdomain/zero/1.0/)
 
@@ -9,13 +9,16 @@ A userscript to make Drawception.com better
 
 ## FEATURES
 
-General
+General:
+
 - Menu buttons in the header for easier access
 - Fix keyboard scrolling after pages load
 - Fix notifications showing in Opera and Firefox < 5
 - No temptation to judge
 - An embedded chat (http://chat.grompe.org.ru/#drawception)
+
 Canvas:
+
 - Wacom tablet eraser and smooth pressure support; doesn't conflict with mouse
 - Secondary color, used with right mouse button; palette right-clicking
 - Alt+click picks a color from the canvas
@@ -27,22 +30,30 @@ Canvas:
 - Shift+F fills with the current color
 - Confirm closing a page if it has a canvas and is painted on
 - Don't confirm clearing, but allow to undo it
-Sandbox
+
+Sandbox:
+
 - Re-add background button
 - Add drawing time indicator
 - Add palettes
 - Upload directly to imgur
-View game
+
+View game:
+
 - Add reverse panels button
 - Add "like all" button
 - Track new comments
 - Show when the game was started
 - Ability to favorite panels
-Play
+
+Play:
+
 - Play modes for those who only caption or only draw
 - Enter pressed in caption mode submits the caption
 - Ability to bookmark games without participating
-Forum
+
+Forum:
+
 - Better-looking timestamps with correct timezone
 - Clickable drawing panels
 - Clickable links
