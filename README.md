@@ -1,4 +1,4 @@
-Drawception-ANBT
+Drawception ANBT
 ================
 
 A userscript to make Drawception.com better: more drawing tools, tablet pressure support, sandbox with palettes and uploading to imgur, like all, quick menu buttons with old browser support, and other enhancements.
@@ -6,6 +6,9 @@ A userscript to make Drawception.com better: more drawing tools, tablet pressure
 [![Public domain](http://i.creativecommons.org/p/zero/1.0/88x31.png)](http://creativecommons.org/publicdomain/zero/1.0/)
 
 [Discussion at Drawception.com forum](http://drawception.com/forums/general/11830/anbt-script/)
+[Chat about the script and the site](http://chat.grompe.org.ru/#drawception)
+
+[What new canvas will be like](https://raw.github.com/grompe/Drawception-ANBT/master/play2.html")
 
 ## HOW TO USE
 
