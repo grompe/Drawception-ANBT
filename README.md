@@ -88,8 +88,12 @@ Forum:
 
 ## CHANGELOG
 
+0.32.2014.2
+- Included update/download URLs in script metadata
+
 0.31.2014.2
 - Stop confirming leaving the page if submitted a contest drawing
+- Fix making small and slow strokes with tablet even without pressure sensitivity
 
 0.30.2014.2
 - Small fixes

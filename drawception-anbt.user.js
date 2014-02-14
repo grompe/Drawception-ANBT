@@ -2,8 +2,10 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      0.31.2014.2
+// @version      0.32.2014.2
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
+// @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
+// @updateURL    https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
 // @grant        none
 // @run-at       document-start
@@ -12,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "0.31.2014.2";
+var SCRIPT_VERSION = "0.32.2014.2";
 
 // == DEFAULT OPTIONS ==
 
@@ -83,6 +85,8 @@ Forum
 - add simple layers(?)
 
 == CHANGELOG ==
+0.32.2014.2
+- Included update/download URLs in script metadata
 0.31.2014.2
 - Stop confirming leaving the page if submitted a contest drawing
 - Fix making small and slow strokes with tablet even without pressure sensitivity
