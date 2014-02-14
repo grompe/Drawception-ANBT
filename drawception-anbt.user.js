@@ -85,6 +85,7 @@ Forum
 == CHANGELOG ==
 0.31.2014.2
 - Stop confirming leaving the page if submitted a contest drawing
+- Fix making small and slow strokes with tablet even without pressure sensitivity
 0.30.2014.2
 - Small fixes
 0.29.2014.01
@@ -355,7 +356,7 @@ function enhanceCanvas(insandbox)
 
   var drawCursor = document.getElementById("drawCursor");
 
-  if (enableWacom) $(document.body).append('<object id="wtPlugin" type="application/x-wacomtabletplugin" width="1" height="1"></object>');
+  $(document.body).append('<object id="wtPlugin" type="application/x-wacomtabletplugin" width="1" height="1"></object>');
   var wtPlugin = document.getElementById("wtPlugin");
   var penAPI, strokeSize, dynSize, pressureUpdater;
 
