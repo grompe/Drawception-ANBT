@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      0.32.2014.2
+// @version      0.33.2014.2
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @updateURL    https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
@@ -14,11 +14,12 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "0.32.2014.2";
+var SCRIPT_VERSION = "0.33.2014.2";
 
 // == DEFAULT OPTIONS ==
 
-var enableWacom = 1; // Whether to enable Wacom plugin and thus pressure sensitivity support
+var asyncSkip = 0; // Whether to try loading next game pages asynchronously when skipped
+var enableWacom = 0; // Whether to enable Wacom plugin and thus pressure sensitivity support
 var fixTabletPluginGoingAWOL = 1; // Fix pressure sensitivity disappearing in case of stupid/old Wacom plugin
 var hideCross = 0; // Whether to hide the cross when drawing
 var pressureExponent = 0.5; // Smaller = softer tablet response, bigger = sharper
@@ -85,6 +86,8 @@ Forum
 - add simple layers(?)
 
 == CHANGELOG ==
+0.33.2014.2
+- Experimental: fast async skip while playing (enabled on settings page)
 0.32.2014.2
 - Included update/download URLs in script metadata
 0.31.2014.2
@@ -844,6 +847,95 @@ function enhanceCanvas(insandbox)
   }
 }
 
+function documentReadyOnPlay() // Mostly copied from the $(document).ready function
+{
+  var timeleft = $("#timeleft").text();
+
+  if ($('#drawingCanvas').length)
+  {
+    defaultBgColor = $('#colorOptions').find('.defaultBgColor').attr('data-color');
+    $('#drawingCanvas').css('background', defaultBgColor ? defaultBgColor : defaultFill);
+
+    $('#btn-color').popover({ 
+      html: true,
+      content: function() {
+        return $('#colorOptions').html();
+      }
+    }); 
+
+    if ($('#btn-bglayer').html() != null) {
+      $('#btn-bglayer').popover({ html : true, placement: 'top' });
+      if (defaultBgColor) {
+        bglayer = defaultBgColor;
+        defaultFill = defaultBgColor;
+      } else {
+        bglayer = defaultFill;
+      }
+    } else {
+      bglayer = null;
+    }
+    $('#brush-default').button('toggle');
+
+    drawApp = new DrawApp("drawingCanvas");
+
+    var ctx = drawApp.context;
+    restorePoints = [ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height)];
+    
+    $('#timeleft').countdown({until: +timeleft, compact: true, format: "MS", onTick: highlightCountdown, onExpiry: timesUpWarning});
+
+    // Fix broken submit button
+    if ($("#play-submit").parent().get(0).childNodes[2].textContent.match(/Submit!/))
+    {
+      $("#play-submit").text("Submit!");
+      $("#play-submit").parent().get(0).childNodes[2].textContent = "";
+    }
+  } else {
+    if (timeleft != "") {
+      $('#timeleft').countdown({until: +timeleft, compact: true, format: "MS", onTick: highlightCountdown, onExpiry: timesUp});
+    }
+  }
+}
+
+function loadNextGameAsync()
+{
+  if (document.location.href.indexOf("/play/") == -1)
+  {
+    console.log("loadNextGameAsync(): doesn't seem to be playing... o_O");
+    return;
+  }
+  $.ajax({
+    url: '/play/',
+    cache: false,
+    timeout: 15000,
+    success: function(s)
+    {
+      var beginning = '<div class="wrapper">';
+      var a = s.indexOf(beginning);
+      var b = s.indexOf('</div> <!-- ./wrapper -->');
+      if (a != -1 && b != -1)
+      {
+        var newContent = s.substring(a + beginning.length, b);
+        $(".wrapper").html(newContent);
+
+        // Kick-start the patient
+        $('[rel=tooltip]').tooltip();
+        documentReadyOnPlay();
+        empowerPlay();
+        enhanceCanvas(false);
+      } else {
+        // In case of mismatch, fallback
+        document.location.replace("/play/");
+      }
+    },
+    error: function()
+    {
+      // In case of error, fallback
+      document.location.replace("/play/");
+    }
+  });
+}
+
+
 function empowerPlay()
 {
   if (!document.getElementById("gameForm")) return;
@@ -858,6 +950,38 @@ function empowerPlay()
   $(".gameControls").prepend(optionsButton);
   optionsButton.popover({container: "body", placement: "bottom", html: 1, content: optionsDiv});
   
+  // Remake skip function to async
+  if (asyncSkip)
+  {
+    DrawceptionPlay.skipPanel = function()
+    {
+      var skipButton = $('input[value="Skip"]');
+      if (skipButton.length) skipButton.attr("value", "Skipping...").attr("disabled", "disabled");
+      $.ajax({
+        url: '/play/skip.json',
+        data: { game_token: $('input[name=which_game]').val()},
+        type: 'post',
+        cache: false,
+        timeout: 15000,
+        success: function(o)
+        {
+          if (o.redirect)
+          {
+            loadNextGameAsync();
+          } else {
+            // Error: reload the page anyway
+            loadNextGameAsync();
+          }
+        },
+        error: function(o)
+        {
+          if (skipButton.length) skipButton.attr("value", "Skip").attr("disabled", null);
+          DrawceptionPlay.handleError(o);
+        }
+      });
+    };
+  }
+
   // Handle auto-skipping
   var captioning = !document.getElementById("drawingCanvas");
   if (captioning && playMode == MODE_DRAW_ONLY) autoSkip("Playing drawing-only mode");
@@ -1435,6 +1559,7 @@ function loadScriptSettings()
   var result = localStorage.getItem("gpe_anbtSettings");
   if (!result) return;
   result = JSON.parse(result);
+  asyncSkip = result.asyncSkip;
   enableWacom = result.enableWacom;
   fixTabletPluginGoingAWOL = result.fixTabletPluginGoingAWOL;
   hideCross = result.hideCross;
@@ -1509,8 +1634,9 @@ function addScriptSettings()
       [pressureExponent, "pressureExponent", "number", "Pressure exponent (smaller = softer tablet response, bigger = sharper)"],
     ]
   );
-  addGroup("Canvas",
+  addGroup("Play",
     [
+      [asyncSkip, "asyncSkip", "boolean", "Fast Async Skip (experimental)"],
       [hideCross, "hideCross", "boolean", "Hide the cross when drawing"],
     ]
   );

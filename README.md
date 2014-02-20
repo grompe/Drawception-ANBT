@@ -88,6 +88,9 @@ Forum:
 
 ## CHANGELOG
 
+0.33.2014.2
+- Experimental: Fast Async Skip while playing (enabled on settings page)
+
 0.32.2014.2
 - Included update/download URLs in script metadata
 
