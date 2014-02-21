@@ -88,6 +88,9 @@ Forum:
 
 ## CHANGELOG
 
+0.34.2014.2
+- Support for https URL
+
 0.33.2014.2
 - Experimental: Fast Async Skip while playing (enabled on settings page)
 

@@ -2,11 +2,12 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      0.33.2014.2
+// @version      0.34.2014.2
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @updateURL    https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
+// @match        https://drawception.com/*
 // @grant        none
 // @run-at       document-start
 // @license      Public domain
@@ -14,7 +15,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "0.33.2014.2";
+var SCRIPT_VERSION = "0.34.2014.2";
 
 // == DEFAULT OPTIONS ==
 
@@ -86,6 +87,8 @@ Forum
 - add simple layers(?)
 
 == CHANGELOG ==
+0.34.2014.2
+- Support for https URL
 0.33.2014.2
 - Experimental: fast async skip while playing (enabled on settings page)
 0.32.2014.2
@@ -1137,7 +1140,7 @@ function reversePanels()
 window.likePanelById = likePanelById;
 function likePanelById(id)
 {
-  $.ajax({url: 'http://drawception.com/viewgame/like/panel.json?panelid=' + id + '&action=Like'});
+  $.ajax({url: '/viewgame/like/panel.json?panelid=' + id + '&action=Like'});
 }
 
 window.likeAll = likeAll;
@@ -1399,7 +1402,7 @@ function viewMyGameBookmarks()
         {
           $.ajax(
             {
-              url: 'http://drawception.com/play/' + id,
+              url: '/play/' + id,
               cache: false,
               error: function(e)
               {
@@ -1754,7 +1757,7 @@ function drawingHint()
   var id = gp.attr("src").match(/\d+/)[0];
   $.ajax(
     {
-      url: 'http://drawception.com/panel/get.json?panelid=' + id,
+      url: '/panel/get.json?panelid=' + id,
       complete: function(result)
       {
         result = JSON.parse(result.responseText);
