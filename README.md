@@ -88,6 +88,9 @@ Forum:
 
 ## CHANGELOG
 
+0.35.2014.2
+- An option to disable submitting captions with Enter
+
 0.34.2014.2
 - Support for https URL
 

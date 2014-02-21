@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      0.34.2014.2
+// @version      0.35.2014.2
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @updateURL    https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
@@ -15,20 +15,24 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "0.34.2014.2";
+var SCRIPT_VERSION = "0.35.2014.2";
 
 // == DEFAULT OPTIONS ==
 
-var asyncSkip = 0; // Whether to try loading next game pages asynchronously when skipped
-var enableWacom = 0; // Whether to enable Wacom plugin and thus pressure sensitivity support
-var fixTabletPluginGoingAWOL = 1; // Fix pressure sensitivity disappearing in case of stupid/old Wacom plugin
-var hideCross = 0; // Whether to hide the cross when drawing
-var pressureExponent = 0.5; // Smaller = softer tablet response, bigger = sharper
-var brushSizes = [2, 5, 12, 35]; // Brush sizes for choosing via keyboard
-var loadChat = 1; // Whether to load the chat
-var chatAutoConnect = 0; // Whether to automatically connect to the chat
-var removeFlagging = 1; // Whether to remove flagging buttons
-var ownPanelLikesSecret = 0;
+var options =
+{
+  asyncSkip: 0, // Whether to try loading next game pages asynchronously when skipped
+  enableWacom: 0, // Whether to enable Wacom plugin and thus pressure sensitivity support
+  fixTabletPluginGoingAWOL: 1, // Fix pressure sensitivity disappearing in case of stupid/old Wacom plugin
+  hideCross: 0, // Whether to hide the cross when drawing
+  enterToCaption: 1, // Whether to submit caption by pressing Enter
+  pressureExponent: 0.5, // Smaller = softer tablet response, bigger = sharper
+  brushSizes: [2, 5, 12, 35], // Brush sizes for choosing via keyboard
+  loadChat: 1, // Whether to load the chat
+  chatAutoConnect: 0, // Whether to automatically connect to the chat
+  removeFlagging: 1, // Whether to remove flagging buttons
+  ownPanelLikesSecret: 0,
+}
 
 /*
 == HOW TO USE ==
@@ -87,6 +91,8 @@ Forum
 - add simple layers(?)
 
 == CHANGELOG ==
+0.35.2014.2
+- An option to disable submitting captions with Enter
 0.34.2014.2
 - Support for https URL
 0.33.2014.2
@@ -378,7 +384,7 @@ function enhanceCanvas(insandbox)
   if (!prestoOpera)
   {
     GM_addStyle(
-      (hideCross ? "#drawingCanvas.active {cursor: none !important}" : "") +
+      (options.hideCross ? "#drawingCanvas.active {cursor: none !important}" : "") +
       "#drawCursor {display: block; z-index: 10; border: 1px solid #FFFFFF }"
     );
   }
@@ -392,7 +398,7 @@ function enhanceCanvas(insandbox)
   var oldX, oldY, oldTabletX = 0, oldTabletY = 0, oldTabletPressure = 0, tabletActive = false;
   usingTablet = function()
   {
-    if (!enableWacom) return false;
+    if (!options.enableWacom) return false;
     if (!tabletActive) return false;
     var result = false;
     try
@@ -405,7 +411,7 @@ function enhanceCanvas(insandbox)
   // Chrome: seems to be the slowest function
   function updateTabletPos(moved)
   {
-    if (!enableWacom) return false;
+    if (!options.enableWacom) return false;
     var result = false;
     try
     {
@@ -444,7 +450,7 @@ function enhanceCanvas(insandbox)
 
   function updatePressure()
   {
-    var goal = strokeSize * Math.pow(getPressure(), pressureExponent);
+    var goal = strokeSize * Math.pow(getPressure(), options.pressureExponent);
     dynSize = (dynSize + goal) / 2;
   }
 
@@ -459,16 +465,16 @@ function enhanceCanvas(insandbox)
 
   function nextSize(d)
   {
-    var idx = 0, m = brushSizes.length - 1;
+    var idx = 0, m = options.brushSizes.length - 1;
     for (var i = m; i > 0; i--)
     {
-      if (strokeSize >= brushSizes[i])
+      if (strokeSize >= options.brushSizes[i])
       {
         idx = i;
         break;
       }
     }
-    strokeSize = brushSizes[Math.min(Math.max(idx + d, 0), m)];
+    strokeSize = options.brushSizes[Math.min(Math.max(idx + d, 0), m)];
     drawApp.context.lineWidth = strokeSize;
     cursorOffset = strokeSize / 2;
     updateDrawCursor();
@@ -685,7 +691,7 @@ function enhanceCanvas(insandbox)
           updateTabletPos(true);
           if (usingTablet())
           {
-            var goal = strokeSize * Math.pow(getPressure(), pressureExponent);
+            var goal = strokeSize * Math.pow(getPressure(), options.pressureExponent);
             dynSize = (dynSize + goal) / 2;
             drawApp.context.lineWidth = dynSize;
           } else {
@@ -837,7 +843,7 @@ function enhanceCanvas(insandbox)
     );
   }
 
-  if (enableWacom && fixTabletPluginGoingAWOL)
+  if (options.enableWacom && options.fixTabletPluginGoingAWOL)
   {
     window.onblur = function(e)
     {
@@ -954,7 +960,7 @@ function empowerPlay()
   optionsButton.popover({container: "body", placement: "bottom", html: 1, content: optionsDiv});
   
   // Remake skip function to async
-  if (asyncSkip)
+  if (options.asyncSkip)
   {
     DrawceptionPlay.skipPanel = function()
     {
@@ -997,7 +1003,12 @@ function empowerPlay()
     if (submitclick)
     {
       $("#gameForm").attr("action", "#");
-      $("#gameForm").attr("onsubmit", submitclick + "; return false;");
+      if (options.enterToCaption)
+      {
+        $("#gameForm").attr("onsubmit", submitclick + "; return false;");
+      } else {
+        $("#gameForm").attr("onsubmit", "return false;");
+      }
     }
   }
 
@@ -1020,7 +1031,7 @@ function empowerPlay()
   optionsButton.before(bookmarkButton).before(" ");
 
   // Remove the temptation to judge
-  if (removeFlagging) $('input.btn[value="Report"]').remove();
+  if (options.removeFlagging) $('input.btn[value="Report"]').remove();
 }
 
 // Event functions referred to in HTML must have unwrapped access
@@ -1190,7 +1201,7 @@ function betterView()
   lead.text(lead.text().replace("game completed", "game started on " + startDate + " and completed"));
   
   // Hide your own number of likes
-  if (ownPanelLikesSecret)
+  if (options.ownPanelLikesSecret)
     $(".panel-user").find('a[href*="/' + userid + '/"]').parent().parent().find("span.disabled .numlikes").text("?").css("opacity", "0.5");
   
   // Reverse panels button and like all button
@@ -1199,7 +1210,7 @@ function betterView()
     .after(' <a href="#" class="btn btn-default" onclick="return likeAll();" title="Like all panels"><span class="glyphicon glyphicon-thumbs-up"></span> Like all</a>');
 
   // Remove the temptation to judge
-  if (removeFlagging) $(".flagbutton").remove();
+  if (options.removeFlagging) $(".flagbutton").remove();
 
   // Panel favorite buttons
   var favButton = $('<span class="panel-number anbt_favpanel glyphicon glyphicon-heart text-muted" title="Favorite"></span>');
@@ -1455,7 +1466,7 @@ function viewMyGameBookmarks()
 function betterPlayer()
 {
   // Remove the temptation to judge
-  if (removeFlagging) $('a.btn:contains("Report")').remove();
+  if (options.removeFlagging) $('a.btn:contains("Report")').remove();
 
   var loc = document.location.href;
   // If it's user's homepage, add new buttons in there
@@ -1562,15 +1573,7 @@ function loadScriptSettings()
   var result = localStorage.getItem("gpe_anbtSettings");
   if (!result) return;
   result = JSON.parse(result);
-  asyncSkip = result.asyncSkip;
-  enableWacom = result.enableWacom;
-  fixTabletPluginGoingAWOL = result.fixTabletPluginGoingAWOL;
-  hideCross = result.hideCross;
-  pressureExponent = result.pressureExponent;
-  loadChat = result.loadChat;
-  chatAutoConnect = result.chatAutoConnect;
-  removeFlagging = result.removeFlagging;
-  ownPanelLikesSecret = result.ownPanelLikesSecret;
+  for (var i in result) options[i] = result[i];
 }
 
 window.updateScriptSettings = updateScriptSettings;
@@ -1610,7 +1613,7 @@ function addScriptSettings()
     div.append('<label class="control-label" for="">' + name + '</label>');
     settings.forEach(function(id)
       {
-        var v = id[0], name = id[1], t = id[2], desc = id[3];
+        var v = options[id[0]], name = id[0], t = id[1], desc = id[2];
         var c = $('<div class="controls"></div>');
         if (t == "boolean")
         {
@@ -1632,27 +1635,28 @@ function addScriptSettings()
   };
   addGroup('Pen Tablet (requires plugin: <a href="http://www.wacomeng.com/web/fbWTPInstall.zip">Windows</a> | <a href="http://www.wacomeng.com/web/Wacom%20Mac%20Plug-in%20Installer.zip">Mac OS</a> | <a href="https://github.com/ZaneA/WacomWebPlugin">Linux</a>)',
     [
-      [enableWacom, "enableWacom", "boolean", "Enable Wacom plugin / pressure sensitivity support"],
-      [fixTabletPluginGoingAWOL, "fixTabletPluginGoingAWOL", "boolean", "Try to prevent Wacom plugin from disappearing"],
-      [pressureExponent, "pressureExponent", "number", "Pressure exponent (smaller = softer tablet response, bigger = sharper)"],
+      ["enableWacom", "boolean", "Enable Wacom plugin / pressure sensitivity support"],
+      ["fixTabletPluginGoingAWOL", "boolean", "Try to prevent Wacom plugin from disappearing"],
+      ["pressureExponent", "number", "Pressure exponent (smaller = softer tablet response, bigger = sharper)"],
     ]
   );
   addGroup("Play",
     [
-      [asyncSkip, "asyncSkip", "boolean", "Fast Async Skip (experimental)"],
-      [hideCross, "hideCross", "boolean", "Hide the cross when drawing"],
+      ["asyncSkip", "boolean", "Fast Async Skip (experimental)"],
+      ["hideCross", "boolean", "Hide the cross when drawing"],
+      ["enterToCaption", "boolean", "Submit captions by pressing Enter"],
     ]
   );
   addGroup("Chat",
     [
-      [loadChat, "loadChat", "boolean", "Load the embedded chat"],
-      [chatAutoConnect, "chatAutoConnect", "boolean", "Automatically connect to the chat"],
+      ["loadChat", "boolean", "Load the embedded chat"],
+      ["chatAutoConnect", "boolean", "Automatically connect to the chat"],
     ]
   );
   addGroup("Miscellaneous",
     [
-      [removeFlagging, "removeFlagging", "boolean", "Remove flagging buttons"],
-      [ownPanelLikesSecret, "ownPanelLikesSecret", "boolean", "Make likes for your own panels secret (in game only)"],
+      ["removeFlagging", "boolean", "Remove flagging buttons"],
+      ["ownPanelLikesSecret", "boolean", "Make likes for your own panels secret (in game only)"],
     ]
   );
   theForm.append('<div class="control-group"><div class="controls"><input name="submit" type="submit" class="btn btn-primary" value="Apply"> <b id="anbtSettingsOK" class="label label-theme_holiday" style="display:none">Saved!</b></div></div>');
@@ -1980,7 +1984,7 @@ function pageEnhancements()
   
   window.onbeforeunload = function() {if ($("#drawingCanvas").length && painted) return "Did you finish drawing?";};
 
-  if (loadChat)
+  if (options.loadChat)
   {
     $.ajax(
       {
@@ -1994,7 +1998,7 @@ function pageEnhancements()
       MINI_GROUPCHATS_NOCLOSE = ["drawception@chat.grompe.org.ru"];
       MINI_NICKNAME = username;
       MINI_RESOURCE = userid + "/jm" + Math.random().toString(36).slice(1, 5);
-      launchMini(Boolean(chatAutoConnect), true, "ip");
+      launchMini(Boolean(options.chatAutoConnect), true, "ip");
     });
   }
 }
