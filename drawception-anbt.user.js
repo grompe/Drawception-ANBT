@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      0.36.2014.2
+// @version      0.37.2014.2
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @updateURL    https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
@@ -15,7 +15,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "0.36.2014.2";
+var SCRIPT_VERSION = "0.37.2014.2";
 
 // == DEFAULT OPTIONS ==
 
@@ -73,6 +73,7 @@ View game
 - Show when the game was started
 - Ability to favorite panels
 Play
+- Much faster skipping
 - Play modes for those who only caption or only draw
 - Enter pressed in caption mode submits the caption
 - Ability to bookmark games without participating
@@ -92,6 +93,9 @@ Forum
 - add simple layers(?)
 
 == CHANGELOG ==
+0.37.2014.2
+- Fix undo/redo buttons after fast skip
+- Fix default color with custom palette game
 0.36.2014.2
 - Small fix for old broken image links in the forum
 - Fix scroll position not being kept
@@ -544,6 +548,7 @@ function enhanceCanvas(insandbox)
         }
         return this.old_setColor(color);
       };
+      defaultColor = $('#colorOptions').find('.selected').attr('data-color');
       drawApp.primary_color = defaultColor;
       drawApp.secondary_color = null;
 
@@ -897,12 +902,23 @@ function documentReadyOnPlay() // Mostly copied from the $(document).ready funct
     
     $('#timeleft').countdown({until: +timeleft, compact: true, format: "MS", onTick: highlightCountdown, onExpiry: timesUpWarning});
 
+    $('#undo-button').click(function() {
+      undo();
+      return false;
+    });
+
+    $('#redo-button').click(function() {
+      redo();
+      return false;
+    });
+
     // Fix broken submit button
     if ($("#play-submit").parent().get(0).childNodes[2].textContent.match(/Submit!/))
     {
       $("#play-submit").text("Submit!");
       $("#play-submit").parent().get(0).childNodes[2].textContent = "";
     }
+
   } else {
     if (timeleft != "") {
       $('#timeleft').countdown({until: +timeleft, compact: true, format: "MS", onTick: highlightCountdown, onExpiry: timesUp});

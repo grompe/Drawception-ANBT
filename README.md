@@ -90,6 +90,10 @@ Forum:
 
 ## CHANGELOG
 
+0.37.2014.2
+- Fix undo/redo buttons after fast skip
+- Fix default color with custom palette game
+
 0.36.2014.2
 - Small fix for old broken image links in the forum
 - Fix scroll position not being kept
