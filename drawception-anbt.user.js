@@ -93,6 +93,8 @@ Forum
 == CHANGELOG ==
 0.36.2014.2
 - Small fix for old broken image links in the forum
+- Fix scroll position not being kept
+- Show direct links to forum posts
 0.35.2014.2
 - An option to disable submitting captions with Enter
 0.34.2014.2
@@ -1572,6 +1574,28 @@ function betterForum()
     }
   );
 
+  // Show posts IDs and link
+  var lastid = 0;
+  $("span.muted").each(function()
+    {
+      var t = $(this), anch, id;
+      try
+      {
+        anch = t.parent().parent().parent().parent().attr("id");
+      } catch(e) {}
+      if (anch)
+      {
+        id = parseInt(anch.substring(1), 10);
+        if (id > lastid)
+        {
+          t.after(' <a class="text-muted" href="#' + anch + '">#' + id + '</a>');
+        } else {
+          t.after(' <a class="text-muted wrong-order" href="#' + anch + '">#' + id + '</a>');
+        }
+        lastid = id;
+      }
+    }
+  );
 }
 
 function loadScriptSettings()
@@ -1835,6 +1859,7 @@ function pageEnhancements()
   prestoOpera = jQuery.browser.opera && (parseInt(jQuery.browser.version, 10) <= 12);
   firefox4OrOlder = jQuery.browser.mozilla && (parseInt(jQuery.browser.version, 10) < 5);
   var loc = document.location.href;
+  var scroll = $("#content").scrollTop();
 
   // Stop tracking me! Best to block
   // api.mixpanel.com and cdn.mxpnl.com
@@ -1917,6 +1942,7 @@ function pageEnhancements()
   GM_addStyle(
     "#user-notify-list .list-group .list-group-item .glyphicon {color: #888}" +
     "#user-notify-list .list-group .list-group-item:nth-child(-n+" + num + ") .glyphicon {color: #2F5}" +
+    "a.wrong-order {color: #F99} div.comment-holder:target {background-color: #DFD}" +
     "#comments .comment-new .text-muted:after {content: 'New'; color: #2F5; font-weight: bold; background-color: #183; border-radius: 9px; display: inline-block; padding: 0px 6px; margin-left: 10px;}"
   );
 
@@ -1949,6 +1975,8 @@ function pageEnhancements()
     );
     $("#open-right").attr({"data-toggle": "modal", "href": "#myNotifications"});
   }
+  // Restore scroll position
+  $("html").scrollTop(scroll);
 
   // Show an error if it occurs instead of "loading forever"
   window.getNotifications = function()
@@ -2041,7 +2069,7 @@ localStorage.setItem("gpe_darkCSS",
   ".nav>li.disabled>a,.nav>li.disabled>a:hover,.nav>li.disabled>a:focus{color:#555$}.table-striped>tbody>tr:nth-child(2n+1)>td,.table-striped>tbody>tr:nth-child(2n+1)>th{~#333$}" +
   ".table-hover>tbody>tr:hover>td,.table-hover>tbody>tr:hover>th{~#555$}.table thead>tr>th,.table tbody>tr>th,.table tfoot>tr>th,.table thead>tr>td,.table tbody>tr>td,.table tfoot>tr>td{border-top:1px solid #333$}.news-alert{~#555$;border:2px solid #444$}" +
   ".btn-menu{~#2e2e2e$}.btn-menu:hover{~#232323$}.btn-yellow{~#8a874e$}.btn-yellow:hover{~#747034$}" +
-  "a.label{color:#fff$}" +
+  "a.label{color:#fff$}a.text-muted{color:#999$}a.wrong-order{color:#F99$}div.comment-holder:target{~#454$}" +
   "#jappix_mini a{color:#000$}" +
   // Some lamey compression method!
   "").replace(/~/g, "background-color:").replace(/\$/g, " !important")
