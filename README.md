@@ -66,6 +66,7 @@ View game:
 
 Play:
 
+- Much faster skipping
 - Play modes for those who only caption or only draw
 - Enter pressed in caption mode submits the caption
 - Ability to bookmark games without participating
