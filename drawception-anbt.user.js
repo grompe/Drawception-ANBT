@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      0.35.2014.2
+// @version      0.36.2014.2
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @updateURL    https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
@@ -15,7 +15,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "0.35.2014.2";
+var SCRIPT_VERSION = "0.36.2014.2";
 
 // == DEFAULT OPTIONS ==
 
@@ -91,6 +91,8 @@ Forum
 - add simple layers(?)
 
 == CHANGELOG ==
+0.36.2014.2
+- Small fix for old broken image links in the forum
 0.35.2014.2
 - An option to disable submitting captions with Enter
 0.34.2014.2
@@ -1552,20 +1554,24 @@ function betterForum()
       var t = $(this);
       if (!t.parent().is("a"))
       {
-        t.wrap('<a href="' + t.attr("src") +'-/"></a>');
+        t.wrap('<a href="' + t.attr("src") + '-/"></a>');
       }
     }
   );
+  // Fix the dead link
   $('img[src*="/display-panel.php?"]').each(function()
     {
       var t = $(this);
       if (!t.parent().is("a"))
       {
         var panelid = t.attr("src").match(/x=(\d+)/)[1];
-        t.wrap('<a href="/panel/drawing/' + scrambleID(panelid) +'/-/"></a>');
+        var newsrc = "/panel/drawing/" + scrambleID(panelid) + "/";
+        t.attr("src", newsrc);
+        t.wrap('<a href="' + newsrc + '-/"></a>');
       }
     }
   );
+
 }
 
 function loadScriptSettings()

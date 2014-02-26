@@ -89,6 +89,9 @@ Forum:
 
 ## CHANGELOG
 
+0.36.2014.2
+- Small fix for old broken image links in the forum
+
 0.35.2014.2
 - An option to disable submitting captions with Enter
 
