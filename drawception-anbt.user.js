@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      0.37.2014.2
+// @version      0.38.2014.2
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @updateURL    https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
@@ -15,7 +15,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "0.37.2014.2";
+var SCRIPT_VERSION = "0.38.2014.2";
 
 // == DEFAULT OPTIONS ==
 
@@ -32,6 +32,7 @@ var options =
   chatAutoConnect: 0, // Whether to automatically connect to the chat
   removeFlagging: 1, // Whether to remove flagging buttons
   ownPanelLikesSecret: 0,
+  backup: 1,
 }
 
 /*
@@ -93,6 +94,8 @@ Forum
 - add simple layers(?)
 
 == CHANGELOG ==
+0.38.2014.2
+- Save drawings from page reload and place timed out ones in sandbox
 0.37.2014.2
 - Fix undo/redo buttons after fast skip
 - Fix default color with custom palette game
@@ -383,7 +386,7 @@ function enhanceCanvas(insandbox)
 
   $(document.body).append('<object id="wtPlugin" type="application/x-wacomtabletplugin" width="1" height="1"></object>');
   var wtPlugin = document.getElementById("wtPlugin");
-  var penAPI, strokeSize, dynSize, pressureUpdater;
+  var penAPI, strokeSize, dynSize, pressureUpdater, backupTimer;
 
   GM_addStyle(
     "#primaryColor, #secondaryColor {width: 49px; height: 20px; float: left; border: 1px solid #AAA}" +
@@ -489,6 +492,15 @@ function enhanceCanvas(insandbox)
     updateDrawCursor();
   }
 
+  function saveBackup()
+  {
+    if (!options.backup) return;
+    var o = {game: null, image: drawApp.toDataURL()};
+    var which_game = $('input[name=which_game]');
+    if (which_game.length) o.game = which_game.val();
+    localStorage.setItem("anbt_drawingbackup", JSON.stringify(o));
+  }
+
   // Make right-click draw secondary color and alt+click pick colors
   var waitForDrawApp = setInterval(function()
     {
@@ -577,10 +589,27 @@ function enhanceCanvas(insandbox)
         restorePoints = [drawApp.context.getImageData(0, 0, drawApp.context.canvas.width, drawApp.context.canvas.height)];
       }
       //drawApp.context.putImageData = CanvasRenderingContext2D.prototype.putImageData;
+
+      var backup = localStorage.getItem("anbt_drawingbackup");
+      if (options.backup && backup)
+      {
+        backup = JSON.parse(backup);
+        var which_game = $('input[name=which_game]');
+        if (insandbox || which_game.length && (which_game.val() == backup.game))
+        {
+          var img = new Image;
+          img.onload = function()
+          {
+            drawApp.context.drawImage(this, 0, 0, drawApp.context.canvas.width, drawApp.context.canvas.height);
+          };
+          img.src = backup.image;
+        }
+      }
       
       drawApp.old_canvasMouseDown = drawApp.onCanvasMouseDown();
       drawApp.canvas.on('mousedown', function(e)
         {
+          clearTimeout(backupTimer);
           $(canvas).addClass("active");
           e.preventDefault();
           var x, y;
@@ -631,6 +660,7 @@ function enhanceCanvas(insandbox)
       );
       drawApp.canvas.on('mouseup', function(e)
         {
+          backupTimer = setTimeout(saveBackup, 1000);
           $(canvas).removeClass("active");
           if (usingTablet())
           {
@@ -1692,6 +1722,7 @@ function addScriptSettings()
       ["asyncSkip", "boolean", "Fast Async Skip (experimental)"],
       ["hideCross", "boolean", "Hide the cross when drawing"],
       ["enterToCaption", "boolean", "Submit captions by pressing Enter"],
+      ["backup", "boolean", "Save drawings from page reload and place timed out ones in sandbox"],
     ]
   );
   addGroup("Chat",

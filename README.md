@@ -90,6 +90,9 @@ Forum:
 
 ## CHANGELOG
 
+0.38.2014.2
+- Save drawings from page reload and place timed out ones in sandbox
+
 0.37.2014.2
 - Fix undo/redo buttons after fast skip
 - Fix default color with custom palette game
