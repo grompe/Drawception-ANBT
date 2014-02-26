@@ -80,6 +80,7 @@ Forum
 - Better-looking timestamps with correct timezone
 - Clickable drawing panels
 - Clickable links
+- Show and highlight direct links to forum posts
 
 == TODO ==
 - fix scrollbar appearing when brush crosses lower page boundary (rare)

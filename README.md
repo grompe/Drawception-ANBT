@@ -76,6 +76,7 @@ Forum:
 - Better-looking timestamps with correct timezone
 - Clickable drawing panels
 - Clickable links
+- Show and highlight direct links to forum posts
 
 ## TODO
 
