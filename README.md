@@ -90,6 +90,9 @@ Forum:
 
 ## CHANGELOG
 
+0.39.2014.2
+- Confirm deleting the cover image
+
 0.38.2014.2
 - Save drawings from page reload and place timed out ones in sandbox
 

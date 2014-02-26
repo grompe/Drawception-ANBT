@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      0.38.2014.2
+// @version      0.39.2014.2
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @updateURL    https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
@@ -15,7 +15,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "0.38.2014.2";
+var SCRIPT_VERSION = "0.39.2014.2";
 
 // == DEFAULT OPTIONS ==
 
@@ -94,6 +94,8 @@ Forum
 - add simple layers(?)
 
 == CHANGELOG ==
+0.39.2014.2
+- Confirm deleting the cover image
 0.38.2014.2
 - Save drawings from page reload and place timed out ones in sandbox
 0.37.2014.2
@@ -1532,6 +1534,17 @@ function betterPlayer()
 
     if (document.location.hash.indexOf("#anbt_panelfavorites") != -1) viewMyPanelFavorites();
     if (document.location.hash.indexOf("#anbt_gamebookmarks") != -1) viewMyGameBookmarks();
+
+    // Make delete cover button safer
+    var old_deleteCover = DrawceptionPlay.deleteCover;
+    DrawceptionPlay.deleteCover = function()
+    {
+      apprise('Delete the whole cover, really?', {'verify': true}, function(r)
+        {
+          if (r) { old_deleteCover(); }
+        }
+      );
+    };
   }
 }
 
