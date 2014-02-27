@@ -15,7 +15,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "0.39.2014.2";
+var SCRIPT_VERSION = "0.40.2014.2";
 
 // == DEFAULT OPTIONS ==
 
@@ -86,7 +86,6 @@ Forum
 
 == TODO ==
 - fix scrollbar appearing when brush crosses lower page boundary (rare)
-- save last snapshot in case of browser crash / accidental refresh
 - fix friend games timer (and show likes)
 - smoother tablet pressure change; react to pressure change even on same position
 - optimize performance
@@ -94,6 +93,8 @@ Forum
 - add simple layers(?)
 
 == CHANGELOG ==
+0.40.2014.2
+- Fix upload to imgur
 0.39.2014.2
 - Confirm deleting the cover image
 0.38.2014.2
@@ -361,6 +362,16 @@ var palettes =
       '#b6cbe4', '#618abc', '#d0d5ce', '#82a2a1',
       '#92b8c1', '#607884', '#c19292', '#8c2c2c',
       '#295c6f',
+    ],
+  },
+  {
+    name: "???",
+    class: "label-normalpal",
+    colors:
+    [
+      '#000000', '#ffffff', '#ff0000', '#00ff00',
+      '#0000ff', 'rgba(0,0,0,0.3)', 'rgba(255,255,255,0.3)', 'rgba(255,0,0,0.3)',
+      'rgba(0,255,0,0.3)', 'rgba(0,0,255,0.3)'
     ],
   },
 ];
@@ -1151,7 +1162,6 @@ function uploadCanvasToImgur()
   $("#imgurimgurl").hide();
   $("#imgurdelurl").hide();
   var data, t = new Image();
-  t.src = drawApp.toDataURL();
   t.onload = function()
   {
     var e = document.getElementById("tempCanvas"),
@@ -1167,14 +1177,8 @@ function uploadCanvasToImgur()
         headers: {Authorization: 'Client-ID dc1240eb1fddf64'},
         data: {image: data},
         dataType: 'json',
-        complete: function(result)
+        success: function(r)
         {
-          var r;
-          try
-          {
-            r = JSON.parse(result.responseText);
-          }
-          catch(e) {}
           $("#imgurup b").text("Upload to imgur");
           $("#imgurimgurl").show();
           if (r.success)
@@ -1183,13 +1187,20 @@ function uploadCanvasToImgur()
             $("#imgurdelurl").show();
             $("#imgurdelurl").attr("href", "http://imgur.com/delete/" + r.data.deletehash);
           } else {
-            var err = r.status ? ("Imgur error: " + r.status) : ("Error: " + result.responseText);
+            var err = r.status ? ("Imgur error: " + r.status) : ("Error: " + r.responseText);
             $("#imgurimgurl").attr({target: "", href: "#"}).text(err);
           }
         },
+        error: function(e)
+        {
+          console.log(e);
+          $("#imgurup b").text("Upload to imgur");
+          $("#imgurimgurl").show().attr({target: "", href: "#"}).text(("Error: " + e.statusText));
+        }
       }
     );
   };
+  t.src = drawApp.toDataURL();
   return false;
 }
 

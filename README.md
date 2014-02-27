@@ -90,6 +90,9 @@ Forum:
 
 ## CHANGELOG
 
+0.40.2014.2
+- Fix upload to imgur
+
 0.39.2014.2
 - Confirm deleting the cover image
 
