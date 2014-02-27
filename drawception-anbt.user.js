@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      0.39.2014.2
+// @version      0.40.2014.2
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @updateURL    https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
@@ -95,6 +95,7 @@ Forum
 == CHANGELOG ==
 0.40.2014.2
 - Fix upload to imgur
+- Small backup/undo fix
 0.39.2014.2
 - Confirm deleting the cover image
 0.38.2014.2
@@ -614,6 +615,7 @@ function enhanceCanvas(insandbox)
           img.onload = function()
           {
             drawApp.context.drawImage(this, 0, 0, drawApp.context.canvas.width, drawApp.context.canvas.height);
+            save();
           };
           img.src = backup.image;
         }

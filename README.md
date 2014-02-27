@@ -92,6 +92,7 @@ Forum:
 
 0.40.2014.2
 - Fix upload to imgur
+- Small backup/undo fix
 
 0.39.2014.2
 - Confirm deleting the cover image
