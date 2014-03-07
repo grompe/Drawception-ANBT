@@ -18,6 +18,13 @@ body
 }
 #b, #c, #v
 {
+  image-rendering: optimizeSpeed;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: optimize-contrast;
+  -ms-interpolation-mode: nearest-neighbor;
+  width: 600px;
+  height: 500px;
   cursor: crosshair;
   position: absolute;
 }
@@ -88,11 +95,11 @@ ta.onkeydown = function(e)
 
   var getPointerType = function()
   {
-    return wacom.penAPI ? wacom.penAPI.pointerType : 0;
+    return wacom.penAPI && wacom.isWacom ? wacom.penAPI.pointerType : 0;
   };
   var getPressure = function()
   {
-    return wacom.penAPI ? wacom.penAPI.pressure * pressureCompensation : 1;
+    return wacom.penAPI && wacom.isWacom ? wacom.penAPI.pressure * pressureCompensation : 1;
   };
   var get1 = function()
   {
@@ -131,6 +138,7 @@ ta.onkeydown = function(e)
       this.points.length = 0;
     },
   };
+  var WIDTH = 600, HEIGHT = 500;
   var bgCanvas = document.getElementById("b");
   var bgContext = bgCanvas.getContext("2d");
   var drawCanvas = document.getElementById("c");
@@ -138,16 +146,19 @@ ta.onkeydown = function(e)
   var visCanvas = document.getElementById("v");
   var visContext = visCanvas.getContext("2d");
   var ox, oy, od;
+  bgContext.imageSmoothingEnabled = false;
+  drawContext.imageSmoothingEnabled = false;
+  visContext.imageSmoothingEnabled = false;
   bgContext.fillStyle = "#ffffd9";
-  bgContext.fillRect(0, 0, 600, 500);
+  bgContext.fillRect(0, 0, WIDTH, HEIGHT);
 
-  var snapshots = [drawContext.getImageData(0, 0, 600, 500)];
+  var snapshots = [drawContext.getImageData(0, 0, WIDTH, HEIGHT)];
   var snapshotPosition = 0;
 
   var saveSnapshot = function()
   {
     snapshots.length = ++snapshotPosition;
-    snapshots.push(drawContext.getImageData(0, 0, 600, 500));
+    snapshots.push(drawContext.getImageData(0, 0, WIDTH, HEIGHT));
   };
   var undo = function()
   {
@@ -168,8 +179,8 @@ ta.onkeydown = function(e)
     if (theBrush.pressed)
     {
       e.preventDefault();
-      var x = e.pageX - drawCanvas.offsetLeft;
-      var y = e.pageY - drawCanvas.offsetTop;
+      var x = Math.floor((e.pageX - drawCanvas.offsetLeft));
+      var y = Math.floor((e.pageY - drawCanvas.offsetTop));
       var d = theBrush.size * theBrush.getPressure();
 
       stroke.addPoint(x, y, d);
@@ -201,9 +212,10 @@ ta.onkeydown = function(e)
     {
       e.preventDefault();
       theBrush.pressed = 1;
-      var x = e.offsetX || e.layerX || 0;
-      var y = e.offsetY || e.layerY || 0;
+      var x = Math.floor((e.offsetX || e.layerX || 0));
+      var y = Math.floor((e.offsetY || e.layerY || 0));
       var pointerType = getPointerType();
+      console.log(pointerType);
       theBrush.getPressure = pointerType > 0 ? getPressure : get1;
       drawContext.globalCompositeOperation = pointerType == 3 ? "destination-out" : "source-over";
       drawContext.fillStyle = e.button == 0 ? theBrush.color : theBrush.color2;
@@ -221,13 +233,13 @@ ta.onkeydown = function(e)
   {
     if (visCanvasDirty)
     {
-      visContext.clearRect(0, 0, 600, 500);
+      visContext.clearRect(0, 0, WIDTH, HEIGHT);
       visCanvasDirty = false;
     }
     if (!theBrush.pressed)
     {
-      var x = e.pageX - drawCanvas.offsetLeft;
-      var y = e.pageY - drawCanvas.offsetTop;
+      var x = Math.floor((e.pageX - drawCanvas.offsetLeft));
+      var y = Math.floor((e.pageY - drawCanvas.offsetTop));
       visContext.fillStyle = theBrush.color;
       visContext.beginPath();
       visContext.arc(x, y, theBrush.size / 2, 0, 2 * Math.PI, false);
@@ -244,7 +256,7 @@ ta.onkeydown = function(e)
     if (e.keyCode == "E".charCodeAt(0) && e.shiftKey)
     {
       drawContext.fillStyle = "#ffffd9";
-      drawContext.fillRect(0, 0, 600, 500);
+      drawContext.fillRect(0, 0, WIDTH, HEIGHT);
       saveSnapshot();
     }
     if (e.keyCode == "Z".charCodeAt(0) && e.ctrlKey)
