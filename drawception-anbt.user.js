@@ -5,7 +5,6 @@
 // @version      0.41.2014.3
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
-// @updateURL    https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
 // @match        https://drawception.com/*
 // @grant        none
