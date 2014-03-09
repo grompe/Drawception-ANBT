@@ -90,6 +90,9 @@ Forum:
 
 ## CHANGELOG
 
+0.41.2014.3
+- Adjust forum timezone
+
 0.40.2014.2
 - Fix upload to imgur
 - Small backup/undo fix

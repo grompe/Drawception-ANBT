@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      0.40.2014.2
+// @version      0.41.2014.3
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @updateURL    https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
@@ -15,7 +15,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "0.40.2014.2";
+var SCRIPT_VERSION = "0.41.2014.3";
 
 // == DEFAULT OPTIONS ==
 
@@ -93,6 +93,8 @@ Forum
 - add simple layers(?)
 
 == CHANGELOG ==
+0.41.2014.3
+- Adjust forum timezone
 0.40.2014.2
 - Fix upload to imgur
 - Small backup/undo fix
@@ -1564,13 +1566,13 @@ function betterPlayer()
 function betterForum()
 {
   // Convert times
-  // Forum time seems to be GMT-6
+  // Forum time seems to be Florida, GMT-6, +1 DST since 09 Mar 2014
   var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   function convertForumTime(year, month, day, hours, minutes)
   {
     var d = new Date(year, month, day, hours, minutes);
     var tzo = d.getTimezoneOffset() * 60 * 1000;
-    return formatTimestamp(d.getTime() - tzo + 6 * 60 * 60 * 1000);
+    return formatTimestamp(d.getTime() - tzo + 5 * 60 * 60 * 1000);
   }
 
   $("span.muted, span.text-muted").each(function()
