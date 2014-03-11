@@ -90,6 +90,9 @@ Forum:
 
 ## CHANGELOG
 
+0.42.2014.3
+- Delete saved drawing if playing another game
+
 0.41.2014.3
 - Adjust forum timezone
 

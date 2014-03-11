@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      0.41.2014.3
+// @version      0.42.2014.3
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "0.41.2014.3";
+var SCRIPT_VERSION = "0.42.2014.3";
 
 // == DEFAULT OPTIONS ==
 
@@ -92,6 +92,8 @@ Forum
 - add simple layers(?)
 
 == CHANGELOG ==
+0.42.2014.3
+- Delete saved drawing if playing another game
 0.41.2014.3
 - Adjust forum timezone
 0.40.2014.2
@@ -510,7 +512,7 @@ function enhanceCanvas(insandbox)
   function saveBackup()
   {
     if (!options.backup) return;
-    var o = {game: null, image: drawApp.toDataURL()};
+    var o = {game: null, image: drawApp.toDataURL(), timeleft: timeleft};
     var which_game = $('input[name=which_game]');
     if (which_game.length) o.game = which_game.val();
     localStorage.setItem("anbt_drawingbackup", JSON.stringify(o));
@@ -619,6 +621,11 @@ function enhanceCanvas(insandbox)
             save();
           };
           img.src = backup.image;
+        }
+        // Delete backup if playing another game
+        if (which_game.length && (which_game.val() != backup.game))
+        {
+          localStorage.removeItem("anbt_drawingbackup");
         }
       }
       
@@ -1892,6 +1899,7 @@ function dataToCanvas()
       drawApp.context.globalCompositeOperation = "copy";
       drawApp.context.drawImage(this, 0, 0, drawApp.context.canvas.width, drawApp.context.canvas.height);
       drawApp.context.globalCompositeOperation = oo;
+      save();
     };
   }
 }
