@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      0.42.2014.3
+// @version      0.43.2014.3
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "0.42.2014.3";
+var SCRIPT_VERSION = "0.43.2014.3";
 
 // == DEFAULT OPTIONS ==
 
@@ -92,6 +92,8 @@ Forum
 - add simple layers(?)
 
 == CHANGELOG ==
+0.43.2014.3
+- If Ctrl is pressed, ignore brush color and size shortcuts 
 0.42.2014.3
 - Delete saved drawing if playing another game
 0.41.2014.3
@@ -717,7 +719,7 @@ function enhanceCanvas(insandbox)
             $(".eraserPicker").click();
             drawApp.setPrimaryColor(null);
           }
-          else if (e.keyCode >= 48 && e.keyCode <= 57)
+          else if (!e.ctrlKey && (e.keyCode >= 48 && e.keyCode <= 57))
           {
             e.preventDefault();
             var i = (e.keyCode == 48) ? 9 : e.keyCode - 49;
@@ -737,12 +739,12 @@ function enhanceCanvas(insandbox)
             drawApp.context.fillRect(0, 0, drawApp.context.canvas.width, drawApp.context.canvas.height);
             save();
           }
-          else if (e.keyCode == 189 || e.keyCode == 219) // - or [
+          else if (!e.ctrlKey && (e.keyCode == 189 || e.keyCode == 219)) // - or [
           {
             e.preventDefault();
             nextSize(-1);
           }
-          else if (e.keyCode == 187 || e.keyCode == 221) // = or ]
+          else if (!e.ctrlKey && (e.keyCode == 187 || e.keyCode == 221)) // = or ]
           {
             e.preventDefault();
             nextSize(+1);

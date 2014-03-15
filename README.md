@@ -90,6 +90,9 @@ Forum:
 
 ## CHANGELOG
 
+0.43.2014.3
+- If Ctrl is pressed, ignore brush color and size shortcuts 
+
 0.42.2014.3
 - Delete saved drawing if playing another game
 
