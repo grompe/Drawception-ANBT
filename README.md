@@ -42,6 +42,7 @@ Canvas:
 - Alt+click picks a color from the canvas
 - Brush cursor
 - Current colors indicator
+- 0..9 and Shift+0..Shift+9 selects primary color
 - X swaps primary and secondary colors
 - E selects eraser
 - [ ] and - = changes brush sizes
@@ -81,7 +82,6 @@ Forum:
 ## TODO
 
 - fix scrollbar appearing when brush crosses lower page boundary (rare)
-- save last snapshot in case of browser crash / accidental refresh
 - fix friend games timer (and show likes)
 - smoother tablet pressure change; react to pressure change even on same position
 - optimize performance
