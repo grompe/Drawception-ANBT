@@ -90,6 +90,9 @@ Forum:
 
 ## CHANGELOG
 
+0.44.2014.5
+- Numpad +/- also changes brush size
+
 0.43.2014.3
 - If Ctrl is pressed, ignore brush color and size shortcuts 
 

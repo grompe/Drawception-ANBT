@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      0.43.2014.3
+// @version      0.44.2014.5
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "0.43.2014.3";
+var SCRIPT_VERSION = "0.44.2014.5";
 
 // == DEFAULT OPTIONS ==
 
@@ -92,6 +92,8 @@ Forum
 - add simple layers(?)
 
 == CHANGELOG ==
+0.44.2014.5
+- Numpad +/- also changes brush size
 0.43.2014.3
 - If Ctrl is pressed, ignore brush color and size shortcuts 
 0.42.2014.3
@@ -739,12 +741,12 @@ function enhanceCanvas(insandbox)
             drawApp.context.fillRect(0, 0, drawApp.context.canvas.width, drawApp.context.canvas.height);
             save();
           }
-          else if (!e.ctrlKey && (e.keyCode == 189 || e.keyCode == 219)) // - or [
+          else if (!e.ctrlKey && (e.keyCode == 109 || e.keyCode == 189 || e.keyCode == 219)) // Numpad - or - or [
           {
             e.preventDefault();
             nextSize(-1);
           }
-          else if (!e.ctrlKey && (e.keyCode == 187 || e.keyCode == 221)) // = or ]
+          else if (!e.ctrlKey && (e.keyCode == 107 || e.keyCode == 187 || e.keyCode == 221)) // Numpad + or = or ]
           {
             e.preventDefault();
             nextSize(+1);
