@@ -44,6 +44,7 @@ Canvas:
 - Current colors indicator
 - 0..9 and Shift+0..Shift+9 selects primary color
 - X swaps primary and secondary colors
+- B selects last used color as primary
 - E selects eraser
 - [ ] and - = changes brush sizes
 - Shift+F fills with the current color
@@ -89,6 +90,9 @@ Forum:
 - add simple layers(?)
 
 ## CHANGELOG
+
+0.45.2014.5
+- New shortcut: B for "brush", selects last used color as primary
 
 0.44.2014.5
 - Numpad +/- also changes brush size

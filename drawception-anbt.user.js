@@ -56,6 +56,7 @@ Canvas:
 - Brush cursor
 - Current colors indicator
 - X swaps primary and secondary colors
+- B selects last used color as primary
 - E selects eraser
 - [ ] and - = changes brush sizes
 - Shift+F fills with the current color
@@ -92,6 +93,8 @@ Forum
 - add simple layers(?)
 
 == CHANGELOG ==
+0.45.2014.5
+- New shortcut: B for "brush", selects last used color as primary
 0.44.2014.5
 - Numpad +/- also changes brush size
 0.43.2014.3
@@ -408,6 +411,7 @@ function enhanceCanvas(insandbox)
   $(document.body).append('<object id="wtPlugin" type="application/x-wacomtabletplugin" width="1" height="1"></object>');
   var wtPlugin = document.getElementById("wtPlugin");
   var penAPI, strokeSize, dynSize, pressureUpdater, backupTimer;
+  var lastColor;
 
   GM_addStyle(
     "#primaryColor, #secondaryColor {width: 49px; height: 20px; float: left; border: 1px solid #AAA}" +
@@ -560,6 +564,7 @@ function enhanceCanvas(insandbox)
         document.getElementById("primaryColor").style.background =
           (color === null) ? "url(http://drawception.com/img/draw_eraser.png)" : color;
         updateCursorColor((color === null) ? defaultFill : color);
+        if (color) lastColor = color;
       };
       drawApp.setSecondaryColor = function(color)
       {
@@ -584,6 +589,7 @@ function enhanceCanvas(insandbox)
       defaultColor = $('#colorOptions').find('.selected').attr('data-color');
       drawApp.primary_color = defaultColor;
       drawApp.secondary_color = null;
+      lastColor = defaultColor;
 
       // Can't remove canvas event listeners, so need to clone the element without events
       var oldcanvas = canvas;
@@ -707,6 +713,11 @@ function enhanceCanvas(insandbox)
           else if (e.keyCode == "Y".charCodeAt(0) && e.ctrlKey)
           {
             redo();
+          }
+          else if (e.keyCode == "B".charCodeAt(0))
+          {
+            e.preventDefault();
+            if (lastColor) drawApp.setPrimaryColor(lastColor);
           }
           else if (e.keyCode == "X".charCodeAt(0))
           {
