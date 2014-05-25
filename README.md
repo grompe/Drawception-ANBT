@@ -91,6 +91,10 @@ Forum:
 
 ## CHANGELOG
 
+0.46.2014.5
+- New shortcut: G for "grid", shows grid on edges of the canvas,
+  that will not affect resulting image
+
 0.45.2014.5
 - New shortcut: B for "brush", selects last used color as primary
 

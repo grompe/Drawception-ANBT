@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      0.44.2014.5
+// @version      0.46.2014.5
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "0.44.2014.5";
+var SCRIPT_VERSION = "0.46.2014.5";
 
 // == DEFAULT OPTIONS ==
 
@@ -93,6 +93,9 @@ Forum
 - add simple layers(?)
 
 == CHANGELOG ==
+0.46.2014.5
+- New shortcut: G for "grid", shows grid on edges of the canvas,
+  that will not affect resulting image
 0.45.2014.5
 - New shortcut: B for "brush", selects last used color as primary
 0.44.2014.5
@@ -526,6 +529,26 @@ function enhanceCanvas(insandbox)
     localStorage.setItem("anbt_drawingbackup", JSON.stringify(o));
   }
 
+  function gridHint()
+  {
+    var w = drawApp.context.canvas.width, h = drawApp.context.canvas.height;
+    var l;
+    var c = document.createElement('canvas');
+    c.width = w;
+    c.height = h;
+    var ctx = c.getContext("2d");
+    ctx.fillStyle = drawApp.primary_color;
+    for (var i = 1; i < 8; i++)
+    {
+      l = 4 + (i%4==0)*4 + (i%2==0)*4;
+      ctx.fillRect(0, Math.floor(i * h / 8), l, 1);
+      ctx.fillRect(w-l, Math.floor(i * h / 8), l, 1);
+      ctx.fillRect(Math.floor(i * w / 8), 0, 1, l);
+      ctx.fillRect(Math.floor(i * w / 8), h-l, 1, l);
+    }
+    $('#drawingCanvas').css('background-image', 'url("' + c.toDataURL("image/png") + '")');
+  }
+
   // Make right-click draw secondary color and alt+click pick colors
   var waitForDrawApp = setInterval(function()
     {
@@ -751,6 +774,11 @@ function enhanceCanvas(insandbox)
             drawApp.context.fillStyle = drawApp.primary_color;
             drawApp.context.fillRect(0, 0, drawApp.context.canvas.width, drawApp.context.canvas.height);
             save();
+          }
+          else if (e.keyCode == "G".charCodeAt(0))
+          {
+            e.preventDefault();
+            gridHint();
           }
           else if (!e.ctrlKey && (e.keyCode == 109 || e.keyCode == 189 || e.keyCode == 219)) // Numpad - or - or [
           {
