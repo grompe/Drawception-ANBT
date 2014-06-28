@@ -91,6 +91,9 @@ Forum:
 
 ## CHANGELOG
 
+0.47.2014.6
+- New option: warning sound when only a minute is left
+
 0.46.2014.5
 - New shortcut: G for "grid", shows grid on edges of the canvas,
   that will not affect resulting image
