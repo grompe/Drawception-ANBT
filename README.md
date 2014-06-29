@@ -91,6 +91,9 @@ Forum:
 
 ## CHANGELOG
 
+0.48.2014.6
+- Add bug workaround where clicking undo skipped drawing after timer expires
+
 0.47.2014.6
 - New option: warning sound when only a minute is left
 

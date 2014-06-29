@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      0.47.2014.6
+// @version      0.48.2014.6
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "0.47.2014.6";
+var SCRIPT_VERSION = "0.48.2014.6";
 
 // == DEFAULT OPTIONS ==
 
@@ -94,6 +94,8 @@ Forum
 - add simple layers(?)
 
 == CHANGELOG ==
+0.48.2014.6
+- Add bug workaround where clicking undo skipped drawing after timer expires
 0.47.2014.6
 - New option: warning sound when only a minute is left
 0.46.2014.5
@@ -581,6 +583,19 @@ function enhanceCanvas(insandbox)
         return old_saveContestDrawing(a, b, c);
       }
 
+      // Workaround for a bug that skips drawing when undoing after timer
+      // expired: http://drawception.com/forums/suggestions/18533/-/
+      var old_undo = undo;
+      var old_redo = redo;
+      undo = function()
+      {
+        if (restorePoints !== 0) old_undo();
+      };
+      redo = function()
+      {
+        if (restorePoints !== 0) old_redo();
+      };
+      
       // Make resetting have no confirmation but undoable, and reset sandbox timer
       drawApp.reset = function()
       {
