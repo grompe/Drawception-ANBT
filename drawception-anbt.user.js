@@ -1122,7 +1122,7 @@ function empowerPlay()
     {
       old_highlightCountdown(p);
       var seconds = $.countdown.periodsToSeconds(p);
-      if (!played && seconds <= blitz ? 5 : 60)
+      if (!played && seconds <= (blitz ? 5 : 60))
       {
         alarm.play();
         played = true;
