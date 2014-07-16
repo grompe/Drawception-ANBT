@@ -91,6 +91,9 @@ Forum:
 
 ## CHANGELOG
 
+0.49.2014.7
+- Warning sound option separate for blitz games, when 5 seconds left
+
 0.48.2014.6
 - Add bug workaround where clicking undo skipped drawing after timer expires
 

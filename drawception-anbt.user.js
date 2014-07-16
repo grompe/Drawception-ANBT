@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      0.48.2014.6
+// @version      0.49.2014.7
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "0.48.2014.6";
+var SCRIPT_VERSION = "0.49.2014.7";
 
 // == DEFAULT OPTIONS ==
 
@@ -33,6 +33,7 @@ var options =
   ownPanelLikesSecret: 0,
   backup: 1,
   timeoutSound: 0,
+  timeoutSoundBlitz: 0,
 }
 
 /*
@@ -94,6 +95,8 @@ Forum
 - add simple layers(?)
 
 == CHANGELOG ==
+0.49.2014.7
+- Warning sound option separate for blitz games, when 5 seconds left
 0.48.2014.6
 - Add bug workaround where clicking undo skipped drawing after timer expires
 0.47.2014.6
@@ -414,6 +417,13 @@ if (typeof GM_addStyle == 'undefined')
     style.appendChild(textNode);
     parent.appendChild(style);
   };
+}
+
+function isBlitzInPlay()
+{
+  var mode = $(".label-game-mode");
+  if (mode.length && mode.text().match(/blitz/i)) return true;
+  return false;
 }
 
 function enhanceCanvas(insandbox)
@@ -1102,7 +1112,8 @@ function empowerPlay()
   optionsButton.popover({container: "body", placement: "bottom", html: 1, content: optionsDiv});
   
   // Add sound to timeout warning
-  if (options.timeoutSound)
+  var blitz = isBlitzInPlay();
+  if ((options.timeoutSound && !blitz) || (options.timeoutSoundBlitz && blitz))
   {
     var played = false;
     var alarm = new Audio(alarmSoundOgg);
@@ -1111,7 +1122,7 @@ function empowerPlay()
     {
       old_highlightCountdown(p);
       var seconds = $.countdown.periodsToSeconds(p);
-      if (!played && seconds <= 60)
+      if (!played && seconds <= blitz ? 5 : 60)
       {
         alarm.play();
         played = true;
@@ -1844,7 +1855,8 @@ function addScriptSettings()
       ["hideCross", "boolean", "Hide the cross when drawing"],
       ["enterToCaption", "boolean", "Submit captions by pressing Enter"],
       ["backup", "boolean", "Save drawings from page reload and place timed out ones in sandbox"],
-      ["timeoutSound", "boolean", "Warning sound when only a minute is left"],
+      ["timeoutSound", "boolean", "Warning sound when only a minute is left (normal games)"],
+      ["timeoutSoundBlitz", "boolean", "Warning sound when only 5 seconds left (blitz)"],
     ]
   );
   addGroup("Chat",
