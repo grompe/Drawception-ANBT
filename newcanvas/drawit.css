@@ -1,0 +1,443 @@
+@font-face {
+  font-family: 'Yanone Kaffeesatz';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Yanone Kaffeesatz Regular'), local('YanoneKaffeesatz-Regular'), url('yanone.woff') format('woff');
+}
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Nunito-Regular'), url('nunito.woff') format('woff');
+}
+body {
+  margin: 0;
+  background: #ccc;
+  font-family: 'Nunito', sans-serif;
+  background: #555;
+}
+#myheader {
+  font-size: 15pt;
+  height: 25px;
+  border-bottom: 1px solid black;
+  background: #333;
+  padding: 12px;
+  text-align: center;
+  color: #999;
+  overflow: hidden;
+}
+a {
+  color: #999;
+}
+a.prominent {
+  color: #7af;
+}
+a.prominent:hover {
+  color: #9ff;
+}
+#fakeheader {
+  height: 49px;
+  border-bottom: 1px solid black;
+  background: #353535 url("fakeheader.png") center no-repeat;
+}
+#drawthis {
+  padding: 4px;
+  color: #fff;
+  font-size: 26pt;
+  font-family: 'Yanone Kaffeesatz';
+  text-align: center;
+  vertical-align: middle;
+  display: table-cell;
+  width: 1%;
+}
+#drawthis:before {
+  color: #aaa;
+  font-size: 14pt;
+  font-family: 'Nunito';
+  content: 'Draw this phrase:';
+  padding-right: 1em;
+  width: 1%;
+  text-align: right;
+  vertical-align: middle;
+  margin-left: -10%;
+}
+#emptytitle {
+  height: 10px;
+}
+#bl {
+  width: 600px;
+  margin: auto;
+  position: relative;
+}
+#toolpane {
+  text-align: center;
+  padding: 0 10px;
+}
+#infopane {
+  text-align: center;
+  padding: 0 10px;
+}
+.panel {
+  border: 2px solid #888;
+  border-radius: 15px;
+  border-top: none;
+  background: #444;
+  margin: 3px 0;
+}
+#timer {
+  font-size: 26pt;
+  color: #aaa;
+  width: 176px;
+  float: left;
+}
+#palettechooser {
+  display: none;
+  position: absolute;
+  width: 300px;
+  background: #666;
+  color: #ddd;
+  z-index: 1;
+  -webkit-columns: 2;
+  -moz-columns: 2;
+  columns: 2;
+  -webkit-column-gap: 0;
+  -moz-column-gap: 0;
+  column-gap: 0;
+  border: 2px solid #777;
+  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+}
+#palettechooser.open {
+  display: block;
+}
+#palettechooser div {
+  padding: 10px 0 20px;
+  cursor: pointer;
+  break-inside: avoid;
+}
+#palettechooser div:hover {
+  background-color: #777;
+  color: #eee;
+}
+#colors {
+  width: 100px;
+  float: left;
+}
+#colors b {
+  float: left;
+  display: block;
+  width: 50px;
+  height: 44px;
+  line-height: 40px;
+  cursor: pointer;
+}
+#colors b:before {
+  font-size: 10pt;
+  opacity: 0.3;
+}
+#colors b:hover:before {
+  opacity: 0.4;
+  color: #fff;
+}
+#palettename {
+  color: #aaa;
+  font-size: 10pt;
+  padding: 0 5px;
+  cursor: pointer;
+}
+#palettename:hover {
+  color: #ccc;
+}
+#palettename:after {
+  content: ' \25BC';
+}
+#colors #eraser:before {
+  content: 'eraser';
+}
+#colors b {
+  counter-increment: color;
+}
+#colors b:before {
+  content: counter(color);
+}
+#colors b:nth-child(10) {
+  counter-reset: color 1;
+}
+#colors b:nth-child(n+10) {
+  counter-increment: color;
+}
+#colors b:nth-child(n+10):before {
+  content: '\2191' counter(color);
+}
+#colors.setbackground b:before {
+  content: 'BG ' counter(color);
+}
+#colors.setbackground b:nth-child(n+10):before {
+  content: 'BG\2191' counter(color);
+}
+#colors.setbackground #eraser:before {
+  content: 'cancel';
+}
+#colors div {
+  clear: both;
+}
+#tools {
+  width: 68px;
+  float: right;
+  padding: 5px 0;
+}
+#tools button {
+  width: 55px;
+  height: 44px;
+  vertical-align: top;
+  margin: 3px 0;
+}
+#brush0, #brush1, #brush2, #brush3,
+#setbackground, #undo, #redo, #trash,
+#play, #knob, #eraser, .eraser
+{
+  background-image: url("newcanvasicons.png");
+}
+#brush0 { background-position: -2px -8px; }
+#brush1 { background-position: -62px -8px; }
+#brush2 { background-position: -122px -8px; }
+#brush3 { background-position: -182px -8px; }
+#brush0.selected { background-position: -2px -68px; }
+#brush1.selected { background-position: -62px -68px; }
+#brush2.selected { background-position: -122px -68px; }
+#brush3.selected { background-position: -182px -68px; }
+#setbackground { background-position: -242px -8px; }
+#setbackground.selected { background-position: -242px -68px; }
+#undo { background-position: -302px -8px; }
+#redo { background-position: -362px -8px; }
+#trash { background-position: -422px -8px; }
+#eraser { background-position: -365px -68px; background-color: pink; }
+.eraser { background-position: -425px -68px; background-color: pink; }
+button, #play {
+  border: none;
+  border-radius: 4px;
+  background-color: #eee;
+}
+button:hover, #play:hover {
+  background-color: #acf;
+}
+button:active, #play:active {
+  background-color: #aaa;
+}
+button:disabled {
+  background-color: #aaa;
+}
+#tools hr {
+  border: 1px solid #888;
+  width: 93%;
+}
+#primary, #secondary {
+  display:inline-block;
+  width: 50px;
+  border-radius: 0 0 0 13px;
+  color: #fff;
+}
+#secondary {
+  border-radius: 0 0 13px 0;
+}
+#gamemode {
+  font-size: 13pt;
+  color: #aaa;
+  width: 176px;
+  float: left;
+}
+#gamebuttons {
+  font-size: 13pt;
+  color: #aaa;
+  width: 176px;
+  float: left;
+  padding: 5px 0;
+}
+#gamebuttons button {
+  padding: 10px;
+  margin: 3px 0;
+}
+#submit {
+  font-size: 16pt;
+  width: 180px;
+  height: 50px;
+}
+#guidelines {
+  color: #fff;
+  font-size: 11pt;
+}
+#guidelines ul {
+  margin: 0;
+  padding: 0 1em;
+  text-align: left;
+}
+#guidelines li {
+  color: #999;
+}
+#seekbar {
+  width: 530px;
+  height: 0px;
+  margin: 10px 50px;
+  background: #333;
+  border: 10px solid #333;
+  border-radius: 10px;
+  cursor: pointer;
+}
+#knob {
+  position: absolute;
+  width: 48px;
+  height: 38px;
+  margin-top: -19px; 
+  margin-left: 492px; /* -10px min */
+  border-radius: 10px;
+  background-color: #fbb;
+  background-position: -305px -71px;
+}
+#knob.smooth {
+  transition: margin-left 0.1s ease-out;
+}
+#knob:hover {
+  background-color: #fdd;
+}
+#play {
+  background-position: -486px -11px;
+  position: absolute;
+  width: 48px;
+  height: 38px;
+  margin: -19px -59px;
+  border-radius: 4px;
+}
+#play.pause {
+  background-position: -546px -11px;
+}
+#wacomContainer {
+  position: absolute;
+  top: -10px;
+  left: -10px;
+}
+@media screen and (min-width: 1000px) {
+  #toolpane {
+    width: 180px;
+    height: 500px;
+    position: absolute;
+    margin-left: -200px;
+  }
+  #infopane {
+    width: 180px;
+    height: 500px;
+    position: absolute;
+    margin-left: 600px;
+    top: 0;
+  }
+  #submit {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    width: 180px;
+    height: 50px;
+  }
+}
+@media screen and (max-width: 999px) {
+  #myheader {
+    font-size: 11pt;
+  }
+  #toolpane {
+    width: 580px;
+    margin: auto;
+  }
+  #toolpane:after {
+    display: block;
+    content: '';
+    clear: both;
+  }
+  #infopane {
+    width: 580px;
+    margin: 40px 0;
+  }
+  #timer {
+    float: right;
+    width: 260px;
+  }
+  #colors {
+    width: 300px;
+    margin-left: 5px;
+    clear: left;
+    float: left;
+  }
+  #primary, #secondary {
+    width: 150px;
+  }
+  #tools {
+    width: 260px;
+  }
+  #tools button {
+    margin: 0;
+  }
+  #gamebuttons {
+    width: 390px;
+    margin-left: 5px;
+  }
+}
+#svgContainer {
+  width: 600px;
+  height: 500px;
+  margin: auto;
+  background: #fffdc9 url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGwAAAAVCAQAAAAJQsNPAAAAkUlEQVR4Xu2WgQbAMBBD9/8/vQ14KpC4UneqYurZ2eNGnnfouWLdsjwce59ikFCdk75ricGIQSEmhekcvRfE8s8jMJ9CdI7camLGYoQ0XzNjJukgRsaJkWFiKqhiLf8x2DAx6EExTV0Mns/sIPZnnBinJJb1h4p21BXrzSOpTZVF3VGCN4lB07U53+6H5Yr1zAdssNOdvbG/lgAAAABJRU5ErkJggg==') center no-repeat;
+  cursor: crosshair;
+}
+#svgContainer.hidecursor {
+  cursor: none;
+}
+#svgContainer.loading * {
+  display: none;
+}
+#svgContainer canvas, #svgContainer svg {
+  position: absolute;
+}
+#popup {
+  display: none;
+  position: absolute;
+  width: 400px;
+  height: 300px;
+  margin: 50px;
+  padding: 50px;
+  opacity: 0.95;
+  background: #444;
+  color: #ddd;
+  border-radius: 15px;
+  text-align: center;
+  z-index: 1;
+  font-size: 20pt;
+}
+#popup.show {
+  display: block;
+}
+#popup hr {
+  border: 1px solid #888;
+}
+#popuptitle {
+  color: #999;
+  font-size: 25pt;
+  margin: 10px;
+}
+#popupclose {
+  display: block;
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  background: #c44;
+  color: #ddd;
+  right: 0;
+  top: 0;
+  text-align: center;
+  border-radius: 13px;
+  cursor: pointer;
+}
+#popupclose:hover {
+  background: #e77;
+  color: #eee;
+}
+#popupclose:before {
+  content: "\d7";
+  font-size: 30pt;
+  line-height: 40px;
+}

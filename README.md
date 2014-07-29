@@ -5,7 +5,7 @@ A userscript to make Drawception.com better: more drawing tools, tablet pressure
 
 [**Direct script link**](https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js) (use to install/update manually, or "save as...")
 
-[ANBT script at userscripts.org](http://userscripts.org/scripts/show/179568)
+[New canvas with recording and playback, standalone version](http://grompe.org.ru/drawit/)
 
 [ANBT script discussion at Drawception.com forum](http://drawception.com/forums/general/11830/anbt-script/)
 
