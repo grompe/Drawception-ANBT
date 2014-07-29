@@ -46,7 +46,7 @@ Canvas:
 - X swaps primary and secondary colors
 - B selects last used color as primary
 - E selects eraser
-- [ ] and - = changes brush sizes
+- \[ \] and - = changes brush sizes
 - Shift+F fills with the current color
 - Confirm closing a page if it has a canvas and is painted on
 - Don't confirm clearing, but allow to undo it
