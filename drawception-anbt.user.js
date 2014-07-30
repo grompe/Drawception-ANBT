@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      0.49.2014.7
+// @version      0.50.2014.7
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "0.49.2014.7";
+var SCRIPT_VERSION = "0.50.2014.7";
 
 // == DEFAULT OPTIONS ==
 
@@ -95,6 +95,9 @@ Forum
 - add simple layers(?)
 
 == CHANGELOG ==
+0.50.2014.7
+- Prevent context menu when finishing drawing outside canvas.
+- Update brush size buttons state when using keyboard.
 0.49.2014.7
 - Warning sound option separate for blitz games, when 5 seconds left
 0.48.2014.6
@@ -536,10 +539,12 @@ function enhanceCanvas(insandbox)
         break;
       }
     }
-    strokeSize = options.brushSizes[Math.min(Math.max(idx + d, 0), m)];
+    idx = Math.min(Math.max(idx + d, 0), m);
+    strokeSize = options.brushSizes[idx];
     drawApp.context.lineWidth = strokeSize;
     cursorOffset = strokeSize / 2;
     updateDrawCursor();
+    $('.btn-drawtool').has('input[id^=brush]').eq(idx).click();
   }
 
   function saveBackup()
@@ -745,6 +750,10 @@ function enhanceCanvas(insandbox)
               drawApp.context.lineWidth = dynSize;
               //pressureUpdater = setInterval(updatePressure, 20);
             }
+            // Prevent context menu when finishing drawing outside canvas.
+            $(window).on('contextmenu.drawing', false).one('mouseup', function () {
+              setTimeout(function () { $(window).off('contextmenu.drawing'); }, 0);
+            });
             return drawApp.old_canvasMouseDown(e);
           }
         }
@@ -854,6 +863,7 @@ function enhanceCanvas(insandbox)
         );
         drawApp.canvas.mousemove(function(e)
           {
+            drawCursor.style.display = "block";
             drawCursor.style.left = e.clientX + "px";
             drawCursor.style.top = e.clientY + "px";
             updateDrawCursor();
@@ -872,7 +882,7 @@ function enhanceCanvas(insandbox)
       }
 
       // Fix brush cursor location
-      $('#drawCursor').prependTo($(document.body));
+      $('#drawCursor').hide().prependTo($(document.body));
 
       // Add primary and secondary color indicators
       var pr = $('<div id="primaryColor" title="Primary color (left click)" style="background: ' + defaultColor +'">');

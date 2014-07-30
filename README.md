@@ -91,6 +91,10 @@ Forum:
 
 ## CHANGELOG
 
+0.50.2014.7
+- Prevent context menu when finishing drawing outside canvas.
+- Update brush size buttons state when using keyboard.
+
 0.49.2014.7
 - Warning sound option separate for blitz games, when 5 seconds left
 
