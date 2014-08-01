@@ -91,6 +91,9 @@ Forum:
 
 ## CHANGELOG
 
+0.51.2014.8
+- Force break caption that doesn't fit into the panel
+
 0.50.2014.7
 - Prevent context menu when finishing drawing outside canvas.
 - Update brush size buttons state when using keyboard.

@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      0.50.2014.7
+// @version      0.51.2014.8
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "0.50.2014.7";
+var SCRIPT_VERSION = "0.51.2014.8";
 
 // == DEFAULT OPTIONS ==
 
@@ -95,6 +95,8 @@ Forum
 - add simple layers(?)
 
 == CHANGELOG ==
+0.51.2014.8
+- Force break caption that doesn't fit into the panel
 0.50.2014.7
 - Prevent context menu when finishing drawing outside canvas.
 - Update brush size buttons state when using keyboard.
@@ -2113,6 +2115,7 @@ function pageEnhancements()
     ".anbt_favpanel {top: 40px; font-weight: normal; padding: 4px 2px}" +
     ".anbt_favpanel:hover {color: #d9534f; cursor:pointer}" +
     ".anbt_favedpanel {color: #d9534f; border-color: #d9534f}" +
+    ".gamepanel, .thumbpanel {word-wrap: break-word}" +
     ""
   );
   // Enhance menu for higher resolutions
