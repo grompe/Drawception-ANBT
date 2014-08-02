@@ -842,7 +842,6 @@ var anbt =
   },
   FromLocalFile: function()
   {
-    var _anbt = this;
     if (!this.fileInput)
     {
       this.fileInput = document.createElement("input");
@@ -851,6 +850,7 @@ var anbt =
       this.fileInput.type = "file";
       this.fileInput.accept = ".png";
       document.body.appendChild(this.fileInput);
+      var _anbt = this;
       this.fileInput.addEventListener("change", function(e)
         {
           var reader = new FileReader();
@@ -871,9 +871,9 @@ var anbt =
       var clickEvent = document.createEvent("MouseEvent");
       clickEvent.initMouseEvent("click", true, true, window, 1,
         0, 0, 0, 0, false, false, false, false, 0, null);
-      _anbt.fileInput.dispatchEvent(clickEvent);
+      this.fileInput.dispatchEvent(clickEvent);
     } else {
-      setTimeout(_anbt.fileInput.click.bind(_anbt.fileInput), 1);
+      setTimeout(this.fileInput.click.bind(this.fileInput), 1);
     }
   },
   ReplayDebug: function()
@@ -1075,8 +1075,7 @@ var anbt =
   Seek: function(newpos)
   {
     var start = -1;
-    this.isPlaying = false;
-    clearInterval(this.playTimer);
+    this.Pause();
     if (newpos == this.position) return;
     if (newpos < this.position)
     {
@@ -1125,39 +1124,97 @@ var anbt =
   },
   Play: function()
   {
-    var _anbt = this;
     this.rewindCache.length = 0; // TODO: make rewind data remember its position
-    var posmax = this.svg.childNodes.length - 1;
-    if (this.position == posmax)
+    if (this.position == this.svg.childNodes.length - 1)
     {
       if (this.position == 0)
       {
         // To make button revert to play
-        _anbt.MoveSeekbar(1);
+        this.MoveSeekbar(1);
         return;
       }
       this.position = 0;
-      _anbt.MoveSeekbar(0);
+      this.MoveSeekbar(0);
       // Assume first svg child is background rect
-      _anbt.DrawSVGElement(_anbt.svg.childNodes[0]);
+      this.DrawSVGElement(this.svg.childNodes[0]);
     }
     this.isPlaying = true;
-    this.playTimer = setInterval(function()
+    this.playTimer = this.PlayTimer.bind(this);
+    this.playTimer();
+  },
+  PlayTimer: function()
+  {
+    if (!this.isPlaying) return;
+    var posmax = this.svg.childNodes.length - 1;
+    var delay = 100;
+    if (this.position < posmax || this.isAnimating)
     {
-      if (_anbt.position < posmax)
+      if (this.isAnimating)
       {
-        _anbt.position++;
-        _anbt.MoveSeekbar(_anbt.position / posmax);
-        _anbt.DrawSVGElement(_anbt.svg.childNodes[_anbt.position]);
+        var maxidx = this.animatePath.pathSegList.numberOfItems - 1;
+        if (this.animateIndex < maxidx)
+        {
+          var seg = this.animatePath.pathSegList.getItem(this.animateIndex);
+          var newseg;
+          if (seg.pathSegTypeAsLetter == "L")
+          {
+            newseg = this.path.createSVGPathSegLinetoAbs(seg.x, seg.y);
+          } else if (seg.pathSegTypeAsLetter == "Q")
+          {
+            newseg = this.path.createSVGPathSegCurvetoQuadraticAbs(seg.x, seg.y, seg.x1, seg.y1);
+          } else if (seg.pathSegTypeAsLetter == "C")
+          {
+            newseg = this.path.createSVGPathSegCurvetoCubicAbs(seg.x, seg.y, seg.x1, seg.y1, seg.x2, seg.y2);
+          }
+          this.path.pathSegList.appendItem(newseg);
+          this.animateIndex++;
+        } else {
+          this.isAnimating = false;
+          this.svgDisp.removeChild(this.path);
+          this.DrawSVGElement(this.animatePath);
+          this.position++;
+        }
+        delay = 15;
       } else {
-        _anbt.Pause();
+        this.MoveSeekbar(this.position / posmax);
+        var el = this.svg.childNodes[this.position + 1];
+        if (el.nodeName == "path")
+        {
+          this.isAnimating = true;
+          this.animatePath = el;
+          this.animateIndex = 1;
+          this.path = el.cloneNode(true);
+          var seg = el.pathSegList.getItem(0);
+          this.path.pathSegList.initialize(this.path.createSVGPathSegMovetoAbs(seg.x, seg.y));
+          this.svgDisp.insertBefore(this.path, this.svgDisp.firstChild);
+        } else {
+          this.DrawSVGElement(el);
+          this.position++;
+        }
       }
-    }, 100);
+    }
+    if (this.position < posmax)
+    {
+      setTimeout(this.playTimer, delay);
+    } else {
+      this.MoveSeekbar(1);
+      this.Pause();
+    }
   },
   Pause: function()
   {
-    this.isPlaying = false;
-    clearInterval(this.playTimer);
+    if (this.isPlaying)
+    {
+      if (this.isAnimating)
+      {
+        this.isAnimating = false;
+        this.svgDisp.removeChild(this.path);
+        this.DrawSVGElement(this.animatePath);
+        this.position++;
+        this.MoveSeekbar(this.position / (this.svg.childNodes.length - 1));
+      }
+      this.isPlaying = false;
+    }
   },
   MoveCursor: function(x, y)
   {
@@ -1398,6 +1455,7 @@ function bindEvents()
       if (Math.abs(ch.pageX - lastTouch.pageX) < 10 &&
           Math.abs(ch.pageY - lastTouch.pageY) < 10)
       {
+        $("#play").classList.remove("pause");
         if (ch.pageX < e.touches[0].pageX)
         {
           anbt.Undo();
@@ -1590,11 +1648,13 @@ function bindEvents()
   $("#undo").addEventListener('click', function(e)
   {
     e.preventDefault();
+    $("#play").classList.remove("pause");
     anbt.Undo();
   });
   $("#redo").addEventListener('click', function(e)
   {
     e.preventDefault();
+    $("#play").classList.remove("pause");
     anbt.Redo();
   });
   $("#trash").addEventListener('click', function(e)
@@ -1803,11 +1863,13 @@ function bindEvents()
     else if (e.keyCode == "Z".charCodeAt(0) && e.ctrlKey)
     {
       e.preventDefault();
+      $("#play").classList.remove("pause");
       anbt.Undo();
     }
     else if (e.keyCode == "Y".charCodeAt(0) && e.ctrlKey)
     {
       e.preventDefault();
+      $("#play").classList.remove("pause");
       anbt.Redo();
     }
     else if (e.keyCode == "X".charCodeAt(0))
