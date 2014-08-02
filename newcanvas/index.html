@@ -7,7 +7,7 @@
 <title>Drawing in Time!</title>
 <body>
   <div id="myheader">
-    Drawing in Time! (last update: 29 Jul 2014)
+    Drawing in Time! (last update: 02 Aug 2014)
     made by <a href="http://grompe.org.ru/">Grom PE</a>
     <a class="prominent" href="http://chat.grompe.org.ru/#drawception">(discuss)</a>
   </div>
@@ -451,6 +451,7 @@ var anbt =
   pngBase64: null,
   lastrect: 0,
   position: 0,
+  isStroking: false,
   isPlaying: false,
   size: 14.4,
   background: '#fffdc9',
@@ -976,6 +977,7 @@ var anbt =
     this.points = [];
     this.points.push({x: x, y: y});
     this.blot = true;
+    this.isStroking = true;
   },
   StrokeEnd: function()
   {
@@ -987,9 +989,11 @@ var anbt =
     }
     this.path.orig = p;
     this.Add(this.path);
+    this.isStroking = false;
   },
   StrokeAdd: function(x, y)
   {
+    if (!this.isStroking) throw new Error("StrokeAdd without StrokeBegin!");
     if (this.blot)
     {
       this.path.pathSegList.removeItem(1);
@@ -1385,6 +1389,25 @@ function bindEvents()
       window.removeEventListener('touchmove', touchMove);
     }
   };
+  var lastTouch;
+  var touchUndoRedo = function(e)
+  {
+    if (e.changedTouches.length == 1 && e.touches.length == 1)
+    {
+      var ch = e.changedTouches[0];
+      if (Math.abs(ch.pageX - lastTouch.pageX) < 10 &&
+          Math.abs(ch.pageY - lastTouch.pageY) < 10)
+      {
+        if (ch.pageX < e.touches[0].pageX)
+        {
+          anbt.Undo();
+        } else {
+          anbt.Redo();
+        }
+      }
+    }
+    window.removeEventListener('touchend', touchUndoRedo);
+  };
   $("#svgContainer").addEventListener('touchstart', function(e)
   {
     if (e.touches.length == 1)
@@ -1397,6 +1420,20 @@ function bindEvents()
       window.addEventListener('touchend', touchEnd);
       window.addEventListener('touchmove', touchMove);
     } else {
+      // Enable two-finger undo and redo:
+      // 1     o    o
+      // 2   o o    o o
+      // 3   , o    o .
+      //     Undo   Redo
+      if (touchSingle && e.touches.length == 2)
+      {
+        lastTouch = e.touches[1];
+        window.addEventListener('touchend', touchUndoRedo);
+      }
+      if (anbt.isStroking)
+      {
+        anbt.StrokeEnd();
+      }
       touchSingle = false;
       window.removeEventListener('touchend', touchEnd);
       window.removeEventListener('touchmove', touchMove);
