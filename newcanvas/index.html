@@ -1076,7 +1076,7 @@ var anbt =
   Seek: function(newpos)
   {
     var start = -1;
-    this.Pause();
+    this.Pause(true);
     if (newpos == this.position) return;
     if (newpos < this.position)
     {
@@ -1148,13 +1148,15 @@ var anbt =
     if (!this.isPlaying) return;
     var posmax = this.svg.childNodes.length - 1;
     var delay = 100;
+    var maxidx = 0;
     if (this.position < posmax || this.isAnimating)
     {
       if (this.isAnimating)
       {
-        var maxidx = this.animatePath.pathSegList.numberOfItems - 1;
+        maxidx = this.animatePath.pathSegList.numberOfItems - 1;
         if (this.animateIndex < maxidx)
         {
+          // There doesn't seem to be a simplier way to copy the pathSeg
           var seg = this.animatePath.pathSegList.getItem(this.animateIndex);
           var newseg;
           if (seg.pathSegTypeAsLetter == "L")
@@ -1174,10 +1176,10 @@ var anbt =
           this.svgDisp.removeChild(this.path);
           this.DrawSVGElement(this.animatePath);
           this.position++;
+          this.animateIndex = 0;
         }
         delay = 15;
       } else {
-        this.MoveSeekbar(this.position / posmax);
         var el = this.svg.childNodes[this.position + 1];
         if (el.nodeName == "path")
         {
@@ -1194,15 +1196,15 @@ var anbt =
         }
       }
     }
+    this.MoveSeekbar((this.position + this.animateIndex / maxidx) / posmax);
     if (this.position < posmax)
     {
       setTimeout(this.playTimer, delay);
     } else {
-      this.MoveSeekbar(1);
       this.Pause();
     }
   },
-  Pause: function()
+  Pause: function(noSeekbar)
   {
     if (this.isPlaying)
     {
@@ -1212,7 +1214,10 @@ var anbt =
         this.svgDisp.removeChild(this.path);
         this.DrawSVGElement(this.animatePath);
         this.position++;
-        this.MoveSeekbar(this.position / (this.svg.childNodes.length - 1));
+        if (!noSeekbar)
+        {
+          this.MoveSeekbar(this.position / (this.svg.childNodes.length - 1));
+        }
       }
       this.isPlaying = false;
     }
