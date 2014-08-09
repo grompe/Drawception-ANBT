@@ -328,43 +328,49 @@ function simplifyDouglasPeucker(points, sqTolerance)
   }
   return newPoints;
 }
-// smooth1() algorithm from https://gist.github.com/upsuper/2633348
-function centrosymmetry(p0, p)
-{
-  return {x: p0.x * 2 - p.x, y: p0.y * 2 - p.y};
-}
-function averagePoint(p1, p2)
-{
-  return {x: (p1.x + p2.x) / 2, y: (p1.y + p2.y) / 2};
-}
 function buildSmoothPath(points, path)
 {
-  path.pathSegList.clear();
-  if (points.length == 2)
+  var dist1, dist2, angle1, angle2, prevtangent, tangent, t1, t2, x, y, p, c, n, l = points.length;
+  var good;
+  if (l < 4) return;
+  path.pathSegList.initialize(path.createSVGPathSegMovetoAbs(points[0].x, points[0].y));
+  path.pathSegList.appendItem(path.createSVGPathSegLinetoAbs(points[1].x, points[1].y));
+  for (var i = 1; i < l - 1; i++)
   {
-    path.pathSegList.appendItem(path.createSVGPathSegMovetoAbs(points[0].x, points[0].y));
-    path.pathSegList.appendItem(path.createSVGPathSegLinetoAbs(points[1].x, points[1].y));
-    return;
+    p = points[i - 1];
+    c = points[i];
+    n = points[i + 1];
+    x = c.x - p.x;
+    y = c.y - p.y;
+    angle1 = Math.atan2(y, x);
+    dist1 = Math.sqrt(x * x + y * y);
+    x = n.x - c.x;
+    y = n.y - c.y;
+    angle2 = Math.atan2(y, x);
+    dist2 = Math.sqrt(x * x + y * y);
+    tangent = (angle1 + angle2) / 2;
+    if (i > 1)
+    {
+      if (Math.abs(angle2 - angle1) >= Math.PI / 4)
+      {
+        path.pathSegList.appendItem(path.createSVGPathSegLinetoAbs(c.x, c.y));
+        good = false;
+      } else {
+        if (good && dist1 / dist2 >= 0.4 && dist1 / dist2 <= 2.5)
+        {
+          t1 = {x: p.x + Math.cos(prevtangent) * dist1 * 0.4, y: p.y + Math.sin(prevtangent) * dist1 * 0.4};
+          t2 = {x: c.x - Math.cos(tangent) * dist2 * 0.4, y: c.y - Math.sin(tangent) * dist2 * 0.4};
+          path.pathSegList.appendItem(path.createSVGPathSegCurvetoCubicAbs(c.x, c.y, t1.x, t1.y, t2.x, t2.y));
+        } else {
+          path.pathSegList.appendItem(path.createSVGPathSegLinetoAbs(c.x, c.y));
+          good = true;
+        }
+      }
+    }
+    prevtangent = tangent;
   }
-  path.pathSegList.appendItem(path.createSVGPathSegMovetoAbs(points[0].x, points[0].y));
-  var a = points[0],
-      o = points[1],
-      b = centrosymmetry(o, points[2]),
-      c = averagePoint(averagePoint(averagePoint(a, b), o), o);
-  path.pathSegList.appendItem(path.createSVGPathSegCurvetoQuadraticAbs(o.x, o.y, c.x, c.y));
-  for (var i = 1; i + 2 < points.length; ++i)
-  {
-    d = centrosymmetry(o, c);
-    a = o;
-    o = points[i + 1];
-    b = centrosymmetry(o, points[i + 2]);
-    c = averagePoint(averagePoint(averagePoint(a, b), o), o);
-    path.pathSegList.appendItem(path.createSVGPathSegCurvetoCubicAbs(o.x, o.y, d.x, d.y, c.x, c.y));
-  }
-  b = points[points.length - 1];
-  o = points[points.length - 2];
-  c = centrosymmetry(o, c);
-  path.pathSegList.appendItem(path.createSVGPathSegCurvetoQuadraticAbs(b.x, b.y, c.x, c.y));
+  c = points[l - 1];
+  path.pathSegList.appendItem(path.createSVGPathSegLinetoAbs(c.x, c.y));
 }
 
 var palettes = {
@@ -888,7 +894,6 @@ var anbt =
       ctx.strokeStyle = el.getAttribute("stroke");
       ctx.lineWidth = el.getAttribute("stroke-width");
       ctx.beginPath();
-      var x, y;
       for (var i = 0; i < el.pathSegList.numberOfItems; i++)
       {
         var seg = el.pathSegList.getItem(i);
