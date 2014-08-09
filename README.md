@@ -80,16 +80,10 @@ Forum:
 - Clickable links
 - Show and highlight direct links to forum posts
 
-## TODO
-
-- fix scrollbar appearing when brush crosses lower page boundary (rare)
-- fix friend games timer (and show likes)
-- smoother tablet pressure change; react to pressure change even on same position
-- optimize performance
-- add stroke smoothening
-- add simple layers(?)
-
 ## CHANGELOG
+
+0.90.2014.8
+- Start integration of new canvas
 
 0.51.2014.8
 - Force break caption that doesn't fit into the panel
