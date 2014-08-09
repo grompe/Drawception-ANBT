@@ -7,7 +7,7 @@
 <title>Drawing in Time!</title>
 <body>
   <div id="myheader">
-    Drawing in Time! (last update: 02 Aug 2014)
+    Drawing in Time! (last update: 08 Aug 2014)
     made by <a href="http://grompe.org.ru/">Grom PE</a>
     <a class="prominent" href="http://chat.grompe.org.ru/#drawception">(discuss)</a>
   </div>
@@ -125,7 +125,7 @@
 <script>
 // Utilities
 function $(id) {return document.getElementById(id.substr(1));}
-function svgElement(name, attrs, childElements)
+function svgElement(name, attrs)
 {
   var el = document.createElementNS("http://www.w3.org/2000/svg", name);
   if (attrs)
@@ -290,24 +290,6 @@ function getSqSegDist(p, p1, p2)
   dy = p.y - y;
   return dx * dx + dy * dy;
 }
-// basic distance-based simplification
-function simplifyRadialDist(points, sqTolerance)
-{
-  var prevPoint = points[0],
-      newPoints = [prevPoint],
-      point;
-  for (var i = 1, len = points.length; i < len; i++)
-  {
-    point = points[i];
-    if (getSqDist(point, prevPoint) > sqTolerance)
-    {
-      newPoints.push(point);
-      prevPoint = point;
-    }
-  }
-  if (prevPoint !== point) newPoints.push(point);
-  return newPoints;
-}
 // simplification using optimized Douglas-Peucker algorithm with recursion elimination
 function simplifyDouglasPeucker(points, sqTolerance)
 {
@@ -383,16 +365,6 @@ function buildSmoothPath(points, path)
   o = points[points.length - 2];
   c = centrosymmetry(o, c);
   path.pathSegList.appendItem(path.createSVGPathSegCurvetoQuadraticAbs(b.x, b.y, c.x, c.y));
-}
-function path2points(path)
-{
-  var points = [];
-  for (var i = 0; i < path.pathSegList.numberOfItems; i++)
-  {
-    var seg = path.pathSegList.getItem(i);
-    points.push({x: seg.x, y: seg.y});
-  }
-  return points;
 }
 
 var palettes = {
@@ -565,7 +537,7 @@ var anbt =
           var dx = el.orig[j].x - lastx;
           var dy = el.orig[j].y - lasty;
           // Ignore repeating points
-          if (dx == 0 && dy == 0) continue;
+          if (dx === 0 && dy === 0) continue;
           arr.push(pack_uint16be(dx));
           arr.push(pack_uint16be(dy));
           lastx = el.orig[j].x;
@@ -633,7 +605,7 @@ var anbt =
       i += 2;
       if (points.length)
       {
-        if (x == 0 && y == 0)
+        if (x === 0 && y === 0)
         {
           var path = svgElement("path",
             {
@@ -645,7 +617,7 @@ var anbt =
             }
           );
           // Restore blots
-          if (points.length == 1)
+          if (points.length === 1)
           {
             path.pathSegList.appendItem(path.createSVGPathSegMovetoAbs(lastx, lasty));
             path.pathSegList.appendItem(path.createSVGPathSegLinetoAbs(lastx, lasty + 0.001));
@@ -663,7 +635,7 @@ var anbt =
           points.push({x: x, y: y});
         }
       } else {
-        if (x == -1 || x == -2)
+        if (x === -1 || x === -2)
         {
           size = y / 100;
           color = [
@@ -678,7 +650,7 @@ var anbt =
             ')'
           ].join("");
           i += 4;
-          if (x == -2)
+          if (x === -2)
           {
             svg.appendChild(svgElement("rect",
               {
@@ -855,7 +827,7 @@ var anbt =
       this.fileInput.addEventListener("change", function(e)
         {
           var reader = new FileReader();
-          reader.onload = function(evt)
+          reader.onload = function()
           {
             _anbt.FromPNG(this.result);
           };
@@ -999,7 +971,7 @@ var anbt =
     {
       this.path.pathSegList.removeItem(1);
       this.blot = false;
-    };
+    }
     this.path.pathSegList.appendItem(this.path.createSVGPathSegLinetoAbs(x, y));
     this.points.push({x: x, y: y});
   },
@@ -1128,7 +1100,7 @@ var anbt =
     this.rewindCache.length = 0; // TODO: make rewind data remember its position
     if (this.position == this.svg.childNodes.length - 1)
     {
-      if (this.position == 0)
+      if (this.position === 0)
       {
         // To make button revert to play
         this.MoveSeekbar(1);
@@ -1337,7 +1309,7 @@ var anbt =
     xhr.onerror = function(e)
     {
       callback("error: " + e);
-    }
+    };
     xhr.setRequestHeader('Authorization', 'Client-ID 4809db83c8897af');
     var fd = new FormData(); 
     fd.append("image", new Blob([base64ToArrayBuffer(this.pngBase64.substr(22))], {type: "image/png"}));
@@ -1381,7 +1353,7 @@ function bindEvents()
   };
   var mouseUp = function(e)
   {
-    if (e.button == 0 || e.button == 2)
+    if (e.button === 0 || e.button === 2)
     {
       e.preventDefault();
       anbt.StrokeEnd();
@@ -1391,8 +1363,9 @@ function bindEvents()
   };
   $("#svgContainer").addEventListener('mousedown', function(e)
   {
-    if (e.button == 0 || e.button == 2)
+    if (e.button === 0 || e.button === 2)
     {
+      if (anbt.isStroking) return mouseUp(e);
       if (checkPlayingAndStop()) return;
       e.preventDefault();
       rect = this.getBoundingClientRect();
@@ -1401,11 +1374,11 @@ function bindEvents()
 
       if (e.altKey)
       {
-        anbt.SetColor(e.button == 0 ? 0 : 1, anbt.Eyedropper(x, y));
+        anbt.SetColor(e.button === 0 ? 0 : 1, anbt.Eyedropper(x, y));
         updateColorIndicators();
       } else {
         // PointerType == 3 is pen tablet eraser
-        anbt.StrokeBegin(x, y, e.button == 0 && getPointerType() != 3);
+        anbt.StrokeBegin(x, y, e.button === 0 && getPointerType() !== 3);
         window.addEventListener('mouseup', mouseUp);
         window.addEventListener('mousemove', mouseMove);
       }
@@ -1432,7 +1405,7 @@ function bindEvents()
   };
   var touchMove = function(e)
   {
-    if (e.touches.length == 1)
+    if (e.touches.length === 1)
     {
       simulateSingleTouchStart(e);
       e.preventDefault();
@@ -1443,7 +1416,7 @@ function bindEvents()
   };
   var touchEnd = function(e)
   {
-    if (e.touches.length == 0)
+    if (e.touches.length === 0)
     {
       simulateSingleTouchStart(e);
       e.preventDefault();
@@ -1455,7 +1428,7 @@ function bindEvents()
   var lastTouch;
   var touchUndoRedo = function(e)
   {
-    if (e.changedTouches.length == 1 && e.touches.length == 1)
+    if (e.changedTouches.length === 1 && e.touches.length === 1)
     {
       var ch = e.changedTouches[0];
       if (Math.abs(ch.pageX - lastTouch.pageX) < 10 &&
@@ -1474,7 +1447,7 @@ function bindEvents()
   };
   $("#svgContainer").addEventListener('touchstart', function(e)
   {
-    if (e.touches.length == 1)
+    if (e.touches.length === 1)
     {
       if (checkPlayingAndStop()) return;
       // Let two-finger scrolling, pinching, etc. work.
@@ -1489,7 +1462,7 @@ function bindEvents()
       // 2   o o    o o
       // 3   , o    o .
       //     Undo   Redo
-      if (touchSingle && e.touches.length == 2)
+      if (touchSingle && e.touches.length === 2)
       {
         lastTouch = e.touches[1];
         window.addEventListener('touchend', touchUndoRedo);
@@ -1530,7 +1503,7 @@ function bindEvents()
     }
     anbt.MakePNG(300, 250);
     anbt.RequestSave();
-  }
+  };
   $("#export").addEventListener('click', doExport);
   $("#submit").addEventListener('click', doExport);
   $("#imgur").addEventListener('click', function(e)
@@ -1571,7 +1544,7 @@ function bindEvents()
       if (el) el.classList.remove("selected");
       this.classList.add("selected");
     };
-  };
+  }
   var brushSizes = [2.4, 6, 14.4, 42];
 
   for (var i = 0; i < brushSizes.length; i++)
@@ -1598,11 +1571,11 @@ function bindEvents()
       $("#secondary").style.backgroundColor = c1;
       $("#secondary").classList.remove('eraser');
     }
-  }
+  };
   var chooseBackground = false;
   var colorClick = function(e)
   {
-    if (e.touches || e.button == 0 || e.button == 2)
+    if (e.touches || e.button === 0 || e.button === 2)
     {
       e.preventDefault();
       var color = this.style.backgroundColor;
@@ -1623,7 +1596,7 @@ function bindEvents()
           showcolor = "pink";
         }
         // PointerType == 3 is pen tablet eraser
-        if (e.button == 2 || getPointerType() == 3)
+        if (e.button === 2 || getPointerType() === 3)
         {
           anbt.SetColor(1, color);
         } else {
@@ -1700,7 +1673,7 @@ function bindEvents()
   };
   var knobCommonUp = function(e)
   {
-    if (e.button == 0 || e.touches.length == 0)
+    if (e.button === 0 || e.touches.length === 0)
     {
       e.preventDefault();
       window.removeEventListener('mouseup', knobCommonUp);
@@ -1711,7 +1684,7 @@ function bindEvents()
   };
   var knobCommonDown = function(e)
   {
-    if (e.button == 0 || e.touches.length == 1)
+    if (e.button === 0 || e.touches.length === 1)
     {
       rect = $("#seekbar").getBoundingClientRect();
       knobCommonMove(e);
@@ -1744,7 +1717,7 @@ function bindEvents()
 
   var choosePalette = function(e)
   {
-    if (e.touches || e.button == 0)
+    if (e.touches || e.button === 0)
     {
       e.preventDefault();
       var name = this.childNodes[0].nodeValue;
@@ -1770,10 +1743,10 @@ function bindEvents()
         pal.appendChild(eraser);
       }
     }
-  }
+  };
   var closePaletteList = function(e)
   {
-    if (e.touches || e.button == 0)
+    if (e.touches || e.button === 0)
     {
       $("#palettechooser").classList.remove("open");
       window.removeEventListener('mousedown', closePaletteList);
@@ -1782,7 +1755,7 @@ function bindEvents()
   };
   var openPaletteList = function(e)
   {
-    if (e.touches || e.button == 0)
+    if (e.touches || e.button === 0)
     {
       e.preventDefault();
       var chooser = $("#palettechooser");
@@ -1824,7 +1797,7 @@ function bindEvents()
         }
       }
     }
-  }
+  };
   $("#palettename").addEventListener('mousedown', openPaletteList);
   $("#palettename").addEventListener('touchend', openPaletteList);
 
@@ -1863,7 +1836,7 @@ function bindEvents()
           anbt.ShowEyedropperCursor(false);
           this.removeEventListener('mousemove', removeEyedropper);
         }
-      }
+      };
       $("#svgContainer").addEventListener('mousemove', removeEyedropper);
     }
     else if (e.keyCode == "Z".charCodeAt(0) && e.ctrlKey)

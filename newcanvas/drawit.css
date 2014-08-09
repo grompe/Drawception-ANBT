@@ -229,6 +229,7 @@ button:disabled {
 #tools hr {
   border: 1px solid #888;
   width: 93%;
+  margin: 8px auto;
 }
 #primary, #secondary {
   display:inline-block;
