@@ -91,6 +91,9 @@ Forum:
 
 ## CHANGELOG
 
+0.52.2014.8
+- Scale posted images in the forum down to fit post width
+
 0.51.2014.8
 - Force break caption that doesn't fit into the panel
 
