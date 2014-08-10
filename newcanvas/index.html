@@ -332,9 +332,10 @@ function buildSmoothPath(points, path)
 {
   var dist1, dist2, angle1, angle2, prevtangent, tangent, t1, t2, x, y, p, c, n, l = points.length;
   var good;
-  if (l < 4) return;
+  if (l < 2) return;
   path.pathSegList.initialize(path.createSVGPathSegMovetoAbs(points[0].x, points[0].y));
   path.pathSegList.appendItem(path.createSVGPathSegLinetoAbs(points[1].x, points[1].y));
+  if (l < 3) return;
   for (var i = 1; i < l - 1; i++)
   {
     p = points[i - 1];
