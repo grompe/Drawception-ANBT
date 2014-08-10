@@ -1024,7 +1024,7 @@ var anbt =
     if (this.position > 0)
     {
       this.Seek(this.position - 1);
-      this.MoveSeekbar(this.position / this.svg.childNodes.length);
+      this.MoveSeekbar(this.position / (this.svg.childNodes.length - 1));
     }
   },
   Redo: function()
