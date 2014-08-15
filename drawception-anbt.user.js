@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      0.52.2014.8
+// @version      0.53.2014.8
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "0.52.2014.8";
+var SCRIPT_VERSION = "0.53.2014.8";
 
 // == DEFAULT OPTIONS ==
 
@@ -1443,13 +1443,15 @@ function viewMyGameBookmarks()
               },
               success: function(e)
               {
-                if (e.match(/Game is not private/))
+                var m = e.match(/Game is not private/) || e.match(/Problem loading game/) && "dust";
+                if (m)
                 {
                   var gamename = "";
                   if (games[id].caption) gamename += " " + games[id].caption;
                   if (games[id].time) gamename += " bookmarked on " + formatTimestamp(games[id].time);
                   if (gamename == "") gamename = id;
-                  $("#" + id).find("span").text("Unfinished public game" + gamename);
+                  var status = (m == "dust") ? "Deleted / dusted" : "Unfinished public";
+                  $("#" + id).find("span").text(status + " game" + gamename);
                   return;
                 }
                 var title = e.match(/<title>(.+)<\/title>/)[1];

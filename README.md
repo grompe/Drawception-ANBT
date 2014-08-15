@@ -91,6 +91,9 @@ Forum:
 
 ## CHANGELOG
 
+0.53.2014.8
+- Handle deleted games in game bookmarks
+
 0.52.2014.8
 - Scale posted images in the forum down to fit post width
 
