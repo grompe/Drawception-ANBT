@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      0.53.2014.8
+// @version      0.54.2014.8
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "0.53.2014.8";
+var SCRIPT_VERSION = "0.54.2014.8";
 
 // == DEFAULT OPTIONS ==
 
@@ -1954,7 +1954,7 @@ function pageEnhancements()
     ".anbt_favpanel {top: 40px; font-weight: normal; padding: 4px 2px}" +
     ".anbt_favpanel:hover {color: #d9534f; cursor:pointer}" +
     ".anbt_favedpanel {color: #d9534f; border-color: #d9534f}" +
-    ".gamepanel, .thumbpanel {word-wrap: break-word}" +
+    ".gamepanel, .thumbpanel, .comment-body {word-wrap: break-word}" +
     ".comment-body img {max-width: 100%}" +
     ""
   );

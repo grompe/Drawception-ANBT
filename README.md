@@ -91,6 +91,9 @@ Forum:
 
 ## CHANGELOG
 
+0.54.2014.8
+- Also break apart comments that would stretch the page
+
 0.53.2014.8
 - Handle deleted games in game bookmarks
 
