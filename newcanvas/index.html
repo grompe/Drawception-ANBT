@@ -5,26 +5,20 @@
 <meta name="viewport" content="width=device-width">
 <link rel="stylesheet" href="drawit.css?1">
 <title>Drawing in Time!</title>
-<body>
+<body id="newcanvasyo" class="sandbox">
   <div id="myheader">
-    Drawing in Time! (last update: 10 Aug 2014)
+    Drawing in Time! (last update: 20 Aug 2014)
     made by <a href="http://grompe.org.ru/">Grom PE</a>
     <a class="prominent" href="http://chat.grompe.org.ru/#drawception">(discuss)</a>
   </div>
-<!--
-  <div id="fakeheader"></div>
-  <div id="drawthis">WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW</div>
-  <div id="drawthis">Phoenix Wright finds flaw in Isaac's testimony</div>
-  <div id="drawthis">A cow jumping over the moon</div>
-  <div id="drawthis">beep</div>
--->
-  <div id="emptytitle"></div>
+  <div id="drawthis" class="onlyplay">A cow jumping over the moon</div>
+  <div id="emptytitle" class="onlysandbox"></div>
   <div id="bl">
     <div id="toolpane">
       <div id="timer" class="panel">00:00</div>
       <div id="colors" class="panel">
         <div id="palettename">Normal</div>
-        <div id="palettechooser"></div>
+        <div id="palettechooser" class="onlysandbox"></div>
         <div id="palette">
           <b style="background-color:#000000"></b>
           <b style="background-color:#444444"></b>
@@ -53,7 +47,7 @@
       <div id="tools" class="panel">
         <button id="brush0" title="Tiny brush (-)"></button>
         <button id="brush1" title="Small brush"></button>
-        <button id="brush2" class="selected" title="Medium brush"></button>
+        <button id="brush2" class="sel" title="Medium brush"></button>
         <button id="brush3" title="Large brush (=)"></button>
         <hr>
         <button id="setbackground" title="Set background (B)"></button>
@@ -71,50 +65,36 @@
     <div id="svgContainer"></div>
     <div id="seekbar"><div id="play" title="Play (Space)"></div><div id="knob"></div></div>
     <div id="infopane">
-      <div id="gamemode" class="panel">Sandbox</div>
-      <!--
-      <div id="gamemode" class="panel">Friend game</div>
-      <div id="gamemode" class="panel">Public safe for work game [rules]</div>
-      -->
-      <div id="gamebuttons" class="panel">
-      <!-- In play
-        <button id="bookmark">Bookmark</button>
-        <button id="options">Options</button>
-        <button id="skip">Skip</button>
-        <button id="report">Report</button>
-        <button id="exit">Exit</button>
-      -->
-      <!-- In Sandbox
-        <button id="import">Import drawing</button>
-        <button id="export">Export drawing</button>
-        <button id="imgur">Upload to imgur</button>
-      -->
-        <button id="import">Import drawing</button>
-        <button id="export">Export drawing</button>
-        <button id="imgur">Upload to imgur</button>
+      <div id="gamemode" class="panel">
+        <span class="onlysandbox">Sandbox</span>
+        <span class="onlyplay">Public safe for work game</span>
       </div>
-      <button id="submit">Submit!</button>
-      <div id="guidelines">Sandbox
+      <div id="gamebuttons" class="panel">
+        <button id="bookmark" class="onlyplay">Bookmark</button>
+        <button id="options" class="onlyplay">Options</button>
+        <button id="skip" class="onlyplay">Skip</button>
+        <button id="report" class="onlyplay">Report</button>
+        <button id="exit" class="onlyplay">Exit</button>
+        <button id="import" class="onlysandbox">Import drawing</button>
+        <button id="export" class="onlysandbox">Export drawing</button>
+        <button id="imgur" class="onlysandbox">Upload to imgur</button>
+      </div>
+      <button id="submit" class="onlyplay">Submit!</button>
+      <div class="guidelines onlyplay">Guidelines
         <ul>
-          <li>
-            Welcome to the sandbox! Here you can play with the drawing tools with no
-            time pressure. Use it to experiment with or to create your avatar (click
-            Export drawing and right-click on the exported image to save it).
-          </li>
-        </ul>
-        <!-- Game:
-          Guidelines
           <li>Simple drawings are welcome! Just give it your best shot</li>
-          <li>If the phrase is too obscure/difficult, use the skip button to find another</li>
+          <li>If the phrase is too difficult, use the skip button</li>
           <li>Don't draw text - always draw a picture</li>
-          <li>Explicit (NSFW) drawings will be removed and result in being banned</li>
-        -->
-        <!-- Captioning
-          Tips
-          <li>Keep descriptions short and simple!</li>
-          <li>Avoid unnecessary detail, just describe the main subject</li>
-          <li>No idea? Click the skip button</li>
-        -->
+          <li>Explicit (NSFW) drawings will get you banned</li>
+        </ul>
+      </div>
+      <div class="guidelines onlysandbox">Sandbox
+        <ul>
+          <li>Welcome to the sandbox! Here you can play with all the palettes and drawing tools.</li>
+          <li>Saved drawings will contain your drawing process in PNG format.</li>
+          <li>After loading a drawing you can continue to draw or watch its playback.</li>
+          <li>Note that editing the PNG with playback with other programs will likely destroy the playback data.</li>
+        </ul>
       </div>
     </div>
   </div>
@@ -124,7 +104,7 @@
 <script src="pako.min.js"></script>
 <script>
 // Utilities
-function $(id) {return document.getElementById(id.substr(1));}
+function ID(id) {return document.getElementById(id);}
 function svgElement(name, attrs)
 {
   var el = document.createElementNS("http://www.w3.org/2000/svg", name);
@@ -507,8 +487,8 @@ var anbt =
     this.svg = svg;
     this.lastrect = 0;
     this.rewindCache.length = 0;
-    this.UpdateView();
     this.position = this.svg.childNodes.length - 1;
+    this.UpdateView();
     this.MoveSeekbar(1);
     // Here we assume first element of svg is background rect
     this.background = this.svg.childNodes[0].getAttribute("fill");
@@ -789,8 +769,8 @@ var anbt =
         //this.lastrect = this.FindLastRect();
         this.lastrect = 0;
         this.rewindCache.length = 0;
-        this.UpdateView();
         this.position = this.svg.childNodes.length - 1;
+        this.UpdateView();
         this.MoveSeekbar(1);
         // Here we assume first element of svg is background rect
         this.background = this.svg.childNodes[0].getAttribute("fill");
@@ -865,6 +845,7 @@ var anbt =
   },
   SetBackground: function(color)
   {
+    this.rewindCache.length = 0;
     this.background = color;
     var erased = this.svg.querySelectorAll(".eraser");
     for (var i = 0; i < erased.length; i++)
@@ -926,7 +907,8 @@ var anbt =
   },
   UpdateView: function()
   {
-    for (var i = this.lastrect; i < this.svg.childNodes.length; i++)
+    var start = this.lastrect < this.position ? this.lastrect : 0;
+    for (var i = start; i <= this.position; i++)
     {
       this.DrawSVGElement(this.svg.childNodes[i]);
     }
@@ -1333,7 +1315,7 @@ var anbt =
 
 function bindEvents()
 {
-  var wacom = $("#wacom");
+  var wacom = ID("wacom");
   var getPointerType = function()
   {
     return wacom.penAPI && wacom.penAPI.isWacom ? wacom.penAPI.pointerType : 0;
@@ -1344,7 +1326,7 @@ function bindEvents()
     if (anbt.isPlaying)
     {
       anbt.Pause();
-      $("#play").classList.remove("pause");
+      ID("play").classList.remove("pause");
       return true;
     }
     return false;
@@ -1367,7 +1349,7 @@ function bindEvents()
       window.removeEventListener('mousemove', mouseMove);
     }
   };
-  $("#svgContainer").addEventListener('mousedown', function(e)
+  ID("svgContainer").addEventListener('mousedown', function(e)
   {
     if (e.button === 0 || e.button === 2)
     {
@@ -1390,7 +1372,7 @@ function bindEvents()
       }
     }
   });
-  $("#svgContainer").addEventListener('mousemove', function(e)
+  ID("svgContainer").addEventListener('mousemove', function(e)
   {
     rect = this.getBoundingClientRect();
     var x = e.pageX - rect.left - pageXOffset;
@@ -1440,7 +1422,7 @@ function bindEvents()
       if (Math.abs(ch.pageX - lastTouch.pageX) < 10 &&
           Math.abs(ch.pageY - lastTouch.pageY) < 10)
       {
-        $("#play").classList.remove("pause");
+        ID("play").classList.remove("pause");
         if (ch.pageX < e.touches[0].pageX)
         {
           anbt.Undo();
@@ -1451,7 +1433,7 @@ function bindEvents()
     }
     window.removeEventListener('touchend', touchUndoRedo);
   };
-  $("#svgContainer").addEventListener('touchstart', function(e)
+  ID("svgContainer").addEventListener('touchstart', function(e)
   {
     if (e.touches.length === 1)
     {
@@ -1483,22 +1465,22 @@ function bindEvents()
     }
   });
 
-  $("#svgContainer").addEventListener('mouseleave', function(e)
+  ID("svgContainer").addEventListener('mouseleave', function(e)
   {
     // Hide brush cursor
     anbt.MoveCursor(-100, -100);
   });
-  $("#svgContainer").addEventListener('contextmenu', function(e)
+  ID("svgContainer").addEventListener('contextmenu', function(e)
   {
     e.preventDefault();
   });
 
-  $("#import").addEventListener('click', function(e)
+  ID("import").addEventListener('click', function(e)
   {
     e.preventDefault();
-    $("#svgContainer").classList.add("loading");
+    ID("svgContainer").classList.add("loading");
     anbt.FromLocalFile();
-    $("#svgContainer").classList.remove("loading");
+    ID("svgContainer").classList.remove("loading");
   });
   var doExport = function(e)
   {
@@ -1510,30 +1492,34 @@ function bindEvents()
     anbt.MakePNG(300, 250);
     anbt.RequestSave();
   };
-  $("#export").addEventListener('click', doExport);
-  $("#submit").addEventListener('click', doExport);
-  $("#imgur").addEventListener('click', function(e)
+  ID("export").addEventListener('click', doExport);
+  ID("submit").addEventListener('click', doExport);
+  ID("imgur").addEventListener('click', function(e)
   {
     e.preventDefault();
-    $("#imgur").childNodes[0].nodeValue = "Uploading...";
-    $("#imgur").disabled = true;
+    if (anbt.position < anbt.GetSeekMax() && !confirm("Strokes after current position will be discarded. Continue?"))
+    {
+      return;
+    }
+    ID("imgur").childNodes[0].nodeValue = "Uploading...";
+    ID("imgur").disabled = true;
     anbt.MakePNG(600, 500, true);
     anbt.UploadToImgur(function(r)
     {
-      $("#imgur").childNodes[0].nodeValue = "Upload to imgur";
-      $("#popup").classList.add("show");
-      $("#popuptitle").childNodes[0].nodeValue = "Imgur upload result";
+      ID("imgur").childNodes[0].nodeValue = "Upload to imgur";
+      ID("popup").classList.add("show");
+      ID("popuptitle").childNodes[0].nodeValue = "Imgur upload result";
       if (r && r.success)
       {
-        $("#imgururl").href = r.data.link;
-        $("#imgururl").childNodes[0].nodeValue = "Uploaded image";
-        $("#imgurdelete").href = "http://imgur.com/delete/" + r.data.deletehash;
-        $("#imgurerror").childNodes[0].nodeValue = "";
+        ID("imgururl").href = "http://imgur.com/" + r.data.id;
+        ID("imgururl").childNodes[0].nodeValue = "Uploaded image";
+        ID("imgurdelete").href = "http://imgur.com/delete/" + r.data.deletehash;
+        ID("imgurerror").childNodes[0].nodeValue = "";
       } else {
         var err = r.data ? ("Imgur error: " + r.data.error) : ("Error: " + r);
-        $("#imgurerror").childNodes[0].nodeValue = err;
+        ID("imgurerror").childNodes[0].nodeValue = err;
       }
-      $("#imgur").disabled = false;
+      ID("imgur").disabled = false;
     });
   });
   window.addEventListener('keydown', function(e)
@@ -1546,16 +1532,16 @@ function bindEvents()
     {
       e.preventDefault();
       anbt.SetSize(s);
-      var el = $("#tools").querySelector(".selected");
-      if (el) el.classList.remove("selected");
-      this.classList.add("selected");
+      var el = ID("tools").querySelector(".sel");
+      if (el) el.classList.remove("sel");
+      this.classList.add("sel");
     };
   }
   var brushSizes = [2.4, 6, 14.4, 42];
 
   for (var i = 0; i < brushSizes.length; i++)
   {
-    $("#brush" + i).addEventListener('click', makeBrushFunc(brushSizes[i]), false);
+    ID("brush" + i).addEventListener('click', makeBrushFunc(brushSizes[i]), false);
   }
   var updateColorIndicators = function()
   {
@@ -1563,19 +1549,19 @@ function bindEvents()
     var c1 = anbt.color[1];
     if (c0 == 'eraser')
     {
-      $("#primary").style.backgroundColor = 'pink';
-      $("#primary").classList.add('eraser');
+      ID("primary").style.backgroundColor = 'pink';
+      ID("primary").classList.add('eraser');
     } else {
-      $("#primary").style.backgroundColor = c0;
-      $("#primary").classList.remove('eraser');
+      ID("primary").style.backgroundColor = c0;
+      ID("primary").classList.remove('eraser');
     }
     if (c1 == 'eraser')
     {
-      $("#secondary").style.backgroundColor = 'pink';
-      $("#secondary").classList.add('eraser');
+      ID("secondary").style.backgroundColor = 'pink';
+      ID("secondary").classList.add('eraser');
     } else {
-      $("#secondary").style.backgroundColor = c1;
-      $("#secondary").classList.remove('eraser');
+      ID("secondary").style.backgroundColor = c1;
+      ID("secondary").classList.remove('eraser');
     }
   };
   var chooseBackground = false;
@@ -1592,8 +1578,8 @@ function bindEvents()
           anbt.SetBackground(color);
         }
         chooseBackground = false;
-        $("#colors").classList.remove("setbackground");
-        $("#setbackground").classList.remove("selected");
+        ID("colors").classList.remove("setbackground");
+        ID("setbackground").classList.remove("sel");
       } else {
         var showcolor = color;
         if (this.id == "eraser")
@@ -1616,33 +1602,33 @@ function bindEvents()
   {
     e.preventDefault();
   };
-  var els = $("#colors").querySelectorAll("b");
+  var els = ID("colors").querySelectorAll("b");
   for (var i = 0; i < els.length; i++)
   {
     els[i].addEventListener('mousedown', colorClick);
     els[i].addEventListener('touchend', colorClick);
     els[i].addEventListener('contextmenu', noDefault);
   }
-  $("#setbackground").addEventListener('click', function(e)
+  ID("setbackground").addEventListener('click', function(e)
   {
     e.preventDefault();
     chooseBackground = true;
-    $("#colors").classList.add("setbackground");
-    $("#setbackground").classList.add("selected");
+    ID("colors").classList.add("setbackground");
+    ID("setbackground").classList.add("sel");
   });
-  $("#undo").addEventListener('click', function(e)
+  ID("undo").addEventListener('click', function(e)
   {
     e.preventDefault();
-    $("#play").classList.remove("pause");
+    ID("play").classList.remove("pause");
     anbt.Undo();
   });
-  $("#redo").addEventListener('click', function(e)
+  ID("redo").addEventListener('click', function(e)
   {
     e.preventDefault();
-    $("#play").classList.remove("pause");
+    ID("play").classList.remove("pause");
     anbt.Redo();
   });
-  $("#trash").addEventListener('click', function(e)
+  ID("trash").addEventListener('click', function(e)
   {
     e.preventDefault();
     anbt.ClearWithColor("eraser");
@@ -1653,14 +1639,14 @@ function bindEvents()
     var x = Math.floor(fraction * 502 - 10);
     if (fraction > 0)
     {
-      $("#knob").classList.add("smooth");
+      ID("knob").classList.add("smooth");
     } else {
-      $("#knob").classList.remove("smooth");
+      ID("knob").classList.remove("smooth");
     }
-    $("#knob").style.marginLeft = x + 'px';
+    ID("knob").style.marginLeft = x + 'px';
     if (fraction >= 1)
     {
-      $("#play").classList.remove("pause");
+      ID("play").classList.remove("pause");
     }
   };
   anbt.SetSeekbarMove(knobMove);
@@ -1672,10 +1658,10 @@ function bindEvents()
     x = Math.min(Math.max(-10, x), 492);
     var pos = Math.round((x + 10) / 502 * len);
     x = pos / len * 502 - 10;
-    $("#knob").classList.add("smooth");
-    $("#knob").style.marginLeft = x + 'px';
+    ID("knob").classList.add("smooth");
+    ID("knob").style.marginLeft = x + 'px';
     anbt.Seek(pos);
-    $("#play").classList.remove("pause");
+    ID("play").classList.remove("pause");
   };
   var knobCommonUp = function(e)
   {
@@ -1692,7 +1678,7 @@ function bindEvents()
   {
     if (e.button === 0 || e.touches.length === 1)
     {
-      rect = $("#seekbar").getBoundingClientRect();
+      rect = ID("seekbar").getBoundingClientRect();
       knobCommonMove(e);
       window.addEventListener('mouseup', knobCommonUp);
       window.addEventListener('touchend', knobCommonUp);
@@ -1700,10 +1686,10 @@ function bindEvents()
       window.addEventListener('touchmove', knobCommonMove);
     }
   };
-  $("#knob").addEventListener('mousedown', knobCommonDown);
-  $("#knob").addEventListener('touchstart', knobCommonDown);
-  $("#seekbar").addEventListener('mousedown', knobCommonDown);
-  $("#seekbar").addEventListener('touchstart', knobCommonDown);
+  ID("knob").addEventListener('mousedown', knobCommonDown);
+  ID("knob").addEventListener('touchstart', knobCommonDown);
+  ID("seekbar").addEventListener('mousedown', knobCommonDown);
+  ID("seekbar").addEventListener('touchstart', knobCommonDown);
 
   var playCommonDown = function(e)
   {
@@ -1711,15 +1697,15 @@ function bindEvents()
     e.preventDefault();
     if (anbt.isPlaying)
     {
-      $("#play").classList.remove("pause");
+      ID("play").classList.remove("pause");
       anbt.Pause();
     } else {
-      $("#play").classList.add("pause");
+      ID("play").classList.add("pause");
       anbt.Play();
     }
   };
-  $("#play").addEventListener('mousedown', playCommonDown);
-  $("#play").addEventListener('touchstart', playCommonDown);
+  ID("play").addEventListener('mousedown', playCommonDown);
+  ID("play").addEventListener('touchstart', playCommonDown);
 
   var choosePalette = function(e)
   {
@@ -1727,9 +1713,9 @@ function bindEvents()
     {
       e.preventDefault();
       var name = this.childNodes[0].nodeValue;
-      $("#palettename").childNodes[0].nodeValue = name;
+      ID("palettename").childNodes[0].nodeValue = name;
       var colors = palettes[name];
-      var pal = $("#palette");
+      var pal = ID("palette");
       var els = pal.querySelectorAll("b");
       // Remove all current colors except for the eraser
       for (var i = 0; i < els.length - 1; i++)
@@ -1754,7 +1740,7 @@ function bindEvents()
   {
     if (e.touches || e.button === 0)
     {
-      $("#palettechooser").classList.remove("open");
+      ID("palettechooser").classList.remove("open");
       window.removeEventListener('mousedown', closePaletteList);
       window.removeEventListener('touchend', closePaletteList);
     }
@@ -1764,7 +1750,7 @@ function bindEvents()
     if (e.touches || e.button === 0)
     {
       e.preventDefault();
-      var chooser = $("#palettechooser");
+      var chooser = ID("palettechooser");
       chooser.classList.toggle("open");
       if (chooser.classList.contains("open"))
       {
@@ -1804,13 +1790,13 @@ function bindEvents()
       }
     }
   };
-  $("#palettename").addEventListener('mousedown', openPaletteList);
-  $("#palettename").addEventListener('touchend', openPaletteList);
+  ID("palettename").addEventListener('mousedown', openPaletteList);
+  ID("palettename").addEventListener('touchend', openPaletteList);
 
-  $("#popupclose").addEventListener('click', function(e)
+  ID("popupclose").addEventListener('click', function(e)
   {
     e.preventDefault();
-    $("#popup").classList.remove("show");
+    ID("popup").classList.remove("show");
   });
 
   
@@ -1818,7 +1804,7 @@ function bindEvents()
   {
     if (e.keyCode == 18) // Alt
     {
-      $("#svgContainer").classList.remove("hidecursor");
+      ID("svgContainer").classList.remove("hidecursor");
       anbt.ShowEyedropperCursor(false);
     }
   });
@@ -1830,7 +1816,7 @@ function bindEvents()
       // Opera Presto refuses to hide cursor =(
       if (!navigator.userAgent.match(/\bPresto\b/))
       {
-        $("#svgContainer").classList.add("hidecursor");
+        ID("svgContainer").classList.add("hidecursor");
       }
       anbt.ShowEyedropperCursor(true);
       // The following is needed in case of Alt+Tab causing eyedropper to be stuck
@@ -1843,18 +1829,18 @@ function bindEvents()
           this.removeEventListener('mousemove', removeEyedropper);
         }
       };
-      $("#svgContainer").addEventListener('mousemove', removeEyedropper);
+      ID("svgContainer").addEventListener('mousemove', removeEyedropper);
     }
     else if (e.keyCode == "Z".charCodeAt(0) && e.ctrlKey)
     {
       e.preventDefault();
-      $("#play").classList.remove("pause");
+      ID("play").classList.remove("pause");
       anbt.Undo();
     }
     else if (e.keyCode == "Y".charCodeAt(0) && e.ctrlKey)
     {
       e.preventDefault();
-      $("#play").classList.remove("pause");
+      ID("play").classList.remove("pause");
       anbt.Redo();
     }
     else if (e.keyCode == "X".charCodeAt(0))
@@ -1870,8 +1856,8 @@ function bindEvents()
     {
       e.preventDefault();
       chooseBackground = true;
-      $("#colors").classList.add("setbackground");
-      $("#setbackground").classList.add("selected");
+      ID("colors").classList.add("setbackground");
+      ID("setbackground").classList.add("sel");
     }
     else if (e.keyCode == "E".charCodeAt(0) && !e.ctrlKey)
     {
@@ -1884,7 +1870,7 @@ function bindEvents()
       e.preventDefault();
       var i = (e.keyCode == 48) ? 9 : e.keyCode - 49;
       if (e.shiftKey) i += 8;
-      var els = $("#colors").querySelectorAll("b");
+      var els = ID("colors").querySelectorAll("b");
       if (i < els.length)
       {
         var color = els[i].style.backgroundColor;
@@ -1896,8 +1882,8 @@ function bindEvents()
             anbt.SetBackground(color);
           }
           chooseBackground = false;
-          $("#colors").classList.remove("setbackground");
-          $("#setbackground").classList.remove("selected");
+          ID("colors").classList.remove("setbackground");
+          ID("setbackground").classList.remove("sel");
         } else {
           anbt.SetColor(0, color);
           updateColorIndicators();
@@ -1916,7 +1902,7 @@ function bindEvents()
       {
         if (anbt.size - brushSizes[i] < 0.01)
         {
-          $("#brush" + (i - 1)).click();
+          ID("brush" + (i - 1)).click();
           break;
         }
       }
@@ -1928,7 +1914,7 @@ function bindEvents()
       {
         if (anbt.size - brushSizes[i] < 0.01)
         {
-          $("#brush" + (i + 1)).click();
+          ID("brush" + (i + 1)).click();
           break;
         }
       }
@@ -1951,8 +1937,8 @@ function bindEvents()
   */
   (function fixPluginGoingAWOL()
   {
-    var stupidPlugin = $("#wacom");
-    var container = $("#wacomContainer");
+    var stupidPlugin = ID("wacom");
+    var container = ID("wacomContainer");
     window.onblur = function(e)
     {
       if (container.childNodes.length === 1) container.removeChild(stupidPlugin);
@@ -1974,14 +1960,14 @@ function runTimer()
     s = Math.floor(s % 60);
     if (m < 10) m = '0' + m;
     if (s < 10) s = '0' + s;
-    $("#timer").childNodes[0].nodeValue = m + ':' + s;
+    ID("timer").childNodes[0].nodeValue = m + ':' + s;
   },
   500);
 }
 
 function main()
 {
-  anbt.BindContainer($("#svgContainer"));
+  anbt.BindContainer(ID("svgContainer"));
   bindEvents();
   if (window.location.hash.length > 7)
   {

@@ -16,6 +16,13 @@ body {
   font-family: 'Nunito', sans-serif;
   background: #555;
 }
+#newcanvasyo {
+  background: #555;
+}
+#newcanvasyo.play .onlysandbox,
+#newcanvasyo.sandbox .onlyplay {
+  display: none;
+}
 #myheader {
   font-size: 15pt;
   height: 25px;
@@ -34,11 +41,6 @@ a.prominent {
 }
 a.prominent:hover {
   color: #9ff;
-}
-#fakeheader {
-  height: 49px;
-  border-bottom: 1px solid black;
-  background: #353535 url("fakeheader.png") center no-repeat;
 }
 #drawthis {
   padding: 4px;
@@ -133,6 +135,7 @@ a.prominent:hover {
 #colors b:before {
   font-size: 10pt;
   opacity: 0.3;
+  color: #000;
 }
 #colors b:hover:before {
   opacity: 0.4;
@@ -147,7 +150,7 @@ a.prominent:hover {
 #palettename:hover {
   color: #ccc;
 }
-#palettename:after {
+.sandbox #palettename:after {
   content: ' \25BC';
 }
 #colors #eraser:before {
@@ -190,6 +193,7 @@ a.prominent:hover {
   height: 44px;
   vertical-align: top;
   margin: 3px 0;
+  padding: 0;
 }
 #brush0, #brush1, #brush2, #brush3,
 #setbackground, #undo, #redo, #trash,
@@ -201,12 +205,12 @@ a.prominent:hover {
 #brush1 { background-position: -62px -8px; }
 #brush2 { background-position: -122px -8px; }
 #brush3 { background-position: -182px -8px; }
-#brush0.selected { background-position: -2px -68px; }
-#brush1.selected { background-position: -62px -68px; }
-#brush2.selected { background-position: -122px -68px; }
-#brush3.selected { background-position: -182px -68px; }
+#brush0.sel { background-position: -2px -68px; }
+#brush1.sel { background-position: -62px -68px; }
+#brush2.sel { background-position: -122px -68px; }
+#brush3.sel { background-position: -182px -68px; }
 #setbackground { background-position: -242px -8px; }
-#setbackground.selected { background-position: -242px -68px; }
+#setbackground.sel { background-position: -242px -68px; }
 #undo { background-position: -302px -8px; }
 #redo { background-position: -362px -8px; }
 #trash { background-position: -422px -8px; }
@@ -256,23 +260,24 @@ button:disabled {
 #gamebuttons button {
   padding: 10px;
   margin: 3px 0;
+  font-size: 10pt;
 }
 #submit {
   font-size: 16pt;
   width: 180px;
   height: 50px;
 }
-#guidelines {
+.guidelines {
   color: #fff;
-  font-size: 11pt;
+  font-size: 10pt;
 }
-#guidelines ul {
+.guidelines ul {
   margin: 0;
   padding: 0 1em;
   text-align: left;
 }
-#guidelines li {
-  color: #999;
+.guidelines li {
+  color: #bbb;
 }
 #seekbar {
   width: 530px;
