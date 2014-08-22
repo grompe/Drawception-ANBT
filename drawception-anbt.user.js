@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      0.54.2014.8
+// @version      0.55.2014.8
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "0.54.2014.8";
+var SCRIPT_VERSION = "0.55.2014.8";
 
 // == DEFAULT OPTIONS ==
 
@@ -960,18 +960,28 @@ function empowerPlay()
   $(".gameControls").prepend(optionsButton);
   optionsButton.popover({container: "body", placement: "bottom", html: 1, content: optionsDiv});
   
+  // Show time remaining in document title
+  var origtitle = document.title;
+  var old_highlightCountdown1 = window.highlightCountdown;
+  window.highlightCountdown = function(p)
+  {
+    old_highlightCountdown1(p);
+    document.title = "[" + p[5] + ":" + p[6] + "] " + origtitle;
+  }
+  $("#timeleft").countdown('option', 'onTick', window.highlightCountdown);
+  
   // Add sound to timeout warning
   var blitz = isBlitzInPlay();
   if ((options.timeoutSound && !blitz) || (options.timeoutSoundBlitz && blitz))
   {
     var played = false;
     var alarm = new Audio(alarmSoundOgg);
-    var old_highlightCountdown = window.highlightCountdown;
+    var old_highlightCountdown2 = window.highlightCountdown;
     window.highlightCountdown = function(p)
     {
-      old_highlightCountdown(p);
+      old_highlightCountdown2(p);
       var seconds = $.countdown.periodsToSeconds(p);
-      if (!played && seconds <= (blitz ? 5 : 60))
+      if (!played && seconds <= (blitz ? 5 : 61))
       {
         alarm.play();
         played = true;

@@ -91,6 +91,9 @@ Forum:
 
 ## CHANGELOG
 
+0.55.2014.8
+- Show time remaining in the document title
+
 0.54.2014.8
 - Also break apart comments that would stretch the page
 
