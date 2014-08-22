@@ -3,11 +3,11 @@
 <link rel="author" href="https://plus.google.com/108281709967672964894">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta name="viewport" content="width=device-width">
-<link rel="stylesheet" href="drawit.css?1">
+<link rel="stylesheet" href="drawit.css?2">
 <title>Drawing in Time!</title>
 <body id="newcanvasyo" class="sandbox">
   <div id="myheader">
-    Drawing in Time! (last update: 20 Aug 2014)
+    Drawing in Time! (<a href="canvas_checklist.txt">last update: 22 Aug 2014</a>)
     made by <a href="http://grompe.org.ru/">Grom PE</a>
     <a class="prominent" href="http://chat.grompe.org.ru/#drawception">(discuss)</a>
   </div>
@@ -42,7 +42,6 @@
         <div id="indicator">
           <div id="primary" title="Primary color (Left button or pen)" style="background-color:#000">L</div><div id="secondary" title="Secondary color (Right button or pen eraser)" class="eraser">R</div>
         </div>
-        
       </div>
       <div id="tools" class="panel">
         <button id="brush0" title="Tiny brush (-)"></button>
@@ -380,7 +379,9 @@ var palettes = {
                       '#c19292', '#8c2c2c', '#295c6f'],
   "DawnBringer 16":  ['#140c1c', '#442434', '#30346d', '#4e4a4e', '#854c30', '#346524',
                       '#d04648', '#757161', '#597dce', '#d27d2c', '#8595a1', '#6daa2c',
-                      '#d2aa99', '#6dc2ca', '#dad45e', '#deeed6']
+                      '#d2aa99', '#6dc2ca', '#dad45e', '#deeed6'],
+  "March":           ['#9ed396', '#57b947', '#4d7736', '#365431', '#231302',
+                      '#3e2409', '#a66621', '#a67e21', '#ebbb49', '#fff']
 };
 
 var anbt =
@@ -414,6 +415,8 @@ var anbt =
   isPlaying: false,
   size: 14.4,
   smoothening: 1,
+  delay: 100,
+  unsaved: false,
   background: '#fffdc9',
   color: ['#000000', "eraser"],
   fastUndoLevels: 10,
@@ -667,6 +670,14 @@ var anbt =
       if (el.nodeName == "rect") return i;
     }
     return 0;
+  },
+  CutHistoryBeforePosition: function()
+  {
+    for (var i = this.position - 1; i > 0; i--)
+    {
+      var el = this.svg.childNodes[i];
+      this.svg.removeChild(el);
+    }
   },
   CutHistoryBeforeClearAndAfterPosition: function()
   {
@@ -942,6 +953,7 @@ var anbt =
   },
   StrokeEnd: function()
   {
+    this.unsaved = true;
     var p = this.points; 
     if (p.length > 2)
     {
@@ -1107,7 +1119,7 @@ var anbt =
   {
     if (!this.isPlaying) return;
     var posmax = this.svg.childNodes.length - 1;
-    var delay = 100;
+    var delay = this.delay;
     var maxidx = 0;
     if (this.position < posmax || this.isAnimating)
     {
@@ -1138,7 +1150,7 @@ var anbt =
           this.position++;
           this.animateIndex = 0;
         }
-        delay = 15;
+        delay = this.delay / 6;
       } else {
         var el = this.svg.childNodes[this.position + 1];
         if (el.nodeName == "path")
@@ -1268,6 +1280,7 @@ var anbt =
     } else {
       window.open(this.pngBase64);
     }
+    this.unsaved = false;
     return true;
   },
   UploadToImgur: function(callback)
@@ -1489,7 +1502,7 @@ function bindEvents()
     {
       return;
     }
-    anbt.MakePNG(300, 250);
+    anbt.MakePNG(600, 500);
     anbt.RequestSave();
   };
   ID("export").addEventListener('click', doExport);
@@ -1511,6 +1524,8 @@ function bindEvents()
       ID("popuptitle").childNodes[0].nodeValue = "Imgur upload result";
       if (r && r.success)
       {
+        anbt.unsaved = false;
+        history.replaceState(null, null, "#" + r.data.id);
         ID("imgururl").href = "http://imgur.com/" + r.data.id;
         ID("imgururl").childNodes[0].nodeValue = "Uploaded image";
         ID("imgurdelete").href = "http://imgur.com/delete/" + r.data.deletehash;
@@ -1665,7 +1680,7 @@ function bindEvents()
   };
   var knobCommonUp = function(e)
   {
-    if (e.button === 0 || e.touches.length === 0)
+    if (e.button === 0 || e.touches && e.touches.length === 0)
     {
       e.preventDefault();
       window.removeEventListener('mouseup', knobCommonUp);
@@ -1676,7 +1691,7 @@ function bindEvents()
   };
   var knobCommonDown = function(e)
   {
-    if (e.button === 0 || e.touches.length === 1)
+    if (e.button === 0 || e.touches && e.touches.length === 1)
     {
       rect = ID("seekbar").getBoundingClientRect();
       knobCommonMove(e);
@@ -1760,13 +1775,13 @@ function bindEvents()
           window.addEventListener('touchend', closePaletteList);
         }, 1);
       }
-      if (!chooser.childNodes.length)
+      var keys = Object.keys(palettes);
+      if (chooser.childNodes.length < keys.length)
       {
-        var keys = Object.keys(palettes);
         var canvas = document.createElement("canvas");
         canvas.height = 10;
         var ctx = canvas.getContext("2d");
-        for (var i = 0; i < keys.length; i++)
+        for (var i = chooser.childNodes.length; i < keys.length; i++)
         {
           canvas.width = 8 * palettes[keys[i]].length + 2;
           ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -1928,13 +1943,10 @@ function bindEvents()
   {
     alert(e);
   };
-  /*
-  window.onhashchange = function(e)
+  window.onbeforeunload = function(e)
   {
-    var id = window.location.hash.substr(1);
-    anbt.FromURL("http://i.imgur.com/" + id + ".png");
+    if (anbt.unsaved) return "You haven't saved the drawing. Abandon?";
   };
-  */
   (function fixPluginGoingAWOL()
   {
     var stupidPlugin = ID("wacom");
