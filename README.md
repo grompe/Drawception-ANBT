@@ -91,6 +91,9 @@ Forum:
 
 ## CHANGELOG
 
+0.56.2014.8
+- Added March palette
+
 0.55.2014.8
 - Show time remaining in the document title
 

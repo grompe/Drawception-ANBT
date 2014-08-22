@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      0.55.2014.8
+// @version      0.56.2014.8
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "0.55.2014.8";
+var SCRIPT_VERSION = "0.56.2014.8";
 
 // == DEFAULT OPTIONS ==
 
@@ -226,6 +226,15 @@ var palettes =
       '#b6cbe4', '#618abc', '#d0d5ce', '#82a2a1',
       '#92b8c1', '#607884', '#c19292', '#8c2c2c',
       '#295c6f',
+    ],
+  },
+  {
+    name: "March",
+    class: "label-theme_holiday",
+    colors:
+    [
+      '#9ed396', '#57b947', '#4d7736', '#365431', '#231302',
+      '#3e2409', '#a66621', '#a67e21', '#ebbb49', '#fff'
     ],
   },
   {
