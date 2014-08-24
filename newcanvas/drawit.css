@@ -25,13 +25,15 @@ body {
 }
 #myheader {
   font-size: 15pt;
-  height: 25px;
+  line-height: 49px;
+  height: 49px;
   border-bottom: 1px solid black;
   background: #333;
-  padding: 12px;
   text-align: center;
+  vertical-align: middle;
   color: #999;
   overflow: hidden;
+  display: block;
 }
 a {
   color: #999;
@@ -41,6 +43,37 @@ a.prominent {
 }
 a.prominent:hover {
   color: #9ff;
+}
+#menu {
+  display: none;
+  position: absolute;
+  background: #666;
+  color: #ddd;
+  z-index: 2;
+  border: 2px solid #777;
+  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  font-size: 13pt;
+  text-align: left;
+}
+#menu.open {
+  display: block;
+}
+#menu li {
+  line-height: 49px;
+  height: 49px;
+  padding: 0 10px;
+  cursor: pointer;
+}
+#menu li:hover {
+  background: #777;
+}
+#menu hr {
+  margin: 5px;
+  border: 1px solid #444;
+
 }
 #drawthis {
   padding: 4px;
@@ -56,7 +89,7 @@ a.prominent:hover {
   color: #aaa;
   font-size: 14pt;
   font-family: 'Nunito';
-  content: 'Draw this phrase:';
+  content: 'Draw this:';
   padding-right: 1em;
   width: 1%;
   text-align: right;
@@ -129,7 +162,7 @@ a.prominent:hover {
   display: block;
   width: 50px;
   height: 44px;
-  line-height: 40px;
+  line-height: 42px;
   cursor: pointer;
 }
 #colors b:before {
@@ -188,7 +221,7 @@ a.prominent:hover {
   float: right;
   padding: 5px 0;
 }
-#tools button {
+#tools button, #openmenu {
   width: 55px;
   height: 44px;
   vertical-align: top;
@@ -197,7 +230,7 @@ a.prominent:hover {
 }
 #brush0, #brush1, #brush2, #brush3,
 #setbackground, #undo, #redo, #trash,
-#play, #knob, #eraser, .eraser
+#play, #knob, #eraser, .eraser, #openmenu
 {
   background-image: url("newcanvasicons.png");
 }
@@ -216,6 +249,7 @@ a.prominent:hover {
 #trash { background-position: -422px -8px; }
 #eraser { background-position: -365px -68px; background-color: pink; }
 .eraser { background-position: -425px -68px; background-color: pink; }
+#openmenu { background-position: -425px -68px; }
 button, #play {
   border: none;
   border-radius: 4px;
@@ -229,6 +263,20 @@ button:active, #play:active {
 }
 button:disabled {
   background-color: #aaa;
+}
+#openmenu:after {
+  content: "\25BC";
+  color: #fff;
+  opacity: 0.6;
+}
+#openmenu {
+  background-color: #999;
+}
+#openmenu:hover {
+  background-color: #57a;
+}
+#openmenu:active {
+  background-color: #555;
 }
 #tools hr {
   border: 1px solid #888;
