@@ -372,6 +372,7 @@ var anbt =
   delay: 100,
   unsaved: false,
   background: '#fffdc9',
+  transparent: false,
   color: ['#000000', "eraser"],
   fastUndoLevels: 10,
   rewindCache: [],
@@ -380,6 +381,7 @@ var anbt =
     this.container = el;
     this.canvas.width = 600;
     this.canvas.height = 500;
+    this.canvas.style.background = this.background;
     this.ctx = this.canvas.getContext("2d");
     this.ctx.lineJoin = "round";
     this.ctx.lineCap = "round";
@@ -448,7 +450,7 @@ var anbt =
     this.UpdateView();
     this.MoveSeekbar(1);
     // Here we assume first element of svg is background rect
-    this.background = this.svg.childNodes[0].getAttribute("fill");
+    this.SetBackground(this.svg.childNodes[0].getAttribute("fill"));
   },
   PackPlayback: function(svg)
   {
@@ -464,6 +466,7 @@ var anbt =
       if (el.nodeName == "path")
       {
         var color = color2dword(el.getAttribute("stroke"));
+        if (el.getAttribute("class") == "eraser") color = "\xFF\xFF\xFF\x00";
         var size = el.getAttribute("stroke-width");
         var pattern = el.pattern || 0;
         if (color != lastcolor || size != lastsize)
@@ -539,6 +542,7 @@ var anbt =
       bindata.charCodeAt(start + 2),
       ')'
     ].join("");
+    svg.background = background;
 
     svg.appendChild(svgElement("rect",
       {
@@ -563,7 +567,8 @@ var anbt =
         {
           var path = svgElement("path",
             {
-              stroke: color,
+              "class": color == "eraser" ? color : null,
+              stroke: color == "eraser" ? background : color,
               "stroke-width": size,
               "stroke-linejoin": "round",
               "stroke-linecap": "round",
@@ -606,16 +611,19 @@ var anbt =
               bindata.charCodeAt(i + 3) / 255,
               ')'
             ].join("");
+            // TODO: fix ugly code
+            if (color == "rgba(255,255,255,0)") color = "eraser";
             i += 4;
             if (x === -2)
             {
               svg.appendChild(svgElement("rect",
                 {
+                  "class": color == "eraser" ? color : null,
                   x: 0,
                   y: 0,
                   width: 600,
                   height: 500,
-                  fill: color,
+                  fill: color == "eraser" ? background : color,
                 }
               ));
             }
@@ -681,6 +689,11 @@ var anbt =
     canvas.width = width;
     canvas.height = height;
     var context = canvas.getContext("2d");
+    if (!this.transparent)
+    {
+      context.fillStyle = this.background;
+      context.fillRect(0, 0, width, height);
+    }
     if (fromBuffer)
     {
       context.drawImage(this.canvas, 0, 0, width, height);
@@ -755,7 +768,7 @@ var anbt =
         this.UpdateView();
         this.MoveSeekbar(1);
         // Here we assume first element of svg is background rect
-        this.background = this.svg.childNodes[0].getAttribute("fill");
+        this.SetBackground(this.svg.background);
         return;
       } else {
         if (chunkname == "IEND") break;
@@ -827,7 +840,10 @@ var anbt =
   },
   SetBackground: function(color)
   {
-    this.rewindCache.length = 0;
+    var transparent = color == "eraser";
+    this.transparent = transparent;
+    this.canvas.style.background = transparent ? "none" : color;
+    color = transparent ? "#fff" : color;
     this.background = color;
     var erased = this.svg.querySelectorAll(".eraser");
     for (var i = 0; i < erased.length; i++)
@@ -839,7 +855,6 @@ var anbt =
         erased[i].setAttribute("fill", color);
       }
     }
-    this.UpdateView();
   },
   SetColor: function(num, color)
   {
@@ -853,6 +868,12 @@ var anbt =
   DrawSVGElement: function(el, ctx)
   {
     if (!ctx) ctx = this.ctx;
+    if (el.getAttribute("class") == "eraser")
+    {
+      ctx.globalCompositeOperation = "destination-out";
+    } else {
+      ctx.globalCompositeOperation = "source-over";
+    }
     if (el.nodeName == "path")
     {
       var c = el.getAttribute("stroke");
@@ -1548,7 +1569,7 @@ function bindEvents()
   {
     e.preventDefault();
     if (warnStrokesAfterPos()) return;
-    anbt.MakePNG(600, 500);
+    anbt.MakePNG(600, 500, true);
     anbt.RequestSave();
   };
   ID("export").addEventListener('click', doExport);
@@ -1929,6 +1950,14 @@ function bindEvents()
   ID("custompng").addEventListener('mousedown', exportCustomPNG);
   ID("custompng").addEventListener('touchend', exportCustomPNG);
 
+  var setTransparentBackground = function(e)
+  {
+    e.preventDefault();
+    anbt.SetBackground("eraser");
+  };
+  ID("transparentbg").addEventListener('mousedown', setTransparentBackground);
+  ID("transparentbg").addEventListener('touchend', setTransparentBackground);
+
   var enablePatterns = function(e)
   {
     e.preventDefault();
@@ -1957,7 +1986,10 @@ function bindEvents()
     for (var i = 0; i < 6; i++)
     {
       var button = document.createElement('button');
-      button.style = "width:55px; height:44px; margin: 0 2px; vertical-align:top";
+      button.style.width = "55px";
+      button.style.height = "44px";
+      button.style.margin = "0 2px";
+      button.style.verticalAlign = "top";
       if (i === 0) button.appendChild(document.createTextNode("(none)"));
       if (i > 0) button.style.backgroundImage = 'url("' + makePatternPreview(i) + '")';
       button.addEventListener('click', makePatternClick(i));
@@ -2153,6 +2185,7 @@ function main()
 {
   anbt.BindContainer(ID("svgContainer"));
   bindEvents();
+  ID("svgContainer").style.background = 'url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAHElEQVR4AWPYgAM8wAFoo2FUAy4JXAbRRMOoBgD42lgf5s146gAAAABJRU5ErkJggg==")';
   if (window.location.hash.length > 7)
   {
     var id = window.location.hash.substr(1);
