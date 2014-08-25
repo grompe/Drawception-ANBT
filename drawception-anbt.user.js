@@ -1908,7 +1908,7 @@ function dbg()
 
 function pagodaBoxError()
 {
-  if (document.body.innerHTML.match("There appears to be an error with this site."))
+  if (document.body.innerHTML.match("There appears to be an error" + " with this site."))
   {
     GM_addStyle(
       "body {background: #755}" +
