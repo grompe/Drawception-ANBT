@@ -91,6 +91,9 @@ Forum:
 
 ## CHANGELOG
 
+0.57.2014.8
+- Add a couple of helpful links if site has Pagoda Box error
+
 0.56.2014.8
 - Added March palette
 

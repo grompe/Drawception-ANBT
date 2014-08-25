@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      0.56.2014.8
+// @version      0.57.2014.8
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "0.56.2014.8";
+var SCRIPT_VERSION = "0.57.2014.8";
 
 // == DEFAULT OPTIONS ==
 
@@ -1906,12 +1906,33 @@ function dbg()
   __DEBUG__.innerHTML = out.join(", ");
 }
 
+function pagodaBoxError()
+{
+  if (document.body.innerHTML.match("There appears to be an error with this site."))
+  {
+    GM_addStyle(
+      "body {background: #755}" +
+      ""
+    );
+    div = document.createElement("div");
+    div.innerHTML = '<h1>ANBT speaking:</h1>' +
+      'Meanwhile, you can visit the chat: ' +
+      '<a href="http://chat.grompe.org.ru/#drawception">http://chat.grompe.org.ru/#drawception</a><br>' +
+      'Or use the new sandbox: <a href="http://grompe.org.ru/drawit/">http://grompe.org.ru/drawit/</a>';
+    document.body.appendChild(div);
+    return true;
+  }
+}
+
 function pageEnhancements()
 {
+  if (pagodaBoxError()) return;
+
   __DEBUG__ = document.getElementById("_debug_");
   prestoOpera = jQuery.browser.opera && (parseInt(jQuery.browser.version, 10) <= 12);
   firefox4OrOlder = jQuery.browser.mozilla && (parseInt(jQuery.browser.version, 10) < 5);
   var loc = document.location.href;
+
   var scroll = $("#content").scrollTop();
 
   // Stop tracking me! Best to block
@@ -2161,7 +2182,7 @@ function anbtLoad()
   return true;
 }
 
-if (document.getElementById("content"))
+if (document.body)
 {
   anbtLoad();
   if (opera && parseInt(localStorage.getItem("gpe_operaWarning"), 10) != 1)
