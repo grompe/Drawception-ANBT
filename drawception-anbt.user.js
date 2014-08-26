@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      0.57.2014.8
+// @version      0.58.2014.8
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "0.57.2014.8";
+var SCRIPT_VERSION = "0.58.2014.8";
 
 // == DEFAULT OPTIONS ==
 
@@ -939,7 +939,7 @@ function loadNextGameAsync()
         // Kick-start the patient
         $('[rel=tooltip]').tooltip();
         documentReadyOnPlay();
-        empowerPlay();
+        empowerPlay(true);
         enhanceCanvas(false);
       } else {
         // In case of mismatch, fallback
@@ -955,7 +955,7 @@ function loadNextGameAsync()
 }
 
 
-function empowerPlay()
+function empowerPlay(noReload)
 {
   if (!document.getElementById("gameForm")) return;
 
@@ -969,34 +969,39 @@ function empowerPlay()
   $(".gameControls").prepend(optionsButton);
   optionsButton.popover({container: "body", placement: "bottom", html: 1, content: optionsDiv});
   
-  // Show time remaining in document title
-  var origtitle = document.title;
-  var old_highlightCountdown1 = window.highlightCountdown;
-  window.highlightCountdown = function(p)
+  if (!noReload)
   {
-    old_highlightCountdown1(p);
-    document.title = "[" + p[5] + ":" + p[6] + "] " + origtitle;
-  }
-  $("#timeleft").countdown('option', 'onTick', window.highlightCountdown);
-  
-  // Add sound to timeout warning
-  var blitz = isBlitzInPlay();
-  if ((options.timeoutSound && !blitz) || (options.timeoutSoundBlitz && blitz))
-  {
-    var played = false;
-    var alarm = new Audio(alarmSoundOgg);
-    var old_highlightCountdown2 = window.highlightCountdown;
+    // Show time remaining in document title
+    var origtitle = document.title;
+    var old_highlightCountdown1 = window.highlightCountdown;
     window.highlightCountdown = function(p)
     {
-      old_highlightCountdown2(p);
-      var seconds = $.countdown.periodsToSeconds(p);
-      if (!played && seconds <= (blitz ? 5 : 61))
-      {
-        alarm.play();
-        played = true;
-      }
+      old_highlightCountdown1(p);
+      document.title = "[" + p[5] + ":" + p[6] + "] " + origtitle;
     }
     $("#timeleft").countdown('option', 'onTick', window.highlightCountdown);
+    
+    // Add sound to timeout warning
+    var blitz = isBlitzInPlay();
+    if ((options.timeoutSound && !blitz) || (options.timeoutSoundBlitz && blitz))
+    {
+      window.playedWarningSound = false;
+      var alarm = new Audio(alarmSoundOgg);
+      var old_highlightCountdown2 = window.highlightCountdown;
+      window.highlightCountdown = function(p)
+      {
+        old_highlightCountdown2(p);
+        var seconds = $.countdown.periodsToSeconds(p);
+        if (!window.playedWarningSound && seconds <= (blitz ? 5 : 61))
+        {
+          alarm.play();
+          window.playedWarningSound = true;
+        }
+      }
+      $("#timeleft").countdown('option', 'onTick', window.highlightCountdown);
+    }
+  } else {
+    window.playedWarningSound = false;
   }
 
   // Remake skip function to async
@@ -1742,7 +1747,7 @@ function addScriptSettings()
     ]
   );
   theForm.append('<div class="control-group"><div class="controls"><input name="submit" type="submit" class="btn btn-primary" value="Apply"> <b id="anbtSettingsOK" class="label label-theme_holiday" style="display:none">Saved!</b></div></div>');
-  $("#main").prepend(theForm);
+  $("#settingsForm").before(theForm);
 }
 
 function autoSkip(reason)

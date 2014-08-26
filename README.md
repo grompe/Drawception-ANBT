@@ -91,6 +91,9 @@ Forum:
 
 ## CHANGELOG
 
+0.58.2014.8
+- Async skip and other small fixes
+
 0.57.2014.8
 - Add a couple of helpful links if site has Pagoda Box error
 
