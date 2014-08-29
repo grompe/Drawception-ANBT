@@ -91,6 +91,9 @@ Forum:
 
 ## CHANGELOG
 
+0.59.2014.8
+- Add an option to proxy imgur links (hello censorship)
+
 0.58.2014.8
 - Async skip and other small fixes
 

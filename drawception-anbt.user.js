@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      0.58.2014.8
+// @version      0.59.2014.8
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "0.58.2014.8";
+var SCRIPT_VERSION = "0.59.2014.8";
 
 // == DEFAULT OPTIONS ==
 
@@ -34,6 +34,7 @@ var options =
   backup: 1,
   timeoutSound: 0,
   timeoutSoundBlitz: 0,
+  proxyImgur: 0,
 }
 
 /*
@@ -1650,6 +1651,16 @@ function betterForum()
       }
     }
   );
+
+  if (options.proxyImgur)
+  {
+    $('img[src*="imgur.com/"]').each(function()
+      {
+        var t = $(this);
+        t.attr("src", "http://www.gmodules.com/ig/proxy?url=" + encodeURIComponent(t.attr("src")));
+      }
+    );
+  }
 }
 
 function loadScriptSettings()
@@ -1744,6 +1755,7 @@ function addScriptSettings()
     [
       ["removeFlagging", "boolean", "Remove flagging buttons"],
       ["ownPanelLikesSecret", "boolean", "Make likes for your own panels secret (in game only)"],
+      ["proxyImgur", "boolean", "Use Google proxy to load imgur links, in case your ISP blocks them"],
     ]
   );
   theForm.append('<div class="control-group"><div class="controls"><input name="submit" type="submit" class="btn btn-primary" value="Apply"> <b id="anbtSettingsOK" class="label label-theme_holiday" style="display:none">Saved!</b></div></div>');
