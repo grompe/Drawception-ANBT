@@ -504,12 +504,14 @@ var anbt =
       {
         var color = color2dword(el.getAttribute("fill"));
         arr.push(pack_uint16be(-2));
+        arr.push(pack_uint16be(0)); // reserved for the future
         arr.push(color);
       } else {
         throw new Error("Unknown node name: " + el.nodeName);
       }
     }
     var result = "\x03" + pako.deflate(arr.join(""), {to: "string"});
+    //var result = "\x02" + arr.join("");
     return result;
   },
   UnpackPlayback: function(bindata)
@@ -599,7 +601,6 @@ var anbt =
         {
           if (x === -1 || x === -2)
           {
-            size = y / 100;
             color = [
               "rgba(",
               bindata.charCodeAt(i),
@@ -614,8 +615,10 @@ var anbt =
             // TODO: fix ugly code
             if (color == "rgba(255,255,255,0)") color = "eraser";
             i += 4;
-            if (x === -2)
+            if (x === -1)
             {
+              size = y / 100;
+            } else {
               svg.appendChild(svgElement("rect",
                 {
                   "class": color == "eraser" ? color : null,
@@ -1710,6 +1713,10 @@ function bindEvents()
   {
     e.preventDefault();
     anbt.ClearWithColor("eraser");
+    if (ID("newcanvasyo").classList.contains("sandbox"))
+    {
+      timerStart = Date.now();
+    }
   });
 
   var knobMove = function(fraction)
@@ -2003,7 +2010,7 @@ function bindEvents()
   var usageTips = function(e)
   {
     e.preventDefault();
-    alert("Read tooltips on the buttons!\n\nPress X to swap colors\n\nOn touchscreen:\n" +
+    alert("Read tooltips on the buttons!\n\nPress Alt to pick colors\nPress X to swap colors\n\nOn touchscreen:\n" +
       "put one finger, tap with second finger on the left to undo,\non the right to redo");
   }
   ID("usagetips").addEventListener('mousedown', usageTips);
