@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      0.59.2014.8
+// @version      0.60.2014.9
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "0.59.2014.8";
+var SCRIPT_VERSION = "0.60.2014.9";
 
 // == DEFAULT OPTIONS ==
 
@@ -35,6 +35,7 @@ var options =
   timeoutSound: 0,
   timeoutSoundBlitz: 0,
   proxyImgur: 0,
+  rememberPosition: 0
 }
 
 /*
@@ -81,6 +82,7 @@ Play
 - Play modes for those who only caption or only draw
 - Enter pressed in caption mode submits the caption
 - Ability to bookmark games without participating
+- Show your panel position in unfinished games list
 Forum
 - Better-looking timestamps with correct timezone
 - Clickable drawing panels
@@ -1353,6 +1355,50 @@ function betterPanel()
     }
   );
   $(".gamepanel").after(favButton);
+  
+  if (options.rememberPosition && $(".regForm > .lead").text().match(/public game/)) // your own panel
+  {
+    var panelId = getPanelId(location.pathname);
+    if (getPanelPosition(panelId)) return;
+    
+    var profileUrl = $(".btn").has(".avatar").attr("href");
+    $.get(profileUrl, function (html)
+    {
+      html = html.replace(/<img\b[^>]*>/ig, ''); // prevent image preload
+      var profilePage = $.parseHTML(html);
+      var panelProgressText = $(profilePage).find("a[href='" + location.pathname + "']").next().find(".progress-bar-text").text();
+      var panelPosition = parseInt(panelProgressText.match(/\d+/)[0]);    
+      var existingIds = $(profilePage).find(".progress-striped").map(function () 
+      {
+        return getPanelId($(this).prev().attr("href"));
+      }).get();
+      setPanelPosition(panelId, panelPosition, existingIds);
+    });
+  }
+}
+
+function getPanelId (url)
+{
+  var match = url.match(/(drawing|caption)\/(\w+)\//);
+  return match && match[2];
+}
+
+function getPanelPosition (id)
+{
+  var val = localStorage.getItem("gpe_panelPositions");
+  return val && JSON.parse(val)[id];
+}
+
+function setPanelPosition (id, position, existingIds)
+{
+  var val = localStorage.getItem("gpe_panelPositions");
+  var positions = val && JSON.parse(val) || {};
+  $.each(positions, function (k) 
+  {
+    if (existingIds.indexOf(k) < 0) delete positions[k];
+  });
+  positions[id] = position;
+  localStorage.setItem("gpe_panelPositions", JSON.stringify(positions));
 }
 
 function simpleHash(s)
@@ -1540,6 +1586,28 @@ function betterPlayer()
         }
       );
     };
+    
+    if (options.rememberPosition)
+    {
+      $(".progress-striped").each(function ()
+      {
+        var panelId = getPanelId($(this).prev().attr("href"));
+        var yourPanelPosition = getPanelPosition(panelId);
+        if (yourPanelPosition)
+        {
+          var panelProgress = $(this).find(".progress-bar-text");
+          var panelProgressText = panelProgress.text();
+          var panelPosition = parseInt(panelProgressText.match(/\d+/)[0]);
+          if (panelPosition != yourPanelPosition)
+          {
+            var panelCount = parseInt(panelProgressText.match(/\d+/g)[1]);
+            $(this).find(".progress-bar").width(yourPanelPosition / panelCount * 100 + "%");
+            $('<div class="progress-bar progress-bar-success">').width((panelPosition - yourPanelPosition) / panelCount * 100 + "%").insertBefore(panelProgress);
+          }
+          $("<span>").text("#" + yourPanelPosition).insertBefore(this);
+        }
+      });
+    }
   }
 }
 
@@ -1743,6 +1811,7 @@ function addScriptSettings()
       ["backup", "boolean", "Save drawings from page reload and place timed out ones in sandbox"],
       ["timeoutSound", "boolean", "Warning sound when only a minute is left (normal games)"],
       ["timeoutSoundBlitz", "boolean", "Warning sound when only 5 seconds left (blitz)"],
+      ["rememberPosition", "boolean", "Show your panel position in unfinished games list"],
     ]
   );
   addGroup("Chat",

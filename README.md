@@ -72,6 +72,7 @@ Play:
 - Play modes for those who only caption or only draw
 - Enter pressed in caption mode submits the caption
 - Ability to bookmark games without participating
+- Show your panel position in unfinished games list
 
 Forum:
 
@@ -90,6 +91,9 @@ Forum:
 - add simple layers(?)
 
 ## CHANGELOG
+
+0.60.2014.9
+- Show your panel position in unfinished games list
 
 0.59.2014.8
 - Add an option to proxy imgur links (hello censorship)
