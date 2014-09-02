@@ -1356,7 +1356,7 @@ function betterPanel()
   );
   $(".gamepanel").after(favButton);
   
-  if (options.rememberPosition && $(".regForm > .lead").text().match(/public game/)) // your own panel
+  if (options.rememberPosition && $(".regForm > .lead").text().match(/be notified/)) // your own panel
   {
     var panelId = getPanelId(location.pathname);
     if (getPanelPosition(panelId)) return;
@@ -1377,19 +1377,19 @@ function betterPanel()
   }
 }
 
-function getPanelId (url)
+function getPanelId(url)
 {
-  var match = url.match(/(drawing|caption)\/(\w+)\//);
-  return match && match[2];
+  var match = url.match(/\/panel\/[^\/]+\/(\w+)\//);
+  return match && match[1];
 }
 
-function getPanelPosition (id)
+function getPanelPosition(id)
 {
   var val = localStorage.getItem("gpe_panelPositions");
   return val && JSON.parse(val)[id];
 }
 
-function setPanelPosition (id, position, existingIds)
+function setPanelPosition(id, position, existingIds)
 {
   var val = localStorage.getItem("gpe_panelPositions");
   var positions = val && JSON.parse(val) || {};

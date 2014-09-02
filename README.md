@@ -93,7 +93,7 @@ Forum:
 ## CHANGELOG
 
 0.60.2014.9
-- Show your panel position in unfinished games list
+- Option to show your panel position in unfinished games list
 
 0.59.2014.8
 - Add an option to proxy imgur links (hello censorship)
