@@ -72,7 +72,7 @@ Play:
 - Play modes for those who only caption or only draw
 - Enter pressed in caption mode submits the caption
 - Ability to bookmark games without participating
-- Show your panel position in unfinished games list
+- Show your panel position and track changes in unfinished games list
 
 Forum:
 
@@ -91,6 +91,9 @@ Forum:
 - add simple layers(?)
 
 ## CHANGELOG
+
+0.61.2014.9
+- Option to track changes in unfinished games list (merged with your panel position option)
 
 0.60.2014.9
 - Option to show your panel position in unfinished games list
