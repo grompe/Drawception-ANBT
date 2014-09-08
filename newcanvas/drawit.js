@@ -13,9 +13,18 @@ function svgElement(name, attrs)
   }
   return el;
 }
-function base64ToArrayBuffer(base64)
+function bytes2string(bytes)
 {
-  var binary_string = window.atob(base64);
+  var len = bytes.length;
+  var arr = [];
+  for (var i = 0; i < len; i++)
+  {
+    arr.push(String.fromCharCode(bytes[i]));
+  }
+  return arr.join("");
+}
+function string2bytes(binary_string)
+{
   var len = binary_string.length;
   var bytes = new Uint8Array(len);
   for (var i = 0; i < len; i++)
@@ -23,7 +32,11 @@ function base64ToArrayBuffer(base64)
     var ascii = binary_string.charCodeAt(i);
     bytes[i] = ascii;
   }
-  return bytes.buffer;
+  return bytes;
+}
+function base642bytes(base64)
+{
+  return string2bytes(atob(base64));
 }
 function node2string(node)
 {
@@ -43,6 +56,11 @@ function unpack_uint16be(s)
 function unpack_int16be(s)
 {
   var v = unpack_uint16be(s);
+  return v > 32767 ? v - 65536 : v;
+}
+function int16be(b1, b2)
+{
+  var v = b1 << 8 | b2;
   return v > 32767 ? v - 65536 : v;
 }
 function unpack_uint32be(s)
@@ -334,7 +352,7 @@ var palettes = {
                       '#d04648', '#757161', '#597dce', '#d27d2c', '#8595a1', '#6daa2c',
                       '#d2aa99', '#6dc2ca', '#dad45e', '#deeed6'],
   "March":           ['#9ed396', '#57b947', '#4d7736', '#365431', '#231302',
-                      '#3e2409', '#a66621', '#a67e21', '#ebbb49', '#fff']
+                      '#3e2409', '#a66621', '#a67e21', '#ebbb49', '#ffc0cb', '#fff']
 };
 
 var anbt =
@@ -510,19 +528,26 @@ var anbt =
         throw new Error("Unknown node name: " + el.nodeName);
       }
     }
-    var result = "\x03" + pako.deflate(arr.join(""), {to: "string"});
-    //var result = "\x02" + arr.join("");
+    var result = "\x04" + bytes2string(pako.deflate(string2bytes(arr.join(""))));
     return result;
   },
-  UnpackPlayback: function(bindata)
+  UnpackPlayback: function(bytes)
   {
-    var version = bindata.charCodeAt(0);
-    var start = 1;
-    if (version != 2 && version != 3) throw new Error("Unsupported version: " + version);
-    if (version == 3)
+    var version = bytes[0];
+    var start;
+    if (version == 4)
     {
-      bindata = pako.inflate(bindata.substr(1), {to: "string"});
+      bytes = pako.inflate(bytes.subarray(1));
       start = 0;
+    } else if (version == 3)
+    {
+      bytes = string2bytes(pako.inflate(bytes.subarray(1), {to: "string"}));
+      start = 0;
+    } else if (version == 2)
+    {
+      start = 1;
+    } else {
+      throw new Error("Unsupported version: " + version);
     }
     var svg = svgElement("svg",
     {
@@ -535,13 +560,14 @@ var anbt =
     var lastx, lasty, x, y;
     var pattern = 0;
     var points = [];
+    // Ignore background alpha
     var background = [
       "rgb(",
-      bindata.charCodeAt(start),
+      bytes[start],
       ',',
-      bindata.charCodeAt(start + 1),
+      bytes[start + 1],
       ',',
-      bindata.charCodeAt(start + 2),
+      bytes[start + 2],
       ')'
     ].join("");
     svg.background = background;
@@ -557,11 +583,11 @@ var anbt =
       }
     ));
 
-    for (var i = start + 4; i < bindata.length;)
+    for (var i = start + 4; i < bytes.length;)
     {
-      x = unpack_int16be(bindata.substr(i, 2));
+      x = int16be(bytes[i], bytes[i + 1]);
       i += 2;
-      y = unpack_int16be(bindata.substr(i, 2));
+      y = int16be(bytes[i], bytes[i + 1]);
       i += 2;
       if (points.length)
       {
@@ -603,13 +629,13 @@ var anbt =
           {
             color = [
               "rgba(",
-              bindata.charCodeAt(i),
+              bytes[i],
               ',',
-              bindata.charCodeAt(i + 1),
+              bytes[i + 1],
               ',',
-              bindata.charCodeAt(i + 2),
+              bytes[i + 2],
               ',',
-              bindata.charCodeAt(i + 3) / 255,
+              bytes[i + 3] / 255,
               ')'
             ].join("");
             // TODO: fix ugly code
@@ -743,12 +769,12 @@ var anbt =
     ].join("");
     this.pngBase64 = this.pngBase64.substr(0, this.pngBase64.length - 20) + btoa(custom);
   },
-  FromPNG: function(bytes)
+  FromPNG: function(buffer)
   {
-    var dv = new DataView(bytes);
+    var dv = new DataView(buffer);
     var magic = dv.getUint32(0);
     if (magic != 0x89504e47) throw new Error("Invalid PNG format: " + pack_uint32be(magic));
-    for (var i = 8; i < bytes.byteLength; i += 4 /* Skip CRC */)
+    for (var i = 8; i < buffer.byteLength; i += 4 /* Skip CRC */)
     {
       var chunklen = dv.getUint32(i);
       i += 4;
@@ -756,12 +782,7 @@ var anbt =
       i += 4;
       if (chunkname == "svGb")
       {
-        var arr = [];
-        for (var j = i; j < i + chunklen; j++)
-        {
-          arr.push(String.fromCharCode(dv.getUint8(j)));
-        }
-        var newsvg = this.UnpackPlayback(arr.join(""));
+        var newsvg = this.UnpackPlayback(new Uint8Array(buffer, i, chunklen));
         this.svg = newsvg;
         // Assume saved data is always optimized and is cut before last rect
         //this.lastrect = this.FindLastRect();
@@ -833,13 +854,6 @@ var anbt =
     } else {
       setTimeout(this.fileInput.click.bind(this.fileInput), 1);
     }
-  },
-  ReplayDebug: function()
-  {
-    if (!this.pngBase64) this.MakePNG(300, 250);
-    if (this.pngBase64.substr(0, 22) != "data:image/png;base64,") alert("Error: Somehow got non-PNG in pngBase64!");
-    this.FromPNG(base64ToArrayBuffer(this.pngBase64.substr(22)));
-    this.Play();
   },
   SetBackground: function(color)
   {
@@ -1310,7 +1324,7 @@ var anbt =
     };
     xhr.setRequestHeader('Authorization', 'Client-ID 4809db83c8897af');
     var fd = new FormData(); 
-    fd.append("image", new Blob([base64ToArrayBuffer(this.pngBase64.substr(22))], {type: "image/png"}));
+    fd.append("image", new Blob([base642bytes(this.pngBase64.substr(22)).buffer], {type: "image/png"}));
     fd.append("type", "file");
     fd.append("title", "Made with Drawing in Time");
     fd.append("description", "http://grompe.org.ru/drawit/");

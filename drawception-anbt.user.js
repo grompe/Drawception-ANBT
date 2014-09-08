@@ -1972,6 +1972,15 @@ function unscrambleID(str)
   return _62ToDec(str.split("").reverse().join("")) - 3521614606208;
 }
 
+window.stalkNextPanel = stalkNextPanel;
+function stalkNextPanel(forward)
+{
+  if (!forward) forward = 1;
+  var sid = location.href.match(/\/panel\/[^\/]+\/(\w+)\/[^\/]+\//)[1];
+  var sid2 = scrambleID(unscrambleID(sid) + 4 * forward);
+  return location.href = location.href.replace(sid, sid2);
+}
+
 window.drawingHint = drawingHint;
 function drawingHint()
 {
