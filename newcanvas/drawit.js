@@ -978,6 +978,8 @@ var anbt =
   StrokeAdd: function(x, y)
   {
     if (!this.isStroking) throw new Error("StrokeAdd without StrokeBegin!");
+    var p = this.points[this.points.length - 1];
+    if (p.x == x && p.y == y) return;
     if (this.blot)
     {
       this.path.pathSegList.removeItem(1);
@@ -985,6 +987,19 @@ var anbt =
     }
     this.path.pathSegList.appendItem(this.path.createSVGPathSegLinetoAbs(x, y));
     this.points.push({x: x, y: y});
+  },
+  // Experimental, for making polylines like in Photoshop
+  // Caveat: undo will erase whole polyline
+  StrokeBeginModifyLast: function(x, y, left)
+  {
+    if (this.position == 0 || !this.points) return StrokeBegin(x, y, left);
+    this.path = this.svg.childNodes[this.position];
+    this.points = this.path.orig;
+    this.Seek(this.position - 1);
+    this.svgDisp.insertBefore(this.path, this.svgDisp.firstChild);
+    this.path.pathSegList.appendItem(this.path.createSVGPathSegLinetoAbs(x, y));
+    this.points.push({x: x, y: y});
+    this.isStroking = true;
   },
   ClearWithColor: function(color)
   {
@@ -1462,7 +1477,13 @@ function bindEvents()
         updateColorIndicators();
       } else {
         // PointerType == 3 is pen tablet eraser
-        anbt.StrokeBegin(x, y, e.button === 0 && getPointerType() !== 3);
+        var left = e.button === 0 && getPointerType() !== 3;
+        if (e.shiftKey)
+        {
+          anbt.StrokeBeginModifyLast(x, y, left);
+        } else {
+          anbt.StrokeBegin(x, y, left);
+        }
         window.addEventListener('mouseup', mouseUp);
         window.addEventListener('mousemove', mouseMove);
       }
