@@ -34,6 +34,7 @@ General:
 - Fix notifications showing in Opera and Firefox < 5
 - No temptation to judge
 - An embedded chat (http://chat.grompe.org.ru/#drawception)
+- Automatically retry failed requests to reduce annoying error messages
 
 Canvas:
 
@@ -91,6 +92,9 @@ Forum:
 - add simple layers(?)
 
 ## CHANGELOG
+
+0.62.2014.9
+- Automatically retry failed requests to reduce annoying error messages
 
 0.61.2014.9
 - Option to track changes in unfinished games list (merged with your panel position option)
