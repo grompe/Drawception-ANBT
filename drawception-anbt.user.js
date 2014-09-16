@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      0.61.2014.9
+// @version      0.62.2014.9
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "0.61.2014.9";
+var SCRIPT_VERSION = "0.62.2014.9";
 
 // == DEFAULT OPTIONS ==
 
@@ -35,7 +35,8 @@ var options =
   timeoutSound: 0,
   timeoutSoundBlitz: 0,
   proxyImgur: 0,
-  rememberPosition: 0
+  rememberPosition: 0,
+  ajaxRetry: 1
 }
 
 /*
@@ -53,6 +54,7 @@ General
 - Fix notifications showing in Opera and Firefox < 5
 - No temptation to judge
 - An embedded chat
+- Automatically retry failed requests to reduce annoying error messages
 Canvas:
 - Wacom tablet eraser and smooth pressure support; doesn't conflict with mouse
 - Secondary color, used with right mouse button; palette right-clicking
@@ -1412,6 +1414,62 @@ var panelPositions =
   }
 };
 
+function initAjaxRetry()
+{
+  if (!options.ajaxRetry) return;
+  
+  var requestCount = 0;
+  
+  $.ajaxPrefilter(function (options, originalOptions)
+  {
+    requestCount++;
+    $("body").css("cursor", "progress");
+    
+    if (options.retryEnabled) return;
+    
+    var isComment = options.url === "/viewgame/comments/add.json";
+    var retryCount = 0;
+    
+    options.retryEnabled = true
+    options.success = function (data, textStatus, jqXHR)
+    {
+      if (options.url === "/viewgame/like/panel.json" && data && data.error === "Invalid request. You already liked this?")
+        data = { callJS: "updateLikeDisplay", data: { panelid: options.data.panelid, setstatus: options.data.action === "Like" ? "on" : "off"} };
+        
+      if (options.url === "/play/skip.json" && data && data.error === "Sorry, but we couldn\u0027t find your current game.")
+      {
+        location.reload();
+        return;
+      }
+        
+      if (options.url === "/play/exit.json" && data && data.error === "Sorry, but we couldn\u0027t find your current game.")
+      {
+        location.pathname = "/";
+        return;
+      }
+      
+      originalOptions.success && originalOptions.success(data, textStatus, jqXHR);
+    };
+    options.error = function ()
+    {
+      if (!isComment && retryCount++ < 5)
+        $.ajax(options);
+      else
+        originalOptions.error && originalOptions.error.apply(this, arguments);
+      
+      if (isComment)
+        $("#commentButton").button("reset");
+    };
+    options.complete = function ()
+    {
+      originalOptions.complete && originalOptions.complete.apply(this, arguments);
+      
+      if (--requestCount <= 0)
+        $("body").css("cursor", "");
+    }
+  });
+}
+
 function getPanelId(url)
 {
   var match = url.match(/\/panel\/[^\/]+\/(\w+)\//);
@@ -1876,6 +1934,7 @@ function addScriptSettings()
       ["removeFlagging", "boolean", "Remove flagging buttons"],
       ["ownPanelLikesSecret", "boolean", "Make likes for your own panels secret (in game only)"],
       ["proxyImgur", "boolean", "Use Google proxy to load imgur links, in case your ISP blocks them"],
+      ["ajaxRetry", "boolean", "Retry failed AJAX requests"]
     ]
   );
   theForm.append('<div class="control-group"><div class="controls"><input name="submit" type="submit" class="btn btn-primary" value="Apply"> <b id="anbtSettingsOK" class="label label-theme_holiday" style="display:none">Saved!</b></div></div>');
@@ -2086,6 +2145,8 @@ function pageEnhancements()
   if (typeof mixpanel != "undefined") mixpanel = {track: function(){}, identify: function(){}};
 
   loadScriptSettings();
+  
+  initAjaxRetry();
 
   try
   {
