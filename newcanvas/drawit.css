@@ -73,7 +73,13 @@ a.prominent:hover {
 #menu hr {
   margin: 5px;
   border: 1px solid #444;
-
+}
+#noscriptwarn {
+  color: #800;
+  padding: 10px;
+  font-size: 15pt;
+  background: #faa;
+  text-align: center;
 }
 #drawthis {
   padding: 4px;

@@ -1498,12 +1498,13 @@ function bindEvents()
   });
 
   var touchSingle = false;
-  var simulateSingleTouchStart = function(e)
+  var lastTouch;
+  var simulateSingleTouchStart = function()
   {
     if (touchSingle)
     {
-      var x = e.changedTouches[0].pageX - rect.left - pageXOffset;
-      var y = e.changedTouches[0].pageY - rect.top - pageYOffset;
+      var x = lastTouch.pageX - rect.left - pageXOffset;
+      var y = lastTouch.pageY - rect.top - pageYOffset;
       anbt.StrokeBegin(x, y, true);
       touchSingle = false;
     }
@@ -1512,25 +1513,27 @@ function bindEvents()
   {
     if (e.touches.length === 1)
     {
-      simulateSingleTouchStart(e);
+      simulateSingleTouchStart();
       e.preventDefault();
-      var x = e.touches[0].pageX - rect.left - pageXOffset;
-      var y = e.touches[0].pageY - rect.top - pageYOffset;
-      anbt.StrokeAdd(x, y);
+      if (anbt.isStroking)
+      {
+        var x = e.touches[0].pageX - rect.left - pageXOffset;
+        var y = e.touches[0].pageY - rect.top - pageYOffset;
+        anbt.StrokeAdd(x, y);
+      }
     }
   };
   var touchEnd = function(e)
   {
     if (e.touches.length === 0)
     {
-      simulateSingleTouchStart(e);
+      simulateSingleTouchStart();
       e.preventDefault();
       anbt.StrokeEnd();
       window.removeEventListener('touchend', touchEnd);
       window.removeEventListener('touchmove', touchMove);
     }
   };
-  var lastTouch;
   var touchUndoRedo = function(e)
   {
     if (e.changedTouches.length === 1 && e.touches.length === 1)
@@ -1559,6 +1562,7 @@ function bindEvents()
       // This requires moving dot-drawing to simulateSingleTouchStart()
       rect = this.getBoundingClientRect();
       touchSingle = true;
+      lastTouch = e.touches[0];
       window.addEventListener('touchend', touchEnd);
       window.addEventListener('touchmove', touchMove);
     } else {
