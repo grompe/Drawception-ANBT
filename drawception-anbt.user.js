@@ -982,7 +982,9 @@ function empowerPlay(noReload)
     window.highlightCountdown = function(p)
     {
       old_highlightCountdown1(p);
-      document.title = "[" + p[5] + ":" + p[6] + "] " + origtitle;
+      var m = ("0" + p[5]).slice(-2);
+      var s = ("0" + p[6]).slice(-2);
+      document.title = "[" + m + ":" + s + "] " + origtitle;
     }
     $("#timeleft").countdown('option', 'onTick', window.highlightCountdown);
     
