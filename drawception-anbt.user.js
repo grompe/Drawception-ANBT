@@ -1295,7 +1295,7 @@ function betterView()
 
   // Highlight new comments and remember seen comments
   var gameid = document.location.href.match(/viewgame\/([^\/]+)\//)[1];
-  var comments = $("#comments");
+  var comments = $("#comments").parent();
   var check = setInterval(function()
   {
     var holders = comments.find(".comment-holder");
@@ -2226,7 +2226,7 @@ function pageEnhancements()
     "#user-notify-list .list-group .list-group-item .glyphicon {color: #888}" +
     "#user-notify-list .list-group .list-group-item:nth-child(-n+" + num + ") .glyphicon {color: #2F5}" +
     "a.wrong-order {color: #F99} div.comment-holder:target {background-color: #DFD}" +
-    "#comments .comment-new .text-muted:after {content: 'New'; color: #2F5; font-weight: bold; background-color: #183; border-radius: 9px; display: inline-block; padding: 0px 6px; margin-left: 10px;}"
+    ".comment-new .text-muted:after {content: 'New'; color: #2F5; font-weight: bold; background-color: #183; border-radius: 9px; display: inline-block; padding: 0px 6px; margin-left: 10px;}"
   );
 
   // Fix usability in Opera and old Firefox browsers
