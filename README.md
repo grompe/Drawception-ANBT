@@ -34,6 +34,7 @@ General:
 - Fix notifications showing in Opera and Firefox < 5
 - No temptation to judge
 - An embedded chat (http://chat.grompe.org.ru/#drawception)
+- Automatically retry failed requests to reduce annoying error messages
 
 Canvas:
 
@@ -46,7 +47,7 @@ Canvas:
 - X swaps primary and secondary colors
 - B selects last used color as primary
 - E selects eraser
-- \[ \] and - = changes brush sizes
+- *[* *]* and - = changes brush sizes
 - Shift+F fills with the current color
 - Confirm closing a page if it has a canvas and is painted on
 - Don't confirm clearing, but allow to undo it
@@ -72,6 +73,7 @@ Play:
 - Play modes for those who only caption or only draw
 - Enter pressed in caption mode submits the caption
 - Ability to bookmark games without participating
+- Show your panel position and track changes in unfinished games list
 
 Forum:
 
@@ -82,8 +84,46 @@ Forum:
 
 ## CHANGELOG
 
-0.90.2014.8
+0.90.2014.9
 - Start integration of new canvas
+
+0.63.2014.9
+- Fix comment tracking
+- Zero padding in title timer
+- Fix dark style for progress bars
+
+0.62.2014.9
+- Automatically retry failed requests to reduce annoying error messages
+
+0.61.2014.9
+- Option to track changes in unfinished games list (merged with your panel position option)
+
+0.60.2014.9
+- Option to show your panel position in unfinished games list
+
+0.59.2014.8
+- Add an option to proxy imgur links (hello censorship)
+
+0.58.2014.8
+- Async skip and other small fixes
+
+0.57.2014.8
+- Add a couple of helpful links if site has Pagoda Box error
+
+0.56.2014.8
+- Added March palette
+
+0.55.2014.8
+- Show time remaining in the document title
+
+0.54.2014.8
+- Also break apart comments that would stretch the page
+
+0.53.2014.8
+- Handle deleted games in game bookmarks
+
+0.52.2014.8
+- Scale posted images in the forum down to fit post width
 
 0.51.2014.8
 - Force break caption that doesn't fit into the panel

@@ -16,15 +16,24 @@ body {
   font-family: 'Nunito', sans-serif;
   background: #555;
 }
+#newcanvasyo {
+  background: #555;
+}
+#newcanvasyo.play .onlysandbox,
+#newcanvasyo.sandbox .onlyplay {
+  display: none;
+}
 #myheader {
   font-size: 15pt;
-  height: 25px;
+  line-height: 49px;
+  height: 49px;
   border-bottom: 1px solid black;
   background: #333;
-  padding: 12px;
   text-align: center;
+  vertical-align: middle;
   color: #999;
   overflow: hidden;
+  display: block;
 }
 a {
   color: #999;
@@ -35,10 +44,42 @@ a.prominent {
 a.prominent:hover {
   color: #9ff;
 }
-#fakeheader {
+#menu {
+  display: none;
+  position: absolute;
+  background: #666;
+  color: #ddd;
+  z-index: 2;
+  border: 2px solid #777;
+  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  font-size: 13pt;
+  text-align: left;
+}
+#menu.open {
+  display: block;
+}
+#menu li {
+  line-height: 49px;
   height: 49px;
-  border-bottom: 1px solid black;
-  background: #353535 url("fakeheader.png") center no-repeat;
+  padding: 0 10px;
+  cursor: pointer;
+}
+#menu li:hover {
+  background: #777;
+}
+#menu hr {
+  margin: 5px;
+  border: 1px solid #444;
+}
+#noscriptwarn {
+  color: #800;
+  padding: 10px;
+  font-size: 15pt;
+  background: #faa;
+  text-align: center;
 }
 #drawthis {
   padding: 4px;
@@ -54,7 +95,7 @@ a.prominent:hover {
   color: #aaa;
   font-size: 14pt;
   font-family: 'Nunito';
-  content: 'Draw this phrase:';
+  content: 'Draw this:';
   padding-right: 1em;
   width: 1%;
   text-align: right;
@@ -127,12 +168,13 @@ a.prominent:hover {
   display: block;
   width: 50px;
   height: 44px;
-  line-height: 40px;
+  line-height: 42px;
   cursor: pointer;
 }
 #colors b:before {
   font-size: 10pt;
   opacity: 0.3;
+  color: #000;
 }
 #colors b:hover:before {
   opacity: 0.4;
@@ -147,7 +189,7 @@ a.prominent:hover {
 #palettename:hover {
   color: #ccc;
 }
-#palettename:after {
+.sandbox #palettename:after {
   content: ' \25BC';
 }
 #colors #eraser:before {
@@ -185,15 +227,16 @@ a.prominent:hover {
   float: right;
   padding: 5px 0;
 }
-#tools button {
+#tools button, #openmenu {
   width: 55px;
   height: 44px;
   vertical-align: top;
   margin: 3px 0;
+  padding: 0;
 }
 #brush0, #brush1, #brush2, #brush3,
 #setbackground, #undo, #redo, #trash,
-#play, #knob, #eraser, .eraser
+#play, #knob, #eraser, .eraser, #openmenu
 {
   background-image: url("newcanvasicons.png");
 }
@@ -201,17 +244,18 @@ a.prominent:hover {
 #brush1 { background-position: -62px -8px; }
 #brush2 { background-position: -122px -8px; }
 #brush3 { background-position: -182px -8px; }
-#brush0.selected { background-position: -2px -68px; }
-#brush1.selected { background-position: -62px -68px; }
-#brush2.selected { background-position: -122px -68px; }
-#brush3.selected { background-position: -182px -68px; }
+#brush0.sel { background-position: -2px -68px; }
+#brush1.sel { background-position: -62px -68px; }
+#brush2.sel { background-position: -122px -68px; }
+#brush3.sel { background-position: -182px -68px; }
 #setbackground { background-position: -242px -8px; }
-#setbackground.selected { background-position: -242px -68px; }
+#setbackground.sel { background-position: -242px -68px; }
 #undo { background-position: -302px -8px; }
 #redo { background-position: -362px -8px; }
 #trash { background-position: -422px -8px; }
 #eraser { background-position: -365px -68px; background-color: pink; }
 .eraser { background-position: -425px -68px; background-color: pink; }
+#openmenu { background-position: -425px -68px; }
 button, #play {
   border: none;
   border-radius: 4px;
@@ -225,6 +269,20 @@ button:active, #play:active {
 }
 button:disabled {
   background-color: #aaa;
+}
+#openmenu:after {
+  content: "\25BC";
+  color: #fff;
+  opacity: 0.6;
+}
+#openmenu {
+  background-color: #999;
+}
+#openmenu:hover {
+  background-color: #57a;
+}
+#openmenu:active {
+  background-color: #555;
 }
 #tools hr {
   border: 1px solid #888;
@@ -256,23 +314,24 @@ button:disabled {
 #gamebuttons button {
   padding: 10px;
   margin: 3px 0;
+  font-size: 10pt;
 }
 #submit {
   font-size: 16pt;
   width: 180px;
   height: 50px;
 }
-#guidelines {
+.guidelines {
   color: #fff;
-  font-size: 11pt;
+  font-size: 10pt;
 }
-#guidelines ul {
+.guidelines ul {
   margin: 0;
   padding: 0 1em;
   text-align: left;
 }
-#guidelines li {
-  color: #999;
+.guidelines li {
+  color: #bbb;
 }
 #seekbar {
   width: 530px;

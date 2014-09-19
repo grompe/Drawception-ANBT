@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      0.90.2014.8
+// @version      0.90.2014.9
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "0.90.2014.8";
+var SCRIPT_VERSION = "0.90.2014.9";
 
 // == DEFAULT OPTIONS ==
 
@@ -35,6 +35,9 @@ var options =
   timeoutSound: 0,
   timeoutSoundBlitz: 0,
   newCanvas: 0,
+  proxyImgur: 0,
+  rememberPosition: 0,
+  ajaxRetry: 1
 }
 
 /*
@@ -52,6 +55,7 @@ General
 - Fix notifications showing in Opera and Firefox < 5
 - No temptation to judge
 - An embedded chat
+- Automatically retry failed requests to reduce annoying error messages
 Canvas:
 - Wacom tablet eraser and smooth pressure support; doesn't conflict with mouse
 - Secondary color, used with right mouse button; palette right-clicking
@@ -81,6 +85,7 @@ Play
 - Play modes for those who only caption or only draw
 - Enter pressed in caption mode submits the caption
 - Ability to bookmark games without participating
+- Show your panel position and track changes in unfinished games list
 Forum
 - Better-looking timestamps with correct timezone
 - Clickable drawing panels
@@ -227,6 +232,15 @@ var palettes =
       '#b6cbe4', '#618abc', '#d0d5ce', '#82a2a1',
       '#92b8c1', '#607884', '#c19292', '#8c2c2c',
       '#295c6f',
+    ],
+  },
+  {
+    name: "March",
+    class: "label-theme_holiday",
+    colors:
+    [
+      '#9ed396', '#57b947', '#4d7736', '#365431', '#231302',
+      '#3e2409', '#a66621', '#a67e21', '#ebbb49', '#fff'
     ],
   },
   {
@@ -973,7 +987,7 @@ function loadNextGameAsync()
         // Kick-start the patient
         $('[rel=tooltip]').tooltip();
         documentReadyOnPlay();
-        empowerPlay();
+        empowerPlay(true);
         enhanceCanvas(false);
       } else {
         // In case of mismatch, fallback
@@ -989,7 +1003,7 @@ function loadNextGameAsync()
 }
 
 
-function empowerPlay()
+function empowerPlay(noReload)
 {
   if (!document.getElementById("gameForm")) return;
 
@@ -1003,24 +1017,41 @@ function empowerPlay()
   $(".gameControls").prepend(optionsButton);
   optionsButton.popover({container: "body", placement: "bottom", html: 1, content: optionsDiv});
   
-  // Add sound to timeout warning
-  var blitz = isBlitzInPlay();
-  if ((options.timeoutSound && !blitz) || (options.timeoutSoundBlitz && blitz))
+  if (!noReload)
   {
-    var played = false;
-    var alarm = new Audio(alarmSoundOgg);
-    var old_highlightCountdown = window.highlightCountdown;
+    // Show time remaining in document title
+    var origtitle = document.title;
+    var old_highlightCountdown1 = window.highlightCountdown;
     window.highlightCountdown = function(p)
     {
-      old_highlightCountdown(p);
-      var seconds = $.countdown.periodsToSeconds(p);
-      if (!played && seconds <= (blitz ? 5 : 60))
-      {
-        alarm.play();
-        played = true;
-      }
+      old_highlightCountdown1(p);
+      var m = ("0" + p[5]).slice(-2);
+      var s = ("0" + p[6]).slice(-2);
+      document.title = "[" + m + ":" + s + "] " + origtitle;
     }
     $("#timeleft").countdown('option', 'onTick', window.highlightCountdown);
+    
+    // Add sound to timeout warning
+    var blitz = isBlitzInPlay();
+    if ((options.timeoutSound && !blitz) || (options.timeoutSoundBlitz && blitz))
+    {
+      window.playedWarningSound = false;
+      var alarm = new Audio(alarmSoundOgg);
+      var old_highlightCountdown2 = window.highlightCountdown;
+      window.highlightCountdown = function(p)
+      {
+        old_highlightCountdown2(p);
+        var seconds = $.countdown.periodsToSeconds(p);
+        if (!window.playedWarningSound && seconds <= (blitz ? 5 : 61))
+        {
+          alarm.play();
+          window.playedWarningSound = true;
+        }
+      }
+      $("#timeleft").countdown('option', 'onTick', window.highlightCountdown);
+    }
+  } else {
+    window.playedWarningSound = false;
   }
 
   // Remake skip function to async
@@ -1309,7 +1340,7 @@ function betterView()
 
   // Highlight new comments and remember seen comments
   var gameid = document.location.href.match(/viewgame\/([^\/]+)\//)[1];
-  var comments = $("#comments");
+  var comments = $("#comments").parent();
   var check = setInterval(function()
   {
     var holders = comments.find(".comment-holder");
@@ -1371,6 +1402,123 @@ function betterPanel()
     }
   );
   $(".gamepanel").after(favButton);
+  
+  if (options.rememberPosition && $(".regForm > .lead").text().match(/be notified/)) // your own panel
+  {
+    panelPositions.load();
+    var panelId = getPanelId(location.pathname);
+    if (panelPositions.player[panelId]) return;
+    
+    var profileUrl = $(".btn").has(".avatar").attr("href");
+    $.get(profileUrl, function (html)
+    {
+      html = html.replace(/<img\b[^>]*>/ig, ''); // prevent image preload
+      var profilePage = $.parseHTML(html);
+      var panelProgressText = $(profilePage).find("a[href='" + location.pathname + "']").next().find(".progress-bar-text").text();
+      var panelPosition = parseInt(panelProgressText.match(/\d+/)[0]);
+      panelPositions.player[panelId] = panelPosition;
+      panelPositions.clear(profilePage);
+      panelPositions.save();
+    });
+  }
+}
+
+var panelPositions = 
+{
+  player: null,
+  last: null,
+  load: function ()
+  {
+    function loadObj(key)
+    {
+      var val = localStorage.getItem(key);
+      return val && JSON.parse(val) || {};
+    }
+    
+    panelPositions.player = loadObj("gpe_panelPositions");
+    panelPositions.last = loadObj("gpe_lastGamePositions");
+  },
+  save: function ()
+  {
+    localStorage.setItem("gpe_panelPositions", JSON.stringify(panelPositions.player));
+    localStorage.setItem("gpe_lastGamePositions", JSON.stringify(panelPositions.last));
+  },
+  clear: function (page)
+  {
+    function clearKeys(obj, keys)
+    {
+      $.each(obj, function (k) { if (keys.indexOf(k) < 0) delete obj[k]; });
+    }
+    
+    var existingIds = $(page).find(".progress-striped").map(function () 
+    {
+      return getPanelId($(this).prev().attr("href"));
+    }).get();
+    clearKeys(panelPositions.player, existingIds);
+    clearKeys(panelPositions.last, existingIds);
+  }
+};
+
+function initAjaxRetry()
+{
+  if (!options.ajaxRetry) return;
+  
+  var requestCount = 0;
+  
+  $.ajaxPrefilter(function (options, originalOptions)
+  {
+    requestCount++;
+    $("body").css("cursor", "progress");
+    
+    if (options.retryEnabled) return;
+    
+    var isComment = options.url === "/viewgame/comments/add.json";
+    var retryCount = 0;
+    
+    options.retryEnabled = true
+    options.success = function (data, textStatus, jqXHR)
+    {
+      if (options.url === "/viewgame/like/panel.json" && data && data.error === "Invalid request. You already liked this?")
+        data = { callJS: "updateLikeDisplay", data: { panelid: options.data.panelid, setstatus: options.data.action === "Like" ? "on" : "off"} };
+        
+      if (options.url === "/play/skip.json" && data && data.error === "Sorry, but we couldn\u0027t find your current game.")
+      {
+        location.reload();
+        return;
+      }
+        
+      if (options.url === "/play/exit.json" && data && data.error === "Sorry, but we couldn\u0027t find your current game.")
+      {
+        location.pathname = "/";
+        return;
+      }
+      
+      originalOptions.success && originalOptions.success(data, textStatus, jqXHR);
+    };
+    options.error = function ()
+    {
+      if (!isComment && retryCount++ < 5)
+        $.ajax(options);
+      else
+        originalOptions.error && originalOptions.error.apply(this, arguments);
+      
+      if (isComment)
+        $("#commentButton").button("reset");
+    };
+    options.complete = function ()
+    {
+      originalOptions.complete && originalOptions.complete.apply(this, arguments);
+      
+      if (--requestCount <= 0)
+        $("body").css("cursor", "");
+    }
+  });
+}
+
+function getPanelId(url)
+{
+  var match = url.match(/\/panel\/[^\/]+\/(\w+)\//);
+  return match && match[1];
 }
 
 function simpleHash(s)
@@ -1486,13 +1634,15 @@ function viewMyGameBookmarks()
               },
               success: function(e)
               {
-                if (e.match(/Game is not private/))
+                var m = e.match(/Game is not private/) || e.match(/Problem loading game/) && "dust";
+                if (m)
                 {
                   var gamename = "";
                   if (games[id].caption) gamename += " " + games[id].caption;
                   if (games[id].time) gamename += " bookmarked on " + formatTimestamp(games[id].time);
                   if (gamename == "") gamename = id;
-                  $("#" + id).find("span").text("Unfinished public game" + gamename);
+                  var status = (m == "dust") ? "Deleted / dusted" : "Unfinished public";
+                  $("#" + id).find("span").text(status + " game" + gamename);
                   return;
                 }
                 var title = e.match(/<title>(.+)<\/title>/)[1];
@@ -1556,6 +1706,62 @@ function betterPlayer()
         }
       );
     };
+    
+    if (options.rememberPosition)
+    {
+      panelPositions.load();
+      panelPositions.clear(document);
+      
+      $(".progress-striped").each(function ()
+      {
+        var panelId = getPanelId($(this).prev().attr("href"));
+        var playerPanelPosition = panelPositions.player[panelId];
+        var lastSeenPanelPosition = panelPositions.last[panelId];
+        var panelProgress = $(this).find(".progress-bar-text");
+        var panelProgressText = panelProgress.text();
+        var panelPosition = parseInt(panelProgressText.match(/\d+/)[0]);
+        var totalPanelCount = parseInt(panelProgressText.match(/\d+/g)[1]); 
+        
+        panelProgress.css("pointer-events", "none"); // to make tooltips work under label
+        if ((playerPanelPosition || lastSeenPanelPosition || panelPosition) < panelPosition)
+        {
+          $(this).find(".progress-bar")
+            .width((playerPanelPosition || lastSeenPanelPosition) / totalPanelCount * 100 + "%");
+        }
+        if (playerPanelPosition && panelPosition > playerPanelPosition && playerPanelPosition < lastSeenPanelPosition)
+        {
+          $('<div class="progress-bar progress-bar-info" title="Panels added after yours">')
+            .width((Math.min(lastSeenPanelPosition || panelPosition, panelPosition) - playerPanelPosition) / totalPanelCount * 100 + "%")
+            .insertBefore(panelProgress)
+            .tooltip();
+        }
+        if (lastSeenPanelPosition && panelPosition > lastSeenPanelPosition)
+        {
+          $('<div class="progress-bar progress-bar-success" title="Panels added recently">')
+            .width((panelPosition - lastSeenPanelPosition) / totalPanelCount * 100 + "%")
+            .insertBefore(panelProgress)
+            .tooltip();
+        }
+        if (lastSeenPanelPosition && panelPosition < lastSeenPanelPosition)
+        {
+          $('<div class="progress-bar progress-bar-danger" title="Panel was removed recently">')
+            .width(1 / totalPanelCount * 100 + "%")
+            .insertBefore(panelProgress)
+            .tooltip();
+        }
+        if (playerPanelPosition)
+        {
+          $('<span title="Your panel position">')
+            .text("#" + playerPanelPosition)
+            .insertBefore(this)
+            .tooltip();
+        }
+        
+        panelPositions.last[panelId] = panelPosition;
+      });
+      
+      panelPositions.save();
+    }
   }
 }
 
@@ -1667,6 +1873,16 @@ function betterForum()
       }
     }
   );
+
+  if (options.proxyImgur)
+  {
+    $('img[src*="imgur.com/"]').each(function()
+      {
+        var t = $(this);
+        t.attr("src", "http://www.gmodules.com/ig/proxy?url=" + encodeURIComponent(t.attr("src")));
+      }
+    );
+  }
 }
 
 function loadScriptSettings()
@@ -1750,6 +1966,7 @@ function addScriptSettings()
       ["backup", "boolean", "Save drawings from page reload and place timed out ones in sandbox"],
       ["timeoutSound", "boolean", "Warning sound when only a minute is left (normal games)"],
       ["timeoutSoundBlitz", "boolean", "Warning sound when only 5 seconds left (blitz)"],
+      ["rememberPosition", "boolean", "Show your panel position and track changes in unfinished games list"],
     ]
   );
   addGroup("Chat",
@@ -1762,10 +1979,12 @@ function addScriptSettings()
     [
       ["removeFlagging", "boolean", "Remove flagging buttons"],
       ["ownPanelLikesSecret", "boolean", "Make likes for your own panels secret (in game only)"],
+      ["proxyImgur", "boolean", "Use Google proxy to load imgur links, in case your ISP blocks them"],
+      ["ajaxRetry", "boolean", "Retry failed AJAX requests"]
     ]
   );
   theForm.append('<div class="control-group"><div class="controls"><input name="submit" type="submit" class="btn btn-primary" value="Apply"> <b id="anbtSettingsOK" class="label label-theme_holiday" style="display:none">Saved!</b></div></div>');
-  $("#main").prepend(theForm);
+  $("#settingsForm").before(theForm);
 }
 
 function autoSkip(reason)
@@ -1858,6 +2077,15 @@ function unscrambleID(str)
   return _62ToDec(str.split("").reverse().join("")) - 3521614606208;
 }
 
+window.stalkNextPanel = stalkNextPanel;
+function stalkNextPanel(forward)
+{
+  if (!forward) forward = 1;
+  var sid = location.href.match(/\/panel\/[^\/]+\/(\w+)\/[^\/]+\//)[1];
+  var sid2 = scrambleID(unscrambleID(sid) + 4 * forward);
+  return location.href = location.href.replace(sid, sid2);
+}
+
 window.drawingHint = drawingHint;
 function drawingHint()
 {
@@ -1929,12 +2157,33 @@ function dbg()
   __DEBUG__.innerHTML = out.join(", ");
 }
 
+function pagodaBoxError()
+{
+  if (document.body.innerHTML.match("There appears to be an error" + " with this site."))
+  {
+    GM_addStyle(
+      "body {background: #755}" +
+      ""
+    );
+    div = document.createElement("div");
+    div.innerHTML = '<h1>ANBT speaking:</h1>' +
+      'Meanwhile, you can visit the chat: ' +
+      '<a href="http://chat.grompe.org.ru/#drawception">http://chat.grompe.org.ru/#drawception</a><br>' +
+      'Or use the new sandbox: <a href="http://grompe.org.ru/drawit/">http://grompe.org.ru/drawit/</a>';
+    document.body.appendChild(div);
+    return true;
+  }
+}
+
 function pageEnhancements()
 {
+  if (pagodaBoxError()) return;
+
   __DEBUG__ = document.getElementById("_debug_");
   prestoOpera = jQuery.browser.opera && (parseInt(jQuery.browser.version, 10) <= 12);
   firefox4OrOlder = jQuery.browser.mozilla && (parseInt(jQuery.browser.version, 10) < 5);
   var loc = document.location.href;
+
   var scroll = $("#content").scrollTop();
 
   // Stop tracking me! Best to block
@@ -1942,6 +2191,8 @@ function pageEnhancements()
   if (typeof mixpanel != "undefined") mixpanel = {track: function(){}, identify: function(){}};
 
   loadScriptSettings();
+  
+  initAjaxRetry();
 
   try
   {
@@ -2004,7 +2255,8 @@ function pageEnhancements()
     ".anbt_favpanel {top: 40px; font-weight: normal; padding: 4px 2px}" +
     ".anbt_favpanel:hover {color: #d9534f; cursor:pointer}" +
     ".anbt_favedpanel {color: #d9534f; border-color: #d9534f}" +
-    ".gamepanel, .thumbpanel {word-wrap: break-word}" +
+    ".gamepanel, .thumbpanel, .comment-body {word-wrap: break-word}" +
+    ".comment-body img {max-width: 100%}" +
     ""
   );
   // Enhance menu for higher resolutions
@@ -2028,7 +2280,7 @@ function pageEnhancements()
     "#user-notify-list .list-group .list-group-item .glyphicon {color: #888}" +
     "#user-notify-list .list-group .list-group-item:nth-child(-n+" + num + ") .glyphicon {color: #2F5}" +
     "a.wrong-order {color: #F99} div.comment-holder:target {background-color: #DFD}" +
-    "#comments .comment-new .text-muted:after {content: 'New'; color: #2F5; font-weight: bold; background-color: #183; border-radius: 9px; display: inline-block; padding: 0px 6px; margin-left: 10px;}"
+    ".comment-new .text-muted:after {content: 'New'; color: #2F5; font-weight: bold; background-color: #183; border-radius: 9px; display: inline-block; padding: 0px 6px; margin-left: 10px;}"
   );
 
   // Fix usability in Opera and old Firefox browsers
@@ -2150,6 +2402,7 @@ localStorage.setItem("gpe_darkCSS",
   ".store-item{~#666$;~-moz-linear-gradient(top,#666 0,#333 100%)$;~-webkit-gradient(linear,left top,left bottom,color-stop(0,#666),color-stop(100%,#333))$;~-webkit-linear-gradient(top,#666 0,#333 100%)$;~-o-linear-gradient(top,#666 0,#333 100%)$;~-ms-linear-gradient(top,#666 0,#333 100%)$;~linear-gradient(to bottom,#666 0,#333 100%)$;border:1px solid #222$}" +
   ".store-item:hover{border:1px solid #000$}.store-item-title{~#222$;color:#DDD$}.store-title-link{color:#DDD$}.profile-award{~#222$}.profile-award-unlocked{~#888$}.progress-bar{color:#CCC$;~#214565$}.progress{~#333$}" +
   ".progress-striped .progress-bar{background-image:-webkit-gradient(linear,0 100%,100% 0,color-stop(.25,rgba(0,0,0,0.15)),color-stop(.25,transparent),color-stop(.5,transparent),color-stop(.5,rgba(0,0,0,0.15)),color-stop(.75,rgba(0,0,0,0.15)),color-stop(.75,transparent),to(transparent))$;background-image:-webkit-linear-gradient(45deg,rgba(0,0,0,0.15) 25%,transparent 25%,transparent 50%,rgba(0,0,0,0.15) 50%,rgba(0,0,0,0.15) 75%,transparent 75%,transparent)$;background-image:-moz-linear-gradient(45deg,rgba(0,0,0,0.15) 25%,transparent 25%,transparent 50%,rgba(0,0,0,0.15) 50%,rgba(0,0,0,0.15) 75%,transparent 75%,transparent)$;background-image:linear-gradient(45deg,rgba(0,0,0,0.15) 25%,transparent 25%,transparent 50%,rgba(0,0,0,0.15) 50%,rgba(0,0,0,0.15) 75%,transparent 75%,transparent)$}" +
+  ".progress-bar-success{~#363$}.progress-bar-info{~#367$}.progress-bar-warning{~#863$}.progress-bar-danger{~#733$}" +
   ".nav-tabs>li.active>a,.nav-tabs>li.active>a:hover,.nav-tabs>li.active>a:focus{color:#DDD$;~#555$;border:1px solid #222$}.nav>li>a:hover,.nav>li>a:focus{~#333$;border-bottom-color:#222$;border-left-color:#111$;border-right-color:#111$;border-top-color:#111$}" +
   ".nav>li.disabled>a,.nav>li.disabled>a:hover,.nav>li.disabled>a:focus{color:#555$}.table-striped>tbody>tr:nth-child(2n+1)>td,.table-striped>tbody>tr:nth-child(2n+1)>th{~#333$}" +
   ".table-hover>tbody>tr:hover>td,.table-hover>tbody>tr:hover>th{~#555$}.table thead>tr>th,.table tbody>tr>th,.table tfoot>tr>th,.table thead>tr>td,.table tbody>tr>td,.table tfoot>tr>td{border-top:1px solid #333$}.news-alert{~#555$;border:2px solid #444$}" +
@@ -2191,7 +2444,7 @@ function anbtLoad()
   return true;
 }
 
-if (document.getElementById("content"))
+if (document.body)
 {
   anbtLoad();
   if (opera && parseInt(localStorage.getItem("gpe_operaWarning"), 10) != 1)
