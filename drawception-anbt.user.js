@@ -391,7 +391,7 @@ function getParametersFromPlay()
     handleParameters();
   }, function()
   {
-    // TODO
+    // TODO: error handling
   });
 }
 
@@ -404,10 +404,21 @@ function handleParameters()
     "Game";
   ID("drawthis").innerHTML = info.caption;
 
-  ID("newcanvasyo").className = "play";
-  if (info.friend) ID("newcanvasyo").classList.add("friend");
-  if (info.nsfw) ID("newcanvasyo").classList.add("nsfw");
-  if (info.blitz) ID("newcanvasyo").classList.add("blitz");
+  var newcanvas = ID("newcanvasyo");
+  newcanvas.className = "play";
+  if (info.friend) newcanvas.classList.add("friend");
+  if (info.nsfw) newcanvas.classList.add("nsfw");
+  if (info.blitz) newcanvas.classList.add("blitz");
+  newcanvas.classList.add(info.image ? "captioning" : "drawing");
+
+  // Clear
+  for (var i = anbt.svg.childNodes.length - 1; i > 0; i--)
+  {
+    var el = anbt.svg.childNodes[i];
+    anbt.svg.removeChild(el);
+  }
+  anbt.Seek(0);
+  anbt.MoveSeekbar(1);
 
   var palettemap = {
     normal: ["Normal", "#fffdc9"],
@@ -432,7 +443,8 @@ function handleParameters()
 
   if (info.image)
   {
-    alert("captioning is not supported yet...");
+    ID("tocaption").src = info.image;
+    ID("caption").focus();
   }
 
   // TODO: put Time+ button
@@ -461,14 +473,12 @@ function bindPlayEvents()
     });
   });
 
-  var submitData = function()
+  ID("submit").addEventListener('click', function()
   {
     anbt.MakePNG(300, 250, true);
     var params = "game_token=" + window.gameinfo.gameid + "&panel=" + encodeURIComponent(anbt.pngBase64);
     sendPost('/play/draw.json', params, function()
     {
-      window.dude = this;
-      console.log(this.responseText);
       var o = JSON.parse(this.responseText);
       if (o.error)
       {
@@ -485,8 +495,33 @@ function bindPlayEvents()
     {
       alert("Server error. :( Try again?");
     });
-  };
-  ID("submit").addEventListener('click', submitData);
+  });
+
+  ID("submitcaption").addEventListener('click', function()
+  {
+    var title = ID("caption").value;
+    var params = "game_token=" + window.gameinfo.gameid + "&title=" + encodeURIComponent(title);
+    sendPost('/play/describe.json', params, function()
+    {
+      window.dude = this;
+      var o = JSON.parse(this.responseText);
+      if (o.error)
+      {
+        alert(o.error);
+      } else if (o.callJS == "drawingComplete")
+      {
+        location.replace(o.data.url);
+      } else if (o.message) {
+        alert(o.message);
+      } else if (o.redirect) {
+        window.location.replace(o.redirect);
+      }
+    }, function()
+    {
+      alert("Server error. :( Try again?");
+    });
+  });
+
 }
 
 function deeper_main()
@@ -1621,7 +1656,7 @@ function betterPanel()
   var panelId = getPanelId(location.pathname);
 
   // Only panels after 14924553 might have a recording
-  if (unscrambleID(panelId) >= 14924553)
+  if (options.newCanvas && unscrambleID(panelId) >= 14924553)
   {
     var img = $(".gamepanel img");
     if (img.length)
@@ -2189,7 +2224,7 @@ function addScriptSettings()
   );
   addGroup("Play",
     [
-      ["newCanvas", "boolean", "New drawing canvas (experimental)"],
+      ["newCanvas", "boolean", "New drawing canvas (experimental, allows watching playback)"],
       ["asyncSkip", "boolean", "Fast Async Skip (experimental)"],
       ["hideCross", "boolean", "Hide the cross when drawing"],
       ["enterToCaption", "boolean", "Submit captions by pressing Enter"],

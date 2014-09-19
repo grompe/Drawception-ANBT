@@ -17,6 +17,9 @@ body {
 #newcanvasyo.play .onlysandbox,
 #newcanvasyo.friend .no-friend,
 #newcanvasyo.nsfw .no-nsfw,
+#newcanvasyo.sandbox .onlycaption,
+#newcanvasyo.drawing .onlycaption,
+#newcanvasyo.captioning .onlydraw,
 #newcanvasyo.sandbox .onlyplay {
   display: none;
 }
@@ -66,6 +69,9 @@ a.prominent:hover {
 }
 #menu li:hover {
   background: #777;
+}
+hr {
+  border: 1px solid #888;
 }
 #menu hr {
   margin: 5px;
@@ -288,7 +294,6 @@ button:disabled {
   background-color: #555;
 }
 #tools hr {
-  border: 1px solid #888;
   width: 93%;
   margin: 8px auto;
 }
@@ -327,7 +332,7 @@ button:disabled {
   margin: 3px 0;
   font-size: 10pt;
 }
-#submit {
+.submit {
   font-size: 16pt;
   width: 180px;
   height: 50px;
@@ -399,7 +404,7 @@ button:disabled {
     margin-left: 600px;
     top: 0;
   }
-  #submit {
+  .submit {
     position: absolute;
     bottom: 10px;
     left: 10px;
@@ -464,6 +469,18 @@ button:disabled {
 #svgContainer canvas, #svgContainer svg {
   position: absolute;
 }
+#drawingtocaption {
+  width: 500px;
+  height: 400px;
+  padding: 50px;
+  margin: auto;
+  background: #484848;
+  text-align: center;
+}
+#caption {
+  width: 100%;
+  font-size: 20pt;
+}
 #popup {
   display: none;
   position: absolute;
@@ -481,9 +498,6 @@ button:disabled {
 }
 #popup.show {
   display: block;
-}
-#popup hr {
-  border: 1px solid #888;
 }
 #popuptitle {
   color: #999;
@@ -518,12 +532,12 @@ button:disabled {
   <div id="myheader">
     Drawing in Time!
   </div>
-  <div id="drawthis" class="onlyplay">Fetching your Drawception game...</div>
+  <div id="drawthis" class="onlyplay onlydraw">Fetching your Drawception game...</div>
   <div id="emptytitle" class="onlysandbox"></div>
   <div id="bl">
     <div id="toolpane">
       <div id="timer" class="panel">00:00</div>
-      <div id="colors" class="panel">
+      <div id="colors" class="panel onlydraw">
         <div id="palettename">Normal</div>
         <div id="palettechooser" class="onlysandbox"></div>
         <div id="palette">
@@ -550,7 +564,7 @@ button:disabled {
           <div id="primary" title="Primary color (Left button or pen)" style="background-color:#000">L</div><div id="secondary" title="Secondary color (Right button or pen eraser)" class="eraser">R</div>
         </div>
       </div>
-      <div id="tools" class="panel">
+      <div id="tools" class="panel onlydraw">
         <button id="brush0" title="Tiny brush (-)"></button>
         <button id="brush1" title="Small brush"></button>
         <button id="brush2" class="sel" title="Medium brush"></button>
@@ -568,8 +582,15 @@ button:disabled {
       <a id="imgurdelete" target="_blank">Imgur delete</a>
       <div id="imgurerror">...</div>
     </div>
-    <div id="svgContainer"></div>
-    <div id="seekbar"><div id="play" title="Play (Space)"></div><div id="knob"></div></div>
+    <div id="svgContainer" class="onlydraw"></div>
+    <div id="drawingtocaption" class="onlycaption">
+      Describe this drawing:
+      <hr>
+      <img id="tocaption">
+      <hr>
+      <input id="caption" type="text" maxlength="46" value="">
+    </div>
+    <div id="seekbar" class="onlydraw"><div id="play" title="Play (Space)"></div><div id="knob"></div></div>
     <div id="infopane">
       <div id="gamemode" class="panel">
         <span class="onlysandbox">Sandbox</span>
@@ -585,13 +606,21 @@ button:disabled {
         <button id="export" class="onlysandbox">Export drawing</button>
         <button id="imgur" class="onlysandbox">Upload to imgur</button>
       </div>
-      <button id="submit" class="onlyplay">Submit!</button>
-      <div class="guidelines onlyplay">Guidelines
+      <button id="submit" class="submit onlyplay onlydraw">Submit!</button>
+      <button id="submitcaption" class="submit onlyplay onlycaption">Submit</button>
+      <div class="guidelines onlyplay onlydraw">Guidelines
         <ul>
           <li>Simple drawings are welcome! Just give it your best shot</li>
           <li>If the phrase is too difficult, use the skip button</li>
           <li>Don't draw text - always draw a picture</li>
           <li class="no-nsfw">Explicit (NSFW) drawings will get you banned</li>
+        </ul>
+      </div>
+      <div class="guidelines onlyplay onlycaption">Tips 
+        <ul>
+          <li>Keep descriptions short and simple!</li>
+          <li>Avoid unnecessary detail, just describe the main subject</li>
+          <li>No idea? Use the skip button</li>
         </ul>
       </div>
       <div class="guidelines onlysandbox">Sandbox
