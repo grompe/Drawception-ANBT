@@ -15,6 +15,8 @@ body {
   background: #555;
 }
 #newcanvasyo.play .onlysandbox,
+#newcanvasyo.friend .no-friend,
+#newcanvasyo.nsfw .no-nsfw,
 #newcanvasyo.sandbox .onlyplay {
   display: none;
 }
@@ -125,6 +127,11 @@ a.prominent:hover {
   color: #aaa;
   width: 176px;
   float: left;
+}
+.blitz #timer {
+  border-color: #dda;
+  color: #dda;
+  background: #982;
 }
 #palettechooser {
   display: none;
@@ -299,6 +306,14 @@ button:disabled {
   color: #aaa;
   width: 176px;
   float: left;
+}
+.nsfw #gamemode {
+  border-color: #faa;
+  color: #faa;
+  background: #744;
+}
+.nsfw #drawthis {
+  background: #744;
 }
 #gamebuttons {
   font-size: 13pt;
@@ -503,7 +518,7 @@ button:disabled {
   <div id="myheader">
     Drawing in Time!
   </div>
-  <div id="drawthis" class="onlyplay">A cow jumping over the moon</div>
+  <div id="drawthis" class="onlyplay">Fetching your Drawception game...</div>
   <div id="emptytitle" class="onlysandbox"></div>
   <div id="bl">
     <div id="toolpane">
@@ -561,10 +576,10 @@ button:disabled {
         <span class="onlyplay">Public safe for work game</span>
       </div>
       <div id="gamebuttons" class="panel">
-        <button id="bookmark" class="onlyplay">Bookmark</button>
-        <button id="options" class="onlyplay">Options</button>
-        <button id="skip" class="onlyplay">Skip</button>
-        <button id="report" class="onlyplay">Report</button>
+        <button id="bookmark" class="onlyplay no-friend">Bookmark</button>
+        <button id="options" class="onlyplay no-friend">Options</button>
+        <button id="skip" class="onlyplay no-friend">Skip</button>
+        <button id="report" class="onlyplay no-friend">Report</button>
         <button id="exit" class="onlyplay">Exit</button>
         <button id="import" class="onlysandbox">Import drawing</button>
         <button id="export" class="onlysandbox">Export drawing</button>
@@ -576,7 +591,7 @@ button:disabled {
           <li>Simple drawings are welcome! Just give it your best shot</li>
           <li>If the phrase is too difficult, use the skip button</li>
           <li>Don't draw text - always draw a picture</li>
-          <li>Explicit (NSFW) drawings will get you banned</li>
+          <li class="no-nsfw">Explicit (NSFW) drawings will get you banned</li>
         </ul>
       </div>
       <div class="guidelines onlysandbox">Sandbox
@@ -656,15 +671,6 @@ function svgElement(name, attrs)
     }
   }
   return el;
-}
-function require(script, callback)
-{
-  var tag = document.querySelector('script[src="' + script + '"]');
-  if (tag) return callback();
-  tag = document.createElement("script");
-  tag.src = script;
-  tag.onload = callback;
-  document.body.appendChild(tag);
 }
 function bytes2string(bytes)
 {
@@ -2077,39 +2083,6 @@ var anbt =
   {
     this.pattern = patid;
   },
-  ExportWebM: function()
-  {
-    var anbt = this;
-    require("whammy.min.js", function()
-    {
-      var canvas = document.createElement("canvas");
-      canvas.width = 600;
-      canvas.height = 500;
-      var context = canvas.getContext("2d");
-      context.fillStyle = anbt.background;
-      var encoder = new Whammy.Video(15);
-      var maxpos = anbt.svg.childNodes.length - 1;
-      var i = 0;
-      var nextFrame = function()
-      {
-        anbt.Seek(i);
-        anbt.MoveSeekbar(anbt.position / maxpos);
-        context.fillRect(0, 0, 600, 500);
-        context.drawImage(anbt.canvas, 0, 0, 600, 500);
-        encoder.add(canvas);
-        i++;
-        if (i <= maxpos)
-        {
-          setTimeout(nextFrame, 1);
-        } else {
-          var output = encoder.compile();
-          var url = (window.webkitURL || window.URL).createObjectURL(output);
-          anbt.RequestSave(url, ".webm");
-        }
-      }
-      nextFrame();
-    });
-  },
 };
 
 var timerStart, timerCallback;
@@ -2607,154 +2580,6 @@ function bindEvents()
   ID("palettename").addEventListener('mousedown', openPaletteList);
   ID("palettename").addEventListener('touchend', openPaletteList);
 
-  // TODO: refactor: generalize with palette chooser menu
-  var closeMenu = function(e)
-  {
-    if (e.touches || e.button === 0)
-    {
-      ID("menu").classList.remove("open");
-      window.removeEventListener('mousedown', closeMenu);
-      window.removeEventListener('touchend', closeMenu);
-    }
-  };
-  var openMenu = function(e)
-  {
-    if (e.touches || e.button === 0)
-    {
-      e.preventDefault();
-      var menu = ID("menu");
-      menu.classList.toggle("open");
-      if (menu.classList.contains("open"))
-      {
-        setTimeout(function()
-        {
-          window.addEventListener('mousedown', closeMenu);
-          window.addEventListener('touchend', closeMenu);
-        }, 1);
-      }
-
-    }
-  };
-  ID("openmenu").addEventListener('mousedown', openMenu);
-  ID("openmenu").addEventListener('touchend', openMenu);
-
-  var exitPlay = function(e)
-  {
-    e.preventDefault();
-    ID("newcanvasyo").classList.add("sandbox");
-    ID("newcanvasyo").classList.remove("play");
-    timerStart -= 10*60*1000;
-    timerCallback = null;
-  };
-  ID("exit").addEventListener('click', exitPlay);
-  ID("submit").addEventListener('click', exitPlay);
-
-  // Menu items
-  var simulatePlay = function(e)
-  {
-    e.preventDefault();
-    ID("newcanvasyo").classList.remove("sandbox");
-    ID("newcanvasyo").classList.add("play");
-    timerStart = Date.now() + 10*60*1000;
-    timerCallback = function(s)
-    {
-      if (s < 0) exitPlay(e);
-    };
-    ID("drawthis").childNodes[0].nodeValue = randomPhrase();
-  };
-  ID("simplay").addEventListener('mousedown', simulatePlay);
-  ID("simplay").addEventListener('touchend', simulatePlay);
-  ID("skip").addEventListener('click', simulatePlay);
-
-  var exportCustomPNG = function(e)
-  {
-    e.preventDefault();
-    if (warnStrokesAfterPos()) return;
-    var m = prompt("PNG size to export? Enter only width to maintain aspect ratio.", "600x500");
-    if (!m) return;
-    m = m.match(/(\d+)/g);
-    if (!m)
-    {
-      alert("Invalid size.");
-      return;
-    }
-    var width = m[0];
-    var height = m[1] || Math.round(width / 1.2);
-    anbt.MakePNG(width, height);
-    anbt.RequestSave();
-  };
-  ID("custompng").addEventListener('mousedown', exportCustomPNG);
-  ID("custompng").addEventListener('touchend', exportCustomPNG);
-
-  var setTransparentBackground = function(e)
-  {
-    e.preventDefault();
-    anbt.SetBackground("eraser");
-  };
-  ID("transparentbg").addEventListener('mousedown', setTransparentBackground);
-  ID("transparentbg").addEventListener('touchend', setTransparentBackground);
-
-  var enablePatterns = function(e)
-  {
-    e.preventDefault();
-    ID("enablepatterns").childNodes[0].nodeValue = "(patterns are enabled)"
-    ID("enablepatterns").removeEventListener('mousedown', enablePatterns);
-    ID("enablepatterns").removeEventListener('touchend', enablePatterns);
-    var div = document.createElement('div');
-    div.className = "panel";
-    div.appendChild(document.createTextNode("pattern:"));
-
-    var canvas = document.createElement("canvas");
-    canvas.width = 48;
-    canvas.height = 48;
-    var ctx = canvas.getContext("2d");
-    var makePatternPreview = function(pattern)
-    {
-      ctx.clearRect(0, 0, 48, 48);
-      ctx.fillStyle = anbt.MakePattern("#000", pattern);
-      ctx.fillRect(0, 0, 48, 48);
-      return canvas.toDataURL();
-    };
-    var makePatternClick = function(pattern)
-    {
-      return function() { anbt.SetPattern(pattern); }
-    };
-    for (var i = 0; i < 6; i++)
-    {
-      var button = document.createElement('button');
-      button.style.width = "55px";
-      button.style.height = "44px";
-      button.style.margin = "0 2px";
-      button.style.verticalAlign = "top";
-      if (i === 0) button.appendChild(document.createTextNode("(none)"));
-      if (i > 0) button.style.backgroundImage = 'url("' + makePatternPreview(i) + '")';
-      button.addEventListener('click', makePatternClick(i));
-      div.appendChild(button);
-    }
-    ID("newcanvasyo").appendChild(div);
-  };
-  ID("enablepatterns").addEventListener('mousedown', enablePatterns);
-  ID("enablepatterns").addEventListener('touchend', enablePatterns);
-
-  var exportWebM = function(e)
-  {
-    e.preventDefault();
-    anbt.ExportWebM();
-  }
-  ID("exportwebm").addEventListener('mousedown', exportWebM);
-  ID("exportwebm").addEventListener('touchend', exportWebM);
-  
-  var usageTips = function(e)
-  {
-    e.preventDefault();
-    alert("Read tooltips on the buttons!\n\nPress Alt to pick colors\nPress X to swap colors\n\nOn touchscreen:\n" +
-      "put one finger, tap with second finger on the left to undo,\non the right to redo");
-  }
-  ID("usagetips").addEventListener('mousedown', usageTips);
-  ID("usagetips").addEventListener('touchend', usageTips);
-
-  // ---
-  
   ID("popupclose").addEventListener('click', function(e)
   {
     e.preventDefault();
@@ -2930,6 +2755,7 @@ anbt.BindContainer(ID("svgContainer"));
 bindEvents();
 timerStart = Date.now();
 runTimer();
+window.anbtReady();
 
 </script>
 </body>

@@ -15,6 +15,7 @@
 function wrapped() {
 
 var SCRIPT_VERSION = "0.90.2014.9";
+var NEWCANVAS_VERSION = 1; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
 
@@ -276,14 +277,18 @@ if (typeof GM_addStyle == 'undefined')
   };
 }
 
-// Potential almost-empty pages to embed on:
-// http://drawception.com/forums/post-preview/ (has nothing)
-// http://drawception.com/viewgame/comments/-/ (has one html element)
-// http://drawception.com/notification/        (has Hi text)
-function replaceCanvas(insandbox)
+// Executed on completely empty page. That means no jQuery!
+function setupNewCanvas(insandbox)
 {
+  // Save friend game id if any
+  var friendgameid = document.location.href.match(/play\/(.+)\//);
+
+  // Show normal address
+  history.replaceState(null, null, insandbox ? "/sandbox/" : "/play/");
+
   var canvasHTML = localStorage.getItem("anbt_canvasHTML");
-  if (!canvasHTML)
+  var canvasHTMLver = localStorage.getItem("anbt_canvasHTMLver");
+  if (!canvasHTML || canvasHTMLver < NEWCANVAS_VERSION)
   {
     /*
     $.ajax({
@@ -294,6 +299,7 @@ function replaceCanvas(insandbox)
       success: function(s)
       {
         localStorage.setItem("anbt_canvasHTML", s);
+        localStorage.setItem("anbt_canvasHTMLver", NEWCANVAS_VERSION);
         replaceCanvas();
       },
       error: function()
@@ -302,21 +308,105 @@ function replaceCanvas(insandbox)
     });
     */
     //localStorage.setItem("anbt_canvasHTML", atob(""));
-    return;
+    return alert("Use JS console to put new canvas manually...");
   }
-  // TODO: save necessary data from the page
 
-  $(".wrapper").html(canvasHTML);
-  if (!insandbox)
+  document.write("");
+  window.anbtReady = function()
+  {
+    if (friendgameid) window.friendgameid = friendgameid[1];
+    window.insandbox = insandbox;
+    window.options = options;
+
+    var script = document.createElement("script");
+    script.textContent = "(" + needToGoDeeper.toString() + ")();";
+    document.body.appendChild(script);
+  };
+  document.write(canvasHTML);
+}
+
+// To be inserted on new canvas page. No jQuery!
+function needToGoDeeper()
+{
+
+function sendGet(url, onloadfunc, onerrorfunc)
+{
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', url);
+  xhr.onload = onloadfunc;
+  xhr.onerror = onerrorfunc || onloadfunc;
+  xhr.send();
+}
+
+// Info to get: captiontodraw, drawingtocaption, palette, haveBackgroundTool
+function getParametersFromPlay()
+{
+  var url = "/play/";
+  if (window.friendgameid) url += window.friendgameid + "/";
+  sendGet(url, function()
+  {
+    var res = this.responseText;
+    var extract = function(r)
+    {
+      var m = res.match(r);
+      return m && m[1] || !!m;
+    };
+    window.gameinfo = {
+      gameid: extract(/<input type="hidden" name="which_game" value="([^"]+)"/),
+      blitz: extract(/BLITZ MODE<br \/>/),
+      nsfw: extract(/>This game Not Safe For Work \(18\+\)<\/span>/),
+      friend: extract(/<legend>\s+Friend Game/),
+      drawfirst: extract(/DrawceptionPlay\.abortDrawFirst\(\)/), // FIXME
+      timeleft: extract(/<span id="timeleft">\s+(\d+)\s+<\/span>/),
+      caption: extract(/<p class="play-phrase">\s+([^<]+)\s+<\/p>/),
+      image: extract(/<img src="(data:image\/png;base64,[^"]+)"/),
+    };
+    handleParameters();
+  }, function()
+  {
+    // TODO
+  });
+}
+
+function handleParameters()
+{
+  var info = window.gameinfo;
+  ID("gamemode").innerHTML = (info.friend ? "Friend " : "Public ") +
+    (info.nsfw ? "Not Safe For Work (18+) " : "safe for work ") +
+    (info.blitz ? "BLITZ " : "") +
+    "Game";
+  ID("drawthis").innerHTML = info.caption;
+  if (info.friend) ID("newcanvasyo").classList.add("friend");
+  if (info.nsfw) ID("newcanvasyo").classList.add("nsfw");
+  if (info.blitz) ID("newcanvasyo").classList.add("blitz");
+  timerStart = Date.now() + 1000 * info.timeleft;
+
+  var exitPlay = function()
+  {
+    sendGet("/play/exit.json?game_token=" + info.gameid, function()
+    {
+      document.location.pathname = "/";
+    });
+  };
+  ID("exit").addEventListener('click', exitPlay);
+
+  var submitData = function()
+  {
+  };
+  ID("submit").addEventListener('click', submitData);
+}
+
+function deeper_main()
+{
+  if (window.options.fixTabletPluginGoingAWOL) fixPluginGoingAWOL();
+  if (!window.insandbox)
   {
     ID("newcanvasyo").className = "play";
-  } else {
-    runTimer();
+    getParametersFromPlay();
   }
-  if (options.fixTabletPluginGoingAWOL) fixPluginGoingAWOL();
-  anbt.BindContainer(ID("svgContainer"));
-  bindEvents();
 }
+deeper_main();
+} // needToGoDeeper end
 
 function isBlitzInPlay()
 {
@@ -2177,12 +2267,16 @@ function pagodaBoxError()
 
 function pageEnhancements()
 {
+  var loc = document.location.href;
+  loadScriptSettings();
+  if (loc.match(/drawception\.com\/forums\/post-preview\/#newcanvas_sandbox$/)) return(setupNewCanvas(true));
+  if (loc.match(/drawception\.com\/forums\/post-preview\/#newcanvas_play/)) return(setupNewCanvas(false));
+  
   if (pagodaBoxError()) return;
 
   __DEBUG__ = document.getElementById("_debug_");
   prestoOpera = jQuery.browser.opera && (parseInt(jQuery.browser.version, 10) <= 12);
   firefox4OrOlder = jQuery.browser.mozilla && (parseInt(jQuery.browser.version, 10) < 5);
-  var loc = document.location.href;
 
   var scroll = $("#content").scrollTop();
 
@@ -2190,8 +2284,6 @@ function pageEnhancements()
   // api.mixpanel.com and cdn.mxpnl.com
   if (typeof mixpanel != "undefined") mixpanel = {track: function(){}, identify: function(){}};
 
-  loadScriptSettings();
-  
   initAjaxRetry();
 
   try
@@ -2205,12 +2297,13 @@ function pageEnhancements()
   catch(e){}
 
   var insandbox = loc.match(/drawception\.com\/sandbox\/$/);
-  var inplay = loc.match(/drawception\.com\/play\/$/);
+  var inplay = loc.match(/drawception\.com\/play\/(.*)/);
   if (options.newCanvas)
   {
     if (insandbox || inplay || __DEBUG__)
     {
-      replaceCanvas(insandbox);
+      document.location.pathname = "/forums/post-preview/#newcanvas_" + (insandbox ? "sandbox" : "play/" + inplay[1]);
+      return;
     }
   } else {
     if (insandbox || inplay || __DEBUG__)
