@@ -241,7 +241,7 @@ var palettes =
     colors:
     [
       '#9ed396', '#57b947', '#4d7736', '#365431', '#231302',
-      '#3e2409', '#a66621', '#a67e21', '#ebbb49', '#fff'
+      '#3e2409', '#a66621', '#a67e21', '#ebbb49', '#ffc0cb', '#fff'
     ],
   },
   {
@@ -283,8 +283,19 @@ function setupNewCanvas(insandbox)
   // Save friend game id if any
   var friendgameid = document.location.href.match(/play\/(.+)\//);
 
+  var panelid = document.location.href.match(/sandbox\/(.+)/);
+
   // Show normal address
-  history.replaceState(null, null, insandbox ? "/sandbox/" : "/play/");
+  var normalurl;
+  if (insandbox)
+  {
+    normalurl = "/sandbox/";
+    if (panelid) normalurl += "#" + panelid[1];
+  } else {
+    normalurl = "/play/";
+    if (friendgameid) normalurl += friendgameid[1] + "/";
+  }
+  history.replaceState(null, null, normalurl);
 
   var canvasHTML = localStorage.getItem("anbt_canvasHTML");
   var canvasHTMLver = localStorage.getItem("anbt_canvasHTMLver");
@@ -315,6 +326,7 @@ function setupNewCanvas(insandbox)
   window.anbtReady = function()
   {
     if (friendgameid) window.friendgameid = friendgameid[1];
+    if (panelid) window.panelid = panelid[1];
     window.insandbox = insandbox;
     window.options = options;
 
@@ -338,11 +350,24 @@ function sendGet(url, onloadfunc, onerrorfunc)
   xhr.send();
 }
 
-// Info to get: captiontodraw, drawingtocaption, palette, haveBackgroundTool
+function sendPost(url, params, onloadfunc, onerrorfunc)
+{
+  var xhr = new XMLHttpRequest();
+  xhr.open('POST', url);
+  xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+  xhr.onload = onloadfunc;
+  xhr.onerror = onerrorfunc || onloadfunc;
+  xhr.send(params);
+}
+
 function getParametersFromPlay()
 {
   var url = "/play/";
-  if (window.friendgameid) url += window.friendgameid + "/";
+  if (window.friendgameid)
+  {
+    url += window.friendgameid + "/";
+    window.friendgameid = false;
+  }
   sendGet(url, function()
   {
     var res = this.responseText;
@@ -360,6 +385,8 @@ function getParametersFromPlay()
       timeleft: extract(/<span id="timeleft">\s+(\d+)\s+<\/span>/),
       caption: extract(/<p class="play-phrase">\s+([^<]+)\s+<\/p>/),
       image: extract(/<img src="(data:image\/png;base64,[^"]+)"/),
+      palette: extract(/theme item was applied to this game">([^<]+)<\/span>/),
+      bgbutton: extract(/<img src="\/img\/draw_bglayer.png"/),
     };
     handleParameters();
   }, function()
@@ -376,22 +403,88 @@ function handleParameters()
     (info.blitz ? "BLITZ " : "") +
     "Game";
   ID("drawthis").innerHTML = info.caption;
+
+  ID("newcanvasyo").className = "play";
   if (info.friend) ID("newcanvasyo").classList.add("friend");
   if (info.nsfw) ID("newcanvasyo").classList.add("nsfw");
   if (info.blitz) ID("newcanvasyo").classList.add("blitz");
-  timerStart = Date.now() + 1000 * info.timeleft;
 
-  var exitPlay = function()
-  {
-    sendGet("/play/exit.json?game_token=" + info.gameid, function()
-    {
-      document.location.pathname = "/";
-    });
+  var palettemap = {
+    normal: ["Normal", "#fffdc9"],
+    sepia: ["Sepia", "#ffe2c4"],
+    grayscale: ["Grayscale", "#eee"],
+    "b&w": ["Black and white", "#fff"],
+    cga: ["CGA", "#ff5"],
+    gameboy: ["Gameboy", "#9bbc0f"],
+    neon: ["Neon", "#00abff"],
+    thxgiving: ["Thanksgiving", "#f5e9ce"],
+    holiday: ["Holiday", "#fff"],
+    valentine: ["Valentine's", "#ffccdf"],
+    halloween: ["Halloween", "#444444"],
+    "the blues": ["the blues", "#295c6f"]
   };
-  ID("exit").addEventListener('click', exitPlay);
+  var pal = info.palette || "normal";
+  var paldata = palettemap[pal.toLowerCase()];
+  setPaletteByName(paldata[0]);
+  anbt.SetBackground(paldata[1]);
+
+  ID("setbackground").hidden = !info.bgbutton;
+
+  if (info.image)
+  {
+    alert("captioning is not supported yet...");
+  }
+
+  // TODO: put Time+ button
+
+  timerStart = Date.now() + 1000 * info.timeleft;
+}
+
+function bindPlayEvents()
+{
+  ID("exit").addEventListener('click', function()
+  {
+    if (!confirm("Really exit?")) return;
+    sendGet("/play/exit.json?game_token=" + window.gameinfo.gameid, function()
+    {
+      timerStart = Date.now();
+      ID("newcanvasyo").className = "sandbox";
+      //document.location.pathname = "/";
+    });
+  });
+
+  ID("skip").addEventListener('click', function()
+  {
+    sendGet("/play/skip.json?game_token=" + window.gameinfo.gameid, function()
+    {
+      getParametersFromPlay();
+    });
+  });
 
   var submitData = function()
   {
+    anbt.MakePNG(300, 250, true);
+    var params = "game_token=" + window.gameinfo.gameid + "&panel=" + encodeURIComponent(anbt.pngBase64);
+    sendPost('/play/draw.json', params, function()
+    {
+      window.dude = this;
+      console.log(this.responseText);
+      var o = JSON.parse(this.responseText);
+      if (o.error)
+      {
+        alert(o.error);
+      } else if (o.callJS == "drawingComplete")
+      {
+        location.replace(o.data.url);
+      } else if (o.message) {
+        alert(o.message);
+      } else if (o.redirect) {
+        window.location.replace(o.redirect);
+      }
+    }, function()
+    {
+      alert("Server error. :( Try again?");
+    });
   };
   ID("submit").addEventListener('click', submitData);
 }
@@ -399,9 +492,12 @@ function handleParameters()
 function deeper_main()
 {
   if (window.options.fixTabletPluginGoingAWOL) fixPluginGoingAWOL();
-  if (!window.insandbox)
+  if (window.insandbox)
   {
+    if (window.panelid) anbt.FromURL("/panel/drawing/" + window.panelid + "/");
+  } else {
     ID("newcanvasyo").className = "play";
+    bindPlayEvents();
     getParametersFromPlay();
   }
 }
@@ -1466,6 +1562,35 @@ function betterView()
   }, 500);
 }
 
+function checkForRecording(url, yesfunc)
+{
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', url, true);
+  xhr.responseType = 'arraybuffer';
+  xhr.onload = function()
+  {
+    var buffer = this.response;
+    var dv = new DataView(buffer);
+    var magic = dv.getUint32(0);
+    if (magic != 0x89504e47) return;
+    for (var i = 8; i < buffer.byteLength; i += 4 /* Skip CRC */)
+    {
+      var chunklen = dv.getUint32(i);
+      i += 4;
+      var chunkname = dv.getUint32(i);
+      i += 4;
+      if (chunkname == 0x73764762)
+      {
+        return yesfunc();
+      } else {
+        if (chunkname == 0x49454e44) break;
+        i += chunklen;
+      }
+    }
+  };
+  xhr.send();
+}
+
 function betterPanel()
 {
   var favButton = $('<button class="btn btn-info" style="margin-top: 20px"><span class="glyphicon glyphicon-heart"></span> <b>Favorite</b></button>');
@@ -1492,11 +1617,26 @@ function betterPanel()
     }
   );
   $(".gamepanel").after(favButton);
+
+  var panelId = getPanelId(location.pathname);
+
+  // Only panels after 14924553 might have a recording
+  if (unscrambleID(panelId) >= 14924553)
+  {
+    var img = $(".gamepanel img");
+    if (img.length)
+    {
+      checkForRecording(img.attr("src"), function()
+      {
+        var replayLink = $('<a class="btn btn-primary" style="margin-top: 20px" href="/sandbox/#' + panelId + '"><span class="glyphicon glyphicon-repeat"></span> <b>Replay</b></a> ');
+        $(".gamepanel").after(replayLink);
+      });
+    }
+  }
   
-  if (options.rememberPosition && $(".regForm > .lead").text().match(/be notified/)) // your own panel
+  if (options.rememberPosition && $(".regForm > .lead").text().match(/public game/)) // your own panel
   {
     panelPositions.load();
-    var panelId = getPanelId(location.pathname);
     if (panelPositions.player[panelId]) return;
     
     var profileUrl = $(".btn").has(".avatar").attr("href");
@@ -2269,7 +2409,7 @@ function pageEnhancements()
 {
   var loc = document.location.href;
   loadScriptSettings();
-  if (loc.match(/drawception\.com\/forums\/post-preview\/#newcanvas_sandbox$/)) return(setupNewCanvas(true));
+  if (loc.match(/drawception\.com\/forums\/post-preview\/#newcanvas_sandbox/)) return(setupNewCanvas(true));
   if (loc.match(/drawception\.com\/forums\/post-preview\/#newcanvas_play/)) return(setupNewCanvas(false));
   
   if (pagodaBoxError()) return;
@@ -2296,13 +2436,13 @@ function pageEnhancements()
   }
   catch(e){}
 
-  var insandbox = loc.match(/drawception\.com\/sandbox\/$/);
+  var insandbox = loc.match(/drawception\.com\/sandbox\/#?(.*)/);
   var inplay = loc.match(/drawception\.com\/play\/(.*)/);
   if (options.newCanvas)
   {
     if (insandbox || inplay || __DEBUG__)
     {
-      document.location.pathname = "/forums/post-preview/#newcanvas_" + (insandbox ? "sandbox" : "play/" + inplay[1]);
+      document.location.pathname = "/forums/post-preview/#newcanvas_" + (insandbox ? "sandbox/" + insandbox[1] : "play/" + inplay[1]);
       return;
     }
   } else {
