@@ -84,9 +84,10 @@ Forum:
 
 ## CHANGELOG
 
-0.90.2014.9
+0.91.2014.9
 - Functional integration of new canvas!
 - Fix logout link
+- Other small fixes
 
 0.63.2014.9
 - Fix comment tracking

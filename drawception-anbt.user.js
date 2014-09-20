@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      0.90.2014.9
+// @version      0.91.2014.9
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "0.90.2014.9";
+var SCRIPT_VERSION = "0.91.2014.9";
 var NEWCANVAS_VERSION = 1; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
@@ -315,7 +315,7 @@ function setupNewCanvas(insandbox)
   // Save friend game id if any
   var friendgameid = document.location.href.match(/play\/(.+)\//);
 
-  var panelid = document.location.href.match(/sandbox\/(.+)/);
+  var panelid = document.location.href.match(/sandbox\/([^\/]+)/);
 
   var sound = alarmSoundOgg;
   var vertitle = "ANBT v" + SCRIPT_VERSION + ", New Canvas v" + NEWCANVAS_VERSION;
@@ -1811,6 +1811,11 @@ function betterPanel()
       checkForRecording(img.attr("src"), function()
       {
         var replayLink = $('<a class="btn btn-primary" style="margin-top: 20px" href="/sandbox/#' + panelId + '"><span class="glyphicon glyphicon-repeat"></span> <b>Replay</b></a> ');
+        replayLink.click(function(e)
+        {
+          e.preventDefault();
+          location.href = "/forums/post-preview/#newcanvas_sandbox/" + panelId;
+        });
         $(".gamepanel").after(replayLink);
       });
     }
@@ -2775,13 +2780,14 @@ function pageEnhancements()
     var directToNewSandbox = function(e)
     {
       e.preventDefault();
-      location.pathname = "/forums/post-preview/#newcanvas_sandbox";
+      var panelid = this.href.match(/sandbox\/#(.+)/);
+      location.href = "/forums/post-preview/#newcanvas_sandbox" + (panelid ? "/" + panelid[1] : "");
     };
     var directToNewPlay = function(e)
     {
       e.preventDefault();
-      friendid = this.href.match(/\/play(\/.+\/)/);
-      location.pathname = "/forums/post-preview/#newcanvas_play" + (friendid ? friendid[1]: "");
+      var friendid = this.href.match(/\/play(\/.+\/)/);
+      location.href = "/forums/post-preview/#newcanvas_play" + (friendid ? friendid[1] : "");
     };
     $('a[href^="/sandbox/"]').click(directToNewSandbox);
     $('a[href^="/play/"]').click(directToNewPlay);
