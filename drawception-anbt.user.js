@@ -280,19 +280,38 @@ if (typeof GM_addStyle == 'undefined')
 /*
 
 canvas integration todo:
-- handle reached game limits
 - add time+ button
 - autoskipping captions/drawings
 - backup drawing?
-- show 15 seconds timeout warning
-- loading the canvas html from github
-- show buttons in menu bar
+- show buttons in menu bar?
 
 */
 
 // Executed on completely empty page. That means no jQuery!
 function setupNewCanvas(insandbox)
 {
+  var canvasHTML = localStorage.getItem("anbt_canvasHTML");
+  var canvasHTMLver = localStorage.getItem("anbt_canvasHTMLver");
+  if (!canvasHTML || canvasHTMLver < NEWCANVAS_VERSION)
+  {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', "https://api.github.com/repos/grompe/Drawception-ANBT/contents/newcanvas_embedding.html");
+    xhr.setRequestHeader("Accept", "application/vnd.github.3.raw");
+    xhr.onload = function()
+    {
+      localStorage.setItem("anbt_canvasHTML", this.responseText);
+      localStorage.setItem("anbt_canvasHTMLver", NEWCANVAS_VERSION);
+      setupNewCanvas(insandbox)
+    };
+    xhr.onerror = function()
+    {
+      alert("Error loading the new canvas code. Please try again.");
+      location.pathname = "/";
+    };
+    xhr.send();
+    //localStorage.setItem("anbt_canvasHTML", atob(""));
+    return;
+  }
   // Save friend game id if any
   var friendgameid = document.location.href.match(/play\/(.+)\//);
 
@@ -312,31 +331,6 @@ function setupNewCanvas(insandbox)
     if (friendgameid) normalurl += friendgameid[1] + "/";
   }
   history.replaceState({}, "The Ever Consuming Void", normalurl);
-
-  var canvasHTML = localStorage.getItem("anbt_canvasHTML");
-  var canvasHTMLver = localStorage.getItem("anbt_canvasHTMLver");
-  if (!canvasHTML || canvasHTMLver < NEWCANVAS_VERSION)
-  {
-    /*
-    $.ajax({
-      url: 'https://api.github.com/repos/grompe/Drawception-ANBT/contents/newcanvas_embedding.html',
-      headers: {Accept: "application/vnd.github.3.raw"},
-      cache: false,
-      timeout: 15000,
-      success: function(s)
-      {
-        localStorage.setItem("anbt_canvasHTML", s);
-        localStorage.setItem("anbt_canvasHTMLver", NEWCANVAS_VERSION);
-        replaceCanvas();
-      },
-      error: function()
-      {
-      }
-    });
-    */
-    //localStorage.setItem("anbt_canvasHTML", atob(""));
-    return alert("Use JS console to put new canvas manually...");
-  }
 
   document.write("");
   window.anbtReady = function()
@@ -395,6 +389,7 @@ function getParametersFromPlay()
       return m && m[1] || !!m;
     };
     window.gameinfo = {
+      error: extract(/<div class="error">\s+([^<]+)\s+<\/div>/),
       gameid: extract(/<input type="hidden" name="which_game" value="([^"]+)"/),
       blitz: extract(/BLITZ MODE<br \/>/),
       nsfw: extract(/>This game Not Safe For Work \(18\+\)<\/span>/),
@@ -409,13 +404,38 @@ function getParametersFromPlay()
     handleParameters();
   }, function()
   {
-    // TODO: error handling
+    window.gameinfo = {
+      error: "Server error: " + this.statusText;
+    };
+    handleParameters();
   });
+}
+
+function exitToSandbox()
+{
+  timerStart = Date.now();
+  ID("newcanvasyo").className = "sandbox";
+  timerCallback = function(){};
+  document.title = "Sandbox - Drawception";
+  ID("gamemode").innerHTML = "Sandbox";
 }
 
 function handleParameters()
 {
+  ID("skip").disabled = false;
+  ID("report").disabled = false;
+  ID("exit").disabled = false;
+  ID("start").disabled = false;
+  ID("bookmark").disabled = false;
+
   var info = window.gameinfo;
+
+  if (info.error)
+  {
+    alert("Play Error:\n" + info.error);
+    return exitToSandbox();
+  }
+
   ID("gamemode").innerHTML = (info.friend ? "Friend " : "Public ") +
     (info.nsfw ? "Not Safe For Work (18+) " : "safe for work ") +
     (info.blitz ? "BLITZ " : "") +
@@ -462,11 +482,6 @@ function handleParameters()
   updateColorIndicators();
 
   ID("setbackground").hidden = !info.bgbutton;
-  ID("skip").disabled = false;
-  ID("report").disabled = false;
-  ID("exit").disabled = false;
-  ID("start").disabled = false;
-  ID("bookmark").disabled = false;
 
   if (info.image)
   {
@@ -502,10 +517,7 @@ function handleParameters()
           getParametersFromPlay();
         } else {
           // Allow to save the drawing after time's up
-          timerStart = Date.now();
-          ID("newcanvasyo").className = "sandbox";
-          timerCallback = function(){};
-          document.title = "Late Player's Sandbox - Drawception";
+          exitToSandbox();
         }
       } else {
         newcanvas.classList.add("locked");
@@ -539,10 +551,7 @@ function bindCanvasEvents()
     sendGet("/play/exit.json?game_token=" + window.gameinfo.gameid, function()
     {
       ID("exit").disabled = false;
-      timerStart = Date.now();
-      ID("newcanvasyo").className = "sandbox";
-      timerCallback = function(){};
-      document.title = "Quitter's Sandbox - Drawception";
+      exitToSandbox();
       //document.location.pathname = "/";
     });
   });

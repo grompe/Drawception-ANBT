@@ -506,6 +506,23 @@ button:disabled {
   width: 100%;
   font-size: 20pt;
 }
+#lockwarn {
+  display: none;
+  position: absolute;
+  width: 500px;
+  height: 400px;
+  padding: 50px;
+  opacity: 0.8;
+  background: #aaa;
+  color: #a00;
+  text-align: center;
+  z-index: 1;
+  font-size: 35pt;
+  text-shadow: 1px 1px 1px #fff, -1px -1px 1px #fff, -1px 1px 1px #fff, 1px -1px 1px #fff;
+}
+.locked #lockwarn {
+  display: block;
+}
 #popup {
   display: none;
   position: absolute;
@@ -608,6 +625,7 @@ button:disabled {
       <a id="imgurdelete" target="_blank">Imgur delete</a>
       <div id="imgurerror">...</div>
     </div>
+    <div id="lockwarn">Time's up!<br><br>Submit now or miss the game!</div>
     <div id="svgContainer" class="loadingbg onlydraw"></div>
     <div id="drawingtocaption" class="onlycaption">
       <img id="tocaption" class="loadingbg">
