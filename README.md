@@ -85,7 +85,7 @@ Forum:
 ## CHANGELOG
 
 0.90.2014.9
-- Start integration of new canvas
+- Functional integration of new canvas!
 - Fix logout link
 
 0.63.2014.9
