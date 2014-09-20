@@ -84,6 +84,10 @@ Forum:
 
 ## CHANGELOG
 
+0.92.2014.9
+- Automatically fix broken panels when viewing the game
+- New canvas: fix clicking on finished friend game links
+
 0.91.2014.9
 - Functional integration of new canvas!
 - Fix logout link

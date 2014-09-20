@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      0.91.2014.9
+// @version      0.92.2014.9
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "0.91.2014.9";
+var SCRIPT_VERSION = "0.92.2014.9";
 var NEWCANVAS_VERSION = 1; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
@@ -1654,14 +1654,29 @@ function toggleLight()
 
 function betterView()
 {
+  var drawings = $('img[src^="/pub/panels/"]');
+	
   // Show approximate creation time from the first drawing panel
-  var m = $('img[src^="/pub/panels/"]').attr("src").match(/\/pub\/panels\/(\d+)\/(\d+)-(\d+)\//);
+  var m = drawings.attr("src").match(/\/pub\/panels\/(\d+)\/(\d+)-(\d+)\//);
   var monthNames = ["January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"];
   var day = (100 + parseInt(m[3], 10)).toString().slice(-2);
   var startDate = monthNames[parseInt(m[2], 10) - 1] + " " + day + ", " + m[1];
   var lead = $("#main .lead");
   lead.text(lead.text().replace("game completed", "game started on " + startDate + " and completed"));
+  
+  // Fix misaligned panels
+  var tryNextPanel = function()
+  {
+    if (!this.naturalWidth)
+    {
+      var pos = this.src.match(/-(\d+)\.png$/)[1];
+      pos++;
+      this.src = this.src.replace(/-(\d+)\.png$/, "-" + pos + ".png");
+    };
+  };
+  // TODO: also fix if script is executed after page load
+  drawings.on("error", tryNextPanel);
   
   // Hide your own number of likes
   if (options.ownPanelLikesSecret)
@@ -2786,12 +2801,10 @@ function pageEnhancements()
     var directToNewPlay = function(e)
     {
       e.preventDefault();
-      var friendid = this.href.match(/\/play(\/.+\/)/);
-      location.href = "/forums/post-preview/#newcanvas_play" + (friendid ? friendid[1] : "");
+      location.href = "/forums/post-preview/#newcanvas_play";
     };
     $('a[href^="/sandbox/"]').click(directToNewSandbox);
-    $('a[href^="/play/"]').click(directToNewPlay);
-    $('a[href*="drawception.com/play/"]').click(directToNewPlay);
+    $('a[href="/play/"]').click(directToNewPlay);
   }
   window.onbeforeunload = function() {if ($("#drawingCanvas").length && painted) return "Did you finish drawing?";};
 
