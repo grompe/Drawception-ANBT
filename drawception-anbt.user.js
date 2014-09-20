@@ -277,6 +277,22 @@ if (typeof GM_addStyle == 'undefined')
   };
 }
 
+/*
+
+canvas integration todo:
+- handle reached game limits
+- add time+ button
+- bookmarking
+- autoskipping captions/drawings
+- backup drawing
+- warning sound
+- disable buttons while processing
+- report button
+- 15 seconds timeout and locking the drawing area
+- loading the canvas html from github
+
+*/
+
 // Executed on completely empty page. That means no jQuery!
 function setupNewCanvas(insandbox)
 {
