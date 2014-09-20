@@ -84,6 +84,10 @@ Forum:
 
 ## CHANGELOG
 
+0.93.2014.9
+- Support Enter to caption in new canvas
+- New canvas: fix alarm sound
+
 0.92.2014.9
 - Automatically fix broken panels when viewing the game
 - New canvas: fix clicking on finished friend game links

@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      0.92.2014.9
+// @version      0.93.2014.9
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "0.92.2014.9";
+var SCRIPT_VERSION = "0.93.2014.9";
 var NEWCANVAS_VERSION = 1; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
@@ -502,7 +502,7 @@ function handleParameters()
 
   timerCallback = function(s)
   {
-    if (!window.playedWarningSound && s <= (info.blitz ? 5 : 61))
+    if (alarm && !window.playedWarningSound && s <= (info.blitz ? 5 : 61))
     {
       alarm.play();
       window.playedWarningSound = true;
