@@ -405,7 +405,7 @@ function getParametersFromPlay()
   }, function()
   {
     window.gameinfo = {
-      error: "Server error: " + this.statusText;
+      error: "Server error: " + this.statusText
     };
     handleParameters();
   });
