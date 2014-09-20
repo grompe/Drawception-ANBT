@@ -84,6 +84,10 @@ Forum:
 
 ## CHANGELOG
 
+0.94.2014.9
+- New canvas: fix error for Firefox Greasemonkey
+- New canvas: Add userpage link in the header 
+
 0.93.2014.9
 - Support Enter to caption in new canvas
 - New canvas: fix alarm sound
