@@ -622,9 +622,14 @@ function bindCanvasEvents()
 
   ID("submitcaption").addEventListener('click', function()
   {
-    ID("submitcaption").disabled = true;
     var title = ID("caption").value;
+    if (title == "")
+    {
+      ID("caption").focus();
+      return alert("You haven't entered a caption!");
+    }
     var params = "game_token=" + window.gameinfo.gameid + "&title=" + encodeURIComponent(title);
+    ID("submitcaption").disabled = true;
     sendPost('/play/describe.json', params, function()
     {
       window.dude = this;
@@ -649,6 +654,17 @@ function bindCanvasEvents()
     });
   });
 
+  if (options.enterToCaption)
+  {
+    ID("caption").addEventListener('keydown', function(e)
+    {
+      if (e.keyCode == 13)
+      {
+        e.preventDefault();
+        ID("submitcaption").click();
+      }
+    });
+  }
 }
 
 function deeper_main()
