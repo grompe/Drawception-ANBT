@@ -282,14 +282,11 @@ if (typeof GM_addStyle == 'undefined')
 canvas integration todo:
 - handle reached game limits
 - add time+ button
-- bookmarking
 - autoskipping captions/drawings
-- backup drawing
-- warning sound
-- disable buttons while processing
-- report button
-- 15 seconds timeout and locking the drawing area
+- backup drawing?
+- show 15 seconds timeout warning
 - loading the canvas html from github
+- show buttons in menu bar
 
 */
 
@@ -301,6 +298,9 @@ function setupNewCanvas(insandbox)
 
   var panelid = document.location.href.match(/sandbox\/(.+)/);
 
+  var sound = alarmSoundOgg;
+  var vertitle = "ANBT v" + SCRIPT_VERSION + ", New Canvas v" + NEWCANVAS_VERSION;
+
   // Show normal address
   var normalurl;
   if (insandbox)
@@ -311,7 +311,7 @@ function setupNewCanvas(insandbox)
     normalurl = "/play/";
     if (friendgameid) normalurl += friendgameid[1] + "/";
   }
-  history.replaceState(null, null, normalurl);
+  history.replaceState({}, "The Ever Consuming Void", normalurl);
 
   var canvasHTML = localStorage.getItem("anbt_canvasHTML");
   var canvasHTMLver = localStorage.getItem("anbt_canvasHTMLver");
@@ -345,6 +345,8 @@ function setupNewCanvas(insandbox)
     if (panelid) window.panelid = panelid[1];
     window.insandbox = insandbox;
     window.options = options;
+    window.alarmSoundOgg = sound;
+    window.vertitle = vertitle;
 
     var script = document.createElement("script");
     script.textContent = "(" + needToGoDeeper.toString() + ")();";
@@ -418,7 +420,8 @@ function handleParameters()
     (info.nsfw ? "Not Safe For Work (18+) " : "safe for work ") +
     (info.blitz ? "BLITZ " : "") +
     "Game";
-  ID("drawthis").innerHTML = info.caption;
+  ID("drawthis").innerHTML = info.caption || "";
+  ID("tocaption").src = "";
 
   var newcanvas = ID("newcanvasyo");
   newcanvas.className = "play";
@@ -435,6 +438,7 @@ function handleParameters()
   }
   anbt.Seek(0);
   anbt.MoveSeekbar(1);
+  anbt.Unlock();
 
   var palettemap = {
     normal: ["Normal", "#fffdc9"],
@@ -454,8 +458,15 @@ function handleParameters()
   var paldata = palettemap[pal.toLowerCase()];
   setPaletteByName(paldata[0]);
   anbt.SetBackground(paldata[1]);
+  anbt.color = [palettes[paldata[0]][0], "eraser"];
+  updateColorIndicators();
 
   ID("setbackground").hidden = !info.bgbutton;
+  ID("skip").disabled = false;
+  ID("report").disabled = false;
+  ID("exit").disabled = false;
+  ID("start").disabled = false;
+  ID("bookmark").disabled = false;
 
   if (info.image)
   {
@@ -466,31 +477,115 @@ function handleParameters()
   // TODO: put Time+ button
 
   timerStart = Date.now() + 1000 * info.timeleft;
+  window.timesup = false;
+
+  if ((options.timeoutSound && !info.blitz) || (options.timeoutSoundBlitz && info.blitz))
+  {
+    window.playedWarningSound = false;
+    var alarm = new Audio(window.alarmSoundOgg);
+  }
+
+  timerCallback = function(s)
+  {
+    if (!window.playedWarningSound && s <= (info.blitz ? 5 : 61))
+    {
+      alarm.play();
+      window.playedWarningSound = true;
+    }
+    if (s < 1)
+    {
+      document.title = "[TIME'S UP!] Playing Drawception";
+      if (!info.caption || window.timesup)
+      {
+        if (info.caption)
+        {
+          getParametersFromPlay();
+        } else {
+          // Allow to save the drawing after time's up
+          timerStart = Date.now();
+          ID("newcanvasyo").className = "sandbox";
+          timerCallback = function(){};
+          document.title = "Late Player's Sandbox - Drawception";
+        }
+      } else {
+        newcanvas.classList.add("locked");
+        anbt.Lock();
+        timerStart += 15000; // 15 seconds to submit
+        window.timesup = true;
+      }
+    } else {
+      var m1 = Math.floor(s / 60), s1 = Math.round(s % 60);
+      var m1 = ("0" + m1).slice(-2);
+      var s1 = ("0" + s1).slice(-2);
+      document.title = "[" + m1 + ":" + s1 + "] Playing Drawception";
+    }
+  };
 }
 
-function bindPlayEvents()
+function include(script, callback)
+{
+  var tag = document.createElement("script");
+  tag.src = script;
+  tag.onload = callback;
+  document.body.appendChild(tag);
+}
+
+function bindCanvasEvents()
 {
   ID("exit").addEventListener('click', function()
   {
     if (!confirm("Really exit?")) return;
+    ID("exit").disabled = true;
     sendGet("/play/exit.json?game_token=" + window.gameinfo.gameid, function()
     {
+      ID("exit").disabled = false;
       timerStart = Date.now();
       ID("newcanvasyo").className = "sandbox";
+      timerCallback = function(){};
+      document.title = "Quitter's Sandbox - Drawception";
       //document.location.pathname = "/";
     });
   });
 
   ID("skip").addEventListener('click', function()
   {
+    ID("skip").disabled = true;
     sendGet("/play/skip.json?game_token=" + window.gameinfo.gameid, function()
     {
+      ID("skip").disabled = false;
       getParametersFromPlay();
     });
   });
 
+  ID("start").addEventListener('click', function()
+  {
+    if (anbt.unsaved && !confirm("You haven't saved the drawing. Abandon?")) return;
+    ID("start").disabled = true;
+    getParametersFromPlay();
+  });
+
+  ID("report").addEventListener('click', function()
+  {
+    if (!confirm("Report this panel?")) return;
+    sendGet("/play/flag.json?game_token=" + window.gameinfo.gameid, function()
+    {
+      ID("report").disabled = false;
+      getParametersFromPlay();
+    });
+  });
+
+  ID("bookmark").addEventListener('click', function()
+  {
+    ID("bookmark").disabled = true;
+    var games = localStorage.getItem("gpe_gameBookmarks");
+    games = games ? JSON.parse(games) : {};
+    games[window.gameinfo.gameid] = {time: Date.now(), caption: window.gameinfo.caption};
+    localStorage.setItem("gpe_gameBookmarks", JSON.stringify(games));
+  });
+
   ID("submit").addEventListener('click', function()
   {
+    ID("submit").disabled = true;
     anbt.MakePNG(300, 250, true);
     var params = "game_token=" + window.gameinfo.gameid + "&panel=" + encodeURIComponent(anbt.pngBase64);
     sendPost('/play/draw.json', params, function()
@@ -498,23 +593,27 @@ function bindPlayEvents()
       var o = JSON.parse(this.responseText);
       if (o.error)
       {
+        ID("submit").disabled = false;
         alert(o.error);
       } else if (o.callJS == "drawingComplete")
       {
         location.replace(o.data.url);
       } else if (o.message) {
+        ID("submit").disabled = false;
         alert(o.message);
       } else if (o.redirect) {
         window.location.replace(o.redirect);
       }
     }, function()
     {
+      ID("submit").disabled = false;
       alert("Server error. :( Try again?");
     });
   });
 
   ID("submitcaption").addEventListener('click', function()
   {
+    ID("submitcaption").disabled = true;
     var title = ID("caption").value;
     var params = "game_token=" + window.gameinfo.gameid + "&title=" + encodeURIComponent(title);
     sendPost('/play/describe.json', params, function()
@@ -523,17 +622,20 @@ function bindPlayEvents()
       var o = JSON.parse(this.responseText);
       if (o.error)
       {
+        ID("submitcaption").disabled = false;
         alert(o.error);
       } else if (o.callJS == "drawingComplete")
       {
         location.replace(o.data.url);
       } else if (o.message) {
+        ID("submitcaption").disabled = false;
         alert(o.message);
       } else if (o.redirect) {
         window.location.replace(o.redirect);
       }
     }, function()
     {
+      ID("submitcaption").disabled = false;
       alert("Server error. :( Try again?");
     });
   });
@@ -542,14 +644,34 @@ function bindPlayEvents()
 
 function deeper_main()
 {
-  if (window.options.fixTabletPluginGoingAWOL) fixPluginGoingAWOL();
+  if (options.fixTabletPluginGoingAWOL) fixPluginGoingAWOL();
+  ID("headerinfo").innerHTML = window.vertitle;
+  bindCanvasEvents();
   if (window.insandbox)
   {
     if (window.panelid) anbt.FromURL("/panel/drawing/" + window.panelid + "/");
   } else {
     ID("newcanvasyo").className = "play";
-    bindPlayEvents();
     getParametersFromPlay();
+  }
+
+  if (options.loadChat)
+  {
+    include("//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js",
+    function()
+    {
+      include("http://chat.grompe.org.ru/jappix-mini.js", function()
+      {
+        var username = localStorage.getItem("gpe_lastSeenName");
+        var userid = localStorage.getItem("gpe_lastSeenId");
+
+        MINI_GROUPCHATS = ["drawception"];
+        MINI_GROUPCHATS_NOCLOSE = ["drawception@chat.grompe.org.ru"];
+        MINI_NICKNAME = username;
+        MINI_RESOURCE = userid + "/jm" + Math.random().toString(36).slice(1, 5);
+        launchMini(Boolean(options.chatAutoConnect), true, "ip");
+      });
+    });
   }
 }
 deeper_main();
@@ -2484,6 +2606,8 @@ function pageEnhancements()
     userid = tmpuserlink.attr("href").match(/\/player\/(\d+)\//)[1];
     // Fix keyboard scrolling without clicking on the window
     $("#content a[href='/play/']").get()[0].focus();
+    localStorage.setItem("gpe_lastSeenName", username);
+    localStorage.setItem("gpe_lastSeenId", userid);
   }
   catch(e){}
 
@@ -2556,7 +2680,7 @@ function pageEnhancements()
   p.append('<a href="/forums/" class="gpe-wide gpe-btn btn btn-success navbar-btn navbar-user-item" style="background:#55A"><span class="glyphicon glyphicon-comment" style="color:#BBF" title="Forums" /></a>');
   p.append('<a href="/search/" class="gpe-wide gpe-btn btn btn-success navbar-btn navbar-user-item"><span class="glyphicon glyphicon-search" title="Search" /></a>');
   p.append('<a href="/settings/" class="gpe-wide gpe-btn btn btn-success navbar-btn navbar-user-item"><span class="glyphicon glyphicon-cog" title="Settings" /></a>');
-  p.append('<a href="/account/logout/" class="gpe-wide gpe-btn btn btn-success navbar-btn navbar-user-item" style="background:#A55"><span class="glyphicon glyphicon-log-out" style="color:#FBB" title="Log Out" /></a>');
+  p.append('<a href="/logout/" class="gpe-wide gpe-btn btn btn-success navbar-btn navbar-user-item" style="background:#A55"><span class="glyphicon glyphicon-log-out" style="color:#FBB" title="Log Out" /></a>');
 
   // Make new notifications actually discernable from the old ones
   var num = $("#user-notify-count").text().trim();
@@ -2637,6 +2761,23 @@ function pageEnhancements()
   }
   $("#navbar-user").append('<div id="anbtver">' + versionDisplay + '</div>');
   
+  if (options.newCanvas)
+  {
+    var directToNewSandbox = function(e)
+    {
+      e.preventDefault();
+      location.pathname = "/forums/post-preview/#newcanvas_sandbox";
+    };
+    var directToNewPlay = function(e)
+    {
+      e.preventDefault();
+      friendid = this.href.match(/\/play(\/.+\/)/);
+      location.pathname = "/forums/post-preview/#newcanvas_play" + (friendid ? friendid[1]: "");
+    };
+    $('a[href^="/sandbox/"]').click(directToNewSandbox);
+    $('a[href^="/play/"]').click(directToNewPlay);
+    $('a[href*="drawception.com/play/"]').click(directToNewPlay);
+  }
   window.onbeforeunload = function() {if ($("#drawingCanvas").length && painted) return "Did you finish drawing?";};
 
   if (options.loadChat)

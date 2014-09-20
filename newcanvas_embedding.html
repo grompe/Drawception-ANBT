@@ -20,6 +20,7 @@ body {
 #newcanvasyo.sandbox .onlycaption,
 #newcanvasyo.drawing .onlycaption,
 #newcanvasyo.captioning .onlydraw,
+#newcanvasyo.locked .onlyunlocked,
 #newcanvasyo.sandbox .onlyplay {
   display: none;
 }
@@ -105,6 +106,13 @@ hr {
   vertical-align: middle;
   margin-left: -10%;
 }
+.captioning #drawthis:before {
+  content: 'Describe this drawing:';
+  padding-right: 0;
+  width: 100%;
+  text-align: center;
+  margin-left: 0;
+}
 #emptytitle {
   height: 10px;
 }
@@ -138,6 +146,11 @@ hr {
   border-color: #dda;
   color: #dda;
   background: #982;
+}
+.locked #timer {
+  border-color: #faa;
+  color: #faa;
+  background: #744;
 }
 #palettechooser {
   display: none;
@@ -453,11 +466,13 @@ button:disabled {
     margin-left: 5px;
   }
 }
+.loadingbg {
+  background: #fffdc9 url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGwAAAAVCAQAAAAJQsNPAAAAkUlEQVR4Xu2WgQbAMBBD9/8/vQ14KpC4UneqYurZ2eNGnnfouWLdsjwce59ikFCdk75ricGIQSEmhekcvRfE8s8jMJ9CdI7camLGYoQ0XzNjJukgRsaJkWFiKqhiLf8x2DAx6EExTV0Mns/sIPZnnBinJJb1h4p21BXrzSOpTZVF3VGCN4lB07U53+6H5Yr1zAdssNOdvbG/lgAAAABJRU5ErkJggg==') center no-repeat;
+}
 #svgContainer {
   width: 600px;
   height: 500px;
   margin: auto;
-  background: #fffdc9 url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGwAAAAVCAQAAAAJQsNPAAAAkUlEQVR4Xu2WgQbAMBBD9/8/vQ14KpC4UneqYurZ2eNGnnfouWLdsjwce59ikFCdk75ricGIQSEmhekcvRfE8s8jMJ9CdI7camLGYoQ0XzNjJukgRsaJkWFiKqhiLf8x2DAx6EExTV0Mns/sIPZnnBinJJb1h4p21BXrzSOpTZVF3VGCN4lB07U53+6H5Yr1zAdssNOdvbG/lgAAAABJRU5ErkJggg==') center no-repeat;
   cursor: crosshair;
 }
 #svgContainer.hidecursor {
@@ -470,14 +485,24 @@ button:disabled {
   position: absolute;
 }
 #drawingtocaption {
-  width: 500px;
+  display: none;
+  width: 550px;
   height: 400px;
-  padding: 50px;
+  padding: 50px 25px;
   margin: auto;
   background: #484848;
   text-align: center;
 }
+.captioning #drawingtocaption {
+  display: block;
+}
+#tocaption {
+  width: 300px;
+  height: 250px;
+}
 #caption {
+  font-family: 'Nunito', sans-serif;
+  margin-top: 100px;
   width: 100%;
   font-size: 20pt;
 }
@@ -527,12 +552,13 @@ button:disabled {
   line-height: 40px;
 }
 </style>
-<title>Drawing in Time! - Drawception</title>
+<title>New Canvas - Drawception</title>
 <body id="newcanvasyo" class="sandbox">
   <div id="myheader">
-    Drawing in Time!
+    <a href="/" title="Home"><img src="/img/logo-d.png"></a>
+    <span id="headerinfo">New Canvas v1</span>
   </div>
-  <div id="drawthis" class="onlyplay onlydraw">Fetching your Drawception game...</div>
+  <div id="drawthis" class="onlyplay">Fetching your Drawception game...</div>
   <div id="emptytitle" class="onlysandbox"></div>
   <div id="bl">
     <div id="toolpane">
@@ -573,7 +599,7 @@ button:disabled {
         <button id="setbackground" title="Set background (B)"></button>
         <button id="undo" title="Undo (Ctrl+Z)"></button>
         <button id="redo" title="Redo (Ctrl+Y)"></button>
-        <button id="trash" title="Clear the canvas (Fill: Shift+F)"></button>
+        <button id="trash" title="Clear the canvas"></button>
       </div>
     </div>
     <div id="popup"><div id="popupclose"></div>
@@ -582,15 +608,13 @@ button:disabled {
       <a id="imgurdelete" target="_blank">Imgur delete</a>
       <div id="imgurerror">...</div>
     </div>
-    <div id="svgContainer" class="onlydraw"></div>
+    <div id="svgContainer" class="loadingbg onlydraw"></div>
     <div id="drawingtocaption" class="onlycaption">
-      Describe this drawing:
-      <hr>
-      <img id="tocaption">
-      <hr>
-      <input id="caption" type="text" maxlength="46" value="">
+      <img id="tocaption" class="loadingbg">
+      <br>
+      <input id="caption" type="text" maxlength="46" value="" placeholder="What is it?">
     </div>
-    <div id="seekbar" class="onlydraw"><div id="play" title="Play (Space)"></div><div id="knob"></div></div>
+    <div id="seekbar" class="onlydraw onlyunlocked"><div id="play" title="Play (Space)"></div><div id="knob"></div></div>
     <div id="infopane">
       <div id="gamemode" class="panel">
         <span class="onlysandbox">Sandbox</span>
@@ -602,6 +626,7 @@ button:disabled {
         <button id="skip" class="onlyplay no-friend">Skip</button>
         <button id="report" class="onlyplay no-friend">Report</button>
         <button id="exit" class="onlyplay">Exit</button>
+        <button id="start" class="onlysandbox">Play Drawception!</button>
         <button id="import" class="onlysandbox">Import drawing</button>
         <button id="export" class="onlysandbox">Export drawing</button>
         <button id="imgur" class="onlysandbox">Upload to imgur</button>
@@ -1545,6 +1570,7 @@ var anbt =
   },
   SetBackground: function(color)
   {
+    if (this.locked) return;
     var transparent = color == "eraser";
     this.transparent = transparent;
     this.canvas.style.background = transparent ? "none" : color;
@@ -1624,6 +1650,7 @@ var anbt =
   },
   StrokeBegin: function(x, y, left)
   {
+    if (this.locked) return;
     var cls = null;
     var color = left ? this.color[0] : this.color[1];
     if (color == "eraser")
@@ -1652,6 +1679,7 @@ var anbt =
   },
   StrokeEnd: function()
   {
+    if (this.locked) return;
     this.unsaved = true;
     var p = this.points; 
     if (p.length > 2)
@@ -1665,6 +1693,7 @@ var anbt =
   },
   StrokeAdd: function(x, y)
   {
+    if (this.locked) return;
     if (!this.isStroking) throw new Error("StrokeAdd without StrokeBegin!");
     var p = this.points[this.points.length - 1];
     if (p.x == x && p.y == y) return;
@@ -1675,19 +1704,6 @@ var anbt =
     }
     this.path.pathSegList.appendItem(this.path.createSVGPathSegLinetoAbs(x, y));
     this.points.push({x: x, y: y});
-  },
-  // Experimental, for making polylines like in Photoshop
-  // Caveat: undo will erase whole polyline
-  StrokeBeginModifyLast: function(x, y, left)
-  {
-    if (this.position == 0 || !this.points) return StrokeBegin(x, y, left);
-    this.path = this.svg.childNodes[this.position];
-    this.points = this.path.orig;
-    this.Seek(this.position - 1);
-    this.svgDisp.insertBefore(this.path, this.svgDisp.firstChild);
-    this.path.pathSegList.appendItem(this.path.createSVGPathSegLinetoAbs(x, y));
-    this.points.push({x: x, y: y});
-    this.isStroking = true;
   },
   ClearWithColor: function(color)
   {
@@ -1728,6 +1744,7 @@ var anbt =
   },
   Undo: function()
   {
+    if (this.locked) return;
     // Prevent "undoing" the background rectangle
     if (this.position > 0)
     {
@@ -1737,6 +1754,7 @@ var anbt =
   },
   Redo: function()
   {
+    if (this.locked) return;
     var posmax = this.svg.childNodes.length - 1;
     if (this.position < posmax)
     {
@@ -1761,6 +1779,7 @@ var anbt =
   },
   Seek: function(newpos)
   {
+    if (this.locked) return;
     var start = -1;
     this.Pause(true);
     if (newpos == this.position) return;
@@ -1811,6 +1830,7 @@ var anbt =
   },
   Play: function()
   {
+    if (this.locked) return;
     this.rewindCache.length = 0; // TODO: make rewind data remember its position
     if (this.position == this.svg.childNodes.length - 1)
     {
@@ -1910,6 +1930,7 @@ var anbt =
   },
   MoveCursor: function(x, y)
   {
+    if (this.locked) return;
     if (!this.brushCursor)
     {
       this.brushCursor = svgElement("circle",
@@ -2042,75 +2063,15 @@ var anbt =
     // https link to prevent recompression by various optimizing proxies
     this.FromURL("https://i.imgur.com/" + id + ".png");
   },
-  MakePattern: function(color, patid)
+  Lock: function()
   {
-    if (this.patternCache[color] && this.patternCache[color][patid])
-    {
-      return this.patternCache[color][patid];
-    } else {
-      if (!this.patternCache[color])
-      {
-        this.patternCache[color] = [];
-      }
-      if (!this.patternCanvas)
-      {
-        this.patternCanvas = document.createElement("canvas");
-        this.patternCanvas.width = 16;
-        this.patternCanvas.height = 16;
-      }
-      var ctx = this.patternCanvas.getContext("2d");
-      ctx.fillStyle = color;
-      ctx.clearRect(0, 0, 16, 16);
-      if (patid == 1)
-      {
-        ctx.beginPath();
-        ctx.arc(2, 2, 2, 0, 2 * Math.PI, false);
-        ctx.fill();
-        ctx.beginPath();
-        ctx.arc(6, 6, 2, 0, 2 * Math.PI, false);
-        ctx.fill();
-        ctx.drawImage(this.patternCanvas, 8, 0);
-        ctx.drawImage(this.patternCanvas, 0, 8);
-      } else if (patid == 2) {
-        ctx.beginPath();
-        ctx.arc(2, 2, 1, 0, 2 * Math.PI, false);
-        ctx.fill();
-        ctx.beginPath();
-        ctx.arc(6, 6, 1, 0, 2 * Math.PI, false);
-        ctx.fill();
-        ctx.drawImage(this.patternCanvas, 8, 0);
-        ctx.drawImage(this.patternCanvas, 0, 8);
-      } else if (patid == 3) {
-        ctx.beginPath();
-        ctx.arc(4, 4, 2, 0, 2 * Math.PI, false);
-        ctx.fill();
-        ctx.beginPath();
-        ctx.arc(4, 12, 2, 0, 2 * Math.PI, false);
-        ctx.fill();
-        ctx.drawImage(this.patternCanvas, 8, -4);
-        ctx.drawImage(this.patternCanvas, 8, 12);
-      } else if (patid == 4) {
-        ctx.fillRect(0, 0, 2, 2);
-        ctx.fillRect(4, 0, 2, 2);
-        ctx.fillRect(0, 4, 2, 2);
-        ctx.fillRect(4, 4, 2, 2);
-        ctx.drawImage(this.patternCanvas, 8, 0);
-        ctx.drawImage(this.patternCanvas, 0, 8);
-      } else if (patid == 5) {
-        ctx.fillRect(0, 0, 1, 1);
-        ctx.fillRect(4, 0, 1, 1);
-        ctx.fillRect(0, 4, 1, 1);
-        ctx.fillRect(4, 4, 1, 1);
-        ctx.drawImage(this.patternCanvas, 8, 0);
-        ctx.drawImage(this.patternCanvas, 0, 8);
-      }
-      var pat = this.ctx.createPattern(this.patternCanvas, 'repeat');
-      return (this.patternCache[color][patid] = pat);
-    }
+    if (this.isStroking) this.StrokeEnd();
+    this.locked = true;
+    this.MoveCursor(-100, -100);
   },
-  SetPattern: function(patid)
+  Unlock: function()
   {
-    this.pattern = patid;
+    this.locked = false;
   },
 };
 
@@ -2170,12 +2131,7 @@ function bindEvents()
       } else {
         // PointerType == 3 is pen tablet eraser
         var left = e.button === 0 && getPointerType() !== 3;
-        if (e.shiftKey)
-        {
-          anbt.StrokeBeginModifyLast(x, y, left);
-        } else {
-          anbt.StrokeBegin(x, y, left);
-        }
+        anbt.StrokeBegin(x, y, left);
         window.addEventListener('mouseup', mouseUp);
         window.addEventListener('mousemove', mouseMove);
       }
@@ -2376,6 +2332,7 @@ function bindEvents()
       ID("secondary").classList.remove('eraser');
     }
   };
+  window.updateColorIndicators = updateColorIndicators;
   var chooseBackground = false;
   var colorClick = function(e)
   {
@@ -2676,6 +2633,7 @@ function bindEvents()
     }
     else if (e.keyCode == "B".charCodeAt(0))
     {
+      if (ID("setbackground").hidden) return;
       e.preventDefault();
       chooseBackground = true;
       ID("colors").classList.add("setbackground");
@@ -2711,11 +2669,6 @@ function bindEvents()
           updateColorIndicators();
         }
       }
-    }
-    else if (e.keyCode == "F".charCodeAt(0) && e.shiftKey)
-    {
-      e.preventDefault();
-      anbt.ClearWithColor(anbt.color[0]);
     }
     else if ((e.keyCode == 189 || e.keyCode == 219) && !e.ctrlKey) // - or [
     {
@@ -2778,7 +2731,7 @@ function runTimer()
     if (timerCallback) timerCallback(s);
     s = Math.abs(s);
     var m = Math.floor(s / 60);
-    s = Math.floor(s % 60);
+    s = Math.floor((s + 0.5) % 60);
     if (m < 10) m = '0' + m;
     if (s < 10) s = '0' + s;
     ID("timer").childNodes[0].nodeValue = m + ':' + s;
