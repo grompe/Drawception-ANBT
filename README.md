@@ -84,6 +84,9 @@ Forum:
 
 ## CHANGELOG
 
+0.95.2014.9
+- Add replay buttons for panels with recordings in the game page
+
 0.94.2014.9
 - New canvas: fix error for Firefox Greasemonkey
 - New canvas: Add userpage link in the header 

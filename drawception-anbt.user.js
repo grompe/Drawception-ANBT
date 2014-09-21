@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      0.94.2014.9
+// @version      0.95.2014.9
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "0.94.2014.9";
+var SCRIPT_VERSION = "0.95.2014.9";
 var NEWCANVAS_VERSION = 1; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
@@ -1714,7 +1714,7 @@ function betterView()
       var t = $(this);
       if (t.hasClass("anbt_favedpanel")) return;
       var tp = t.parent();
-      var id = scrambleID(t.next().attr("id").slice(6));
+      var id = scrambleID(tp.find(".gamepanel").attr("id").slice(6));
 
       var panels = localStorage.getItem("gpe_panelFavorites");
       panels = panels ? JSON.parse(panels) : {};
@@ -1737,6 +1737,31 @@ function betterView()
   );
   $(".panel-number").after(favButton);
 
+  // Panel replay button
+  if (options.newCanvas)
+  {
+    var replayButton = $('<span class="panel-number anbt_replaypanel glyphicon glyphicon-repeat text-muted" title="Replay"></span>');
+    replayButton.click(function(e)
+    {
+      e.preventDefault();
+      var id = scrambleID($(this).parent().find(".gamepanel").attr("id").slice(6));
+      location.href = "/forums/post-preview/#newcanvas_sandbox/" + id;
+    });
+    var addReplayButton = function()
+    {
+      var panel = $(this).parent();
+      checkForRecording(this.src, function()
+      {
+        panel.before(replayButton);
+      });
+    }
+    drawings.on("load", addReplayButton);
+    drawings.each(function()
+    {
+      if (this.complete) addReplayButton.call(this);
+    });
+  }
+  
   // Highlight new comments and remember seen comments
   var gameid = document.location.href.match(/viewgame\/([^\/]+)\//)[1];
   var comments = $("#comments").parent();
@@ -2710,6 +2735,8 @@ function pageEnhancements()
     ".anbt_favpanel {top: 40px; font-weight: normal; padding: 4px 2px}" +
     ".anbt_favpanel:hover {color: #d9534f; cursor:pointer}" +
     ".anbt_favedpanel {color: #d9534f; border-color: #d9534f}" +
+    ".anbt_replaypanel {top: 80px; font-weight: normal; padding: 4px 2px}" +
+    ".anbt_replaypanel:hover {color: #8af; cursor:pointer}" +
     ".gamepanel, .thumbpanel, .comment-body {word-wrap: break-word}" +
     ".comment-body img {max-width: 100%}" +
     ""
