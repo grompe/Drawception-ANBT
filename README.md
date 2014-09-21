@@ -84,6 +84,9 @@ Forum:
 
 ## CHANGELOG
 
+0.96.2014.9
+- Fix submitting: forgot to remove the leaving warning on submit
+
 0.95.2014.9
 - Add replay buttons for panels with recordings in the game page
 
