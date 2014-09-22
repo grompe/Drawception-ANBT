@@ -2766,9 +2766,9 @@ function pageEnhancements()
     addScriptSettings();
   }
   GM_addStyle(
-    ".thumbnail > .panel-details {max-height: 30px; overflow: visible; display: flex; flex-direction: row-reverse; justify-content: space-between }" +
-    ".thumbnail > .panel-details > .btn-group.pull-right {float: none !important; flex-grow: 0; flex-shrink: 0 }" +
-    ".thumbnail > .panel-details > .panel-user  flex-grow: 0; flex-shrink: 1 }" +
+    ".thumbnail > .panel-details {max-height: 30px; overflow: visible; display: flex; flex-direction: row-reverse; justify-content: space-between}" +
+    ".thumbnail > .panel-details > .btn-group.pull-right {float: none !important; flex-grow: 0; flex-shrink: 0}" +
+    ".thumbnail > .panel-details > .panel-user {flex-grow: 1; flex-shrink: 1}" +
     ".gpe-wide {display: none}" +
     ".gpe-btn {padding: 5px 8px; height: 28px}" +
     ".gpe-spacer {margin-right: 7px; float:left}" +
