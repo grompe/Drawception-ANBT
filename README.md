@@ -84,6 +84,9 @@ Forum:
 
 ## CHANGELOG
 
+0.98.2014.9
+- New canvas: properly reset "unsaved" status
+
 0.97.2014.9
 - Dark theme: set default background of thumbnails with old (transparent) drawings
 - New canvas: add warning for skipping with unsaved drawing
