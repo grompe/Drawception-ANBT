@@ -84,6 +84,9 @@ Forum:
 
 ## CHANGELOG
 
+1.1.2014.9
+- Show replayable panels on users' galleries
+
 1.0.2014.9
 - Change replay buttons in game page to links
 - Make old canvas eraser CSS HTTPS-friendly

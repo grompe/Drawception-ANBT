@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      1.0.2014.9
+// @version      1.1.2014.9
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.0.2014.9";
+var SCRIPT_VERSION = "1.1.2014.9";
 var NEWCANVAS_VERSION = 1; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
@@ -2251,6 +2251,27 @@ function betterPlayer()
       });
       
       panelPositions.save();
+    }
+  } else {
+    // Show replayable panels; links are not straightforward to make since there's no panel ID
+    if (options.newCanvas)
+    {
+      var drawings = $('img[src^="/pub/panels/"]');
+      var addReplaySign = function()
+      {
+        var panel = $(this).parent().parent();
+        checkForRecording(this.src, function()
+        {
+          var replaySign = $('<span class="pull-right glyphicon glyphicon-repeat" style="color:#8af;margin-right:4px" title="Replayable!"></span>');
+          panel.append(replaySign);
+          replaySign.tooltip();
+        });
+      };
+      drawings.on("load", addReplaySign);
+      drawings.each(function()
+      {
+        if (this.complete) addReplaySign.call(this);
+      });
     }
   }
 }
