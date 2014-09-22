@@ -84,6 +84,9 @@ Forum:
 
 ## CHANGELOG
 
+0.97.2014.9
+- Dark theme: set default background of thumbnails with old (transparent) drawings
+
 0.96.2014.9
 - Fix submitting: forgot to remove the leaving warning on submit
 
