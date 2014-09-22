@@ -84,6 +84,9 @@ Forum:
 
 ## CHANGELOG
 
+0.99.2014.9
+- Hopefully fixed 404 error appearing for new canvas
+
 0.98.2014.9
 - New canvas: properly reset "unsaved" status
 
