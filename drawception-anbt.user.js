@@ -39,7 +39,7 @@ var options =
   proxyImgur: 0,
   rememberPosition: 0,
   ajaxRetry: 1
-}
+};
 
 /*
 == HOW TO USE ==
@@ -527,8 +527,8 @@ function handleParameters()
       }
     } else {
       var m1 = Math.floor(s / 60), s1 = Math.round(s % 60);
-      var m1 = ("0" + m1).slice(-2);
-      var s1 = ("0" + s1).slice(-2);
+      m1 = ("0" + m1).slice(-2);
+      s1 = ("0" + s1).slice(-2);
       document.title = "[" + m1 + ":" + s1 + "] Playing Drawception";
     }
   };
@@ -630,7 +630,7 @@ function bindCanvasEvents()
   ID("submitcaption").addEventListener('click', function()
   {
     var title = ID("caption").value;
-    if (title == "")
+    if (!title)
     {
       ID("caption").focus();
       return alert("You haven't entered a caption!");
@@ -947,7 +947,7 @@ function enhanceCanvas(insandbox)
       oldcanvas.parentNode.replaceChild(canvas, oldcanvas);
       drawApp.canvas = $(canvas);
       drawApp.context = canvas.getContext("2d");
-      drawApp.canvas.bind("contextmenu", function() {return false});
+      drawApp.canvas.bind("contextmenu", function() {return false;});
 
       drawApp.old_setSize = drawApp.setSize;
       drawApp.setSize = function(size)
@@ -2000,7 +2000,7 @@ function initAjaxRetry()
       
       if (--requestCount <= 0)
         $("body").css("cursor", "");
-    }
+    };
   });
 }
 
@@ -2027,7 +2027,7 @@ function rot13(s)
       c = c.charCodeAt(0);
       if (c >= 97 && c <= 122) c = (c - 97 + 13) % 26 + 97;
       if (c >= 65 && c <= 90) c = (c - 65 + 13) % 26 + 65;
-      return String.fromCharCode(c)
+      return String.fromCharCode(c);
     }
   ).join("");
 }
@@ -2085,7 +2085,7 @@ function viewMyPanelFavorites()
       '</span><br><span class="text-muted"><span class="glyphicon glyphicon-heart"></span> ' +
       formatTimestamp(panels[id].time) + '</span></div></div>';
   }
-  if (result == "") result = "You don't have any favorited panels.";
+  if (!result) result = "You don't have any favorited panels.";
   $("#anbt_userpage").html(result);
   $("#anbt_userpage").on("click", ".anbt_paneldel", function(e)
     {
@@ -2129,13 +2129,13 @@ function viewMyGameBookmarks()
                   var gamename = "";
                   if (games[id].caption) gamename += " " + games[id].caption;
                   if (games[id].time) gamename += " bookmarked on " + formatTimestamp(games[id].time);
-                  if (gamename == "") gamename = id;
+                  if (!gamename) gamename = id;
                   var status = (m == "dust") ? "Deleted / dusted" : "Unfinished public";
                   $("#" + id).find("span").text(status + " game" + gamename);
                   return;
                 }
                 var title = e.match(/<title>(.+)<\/title>/)[1];
-                var m = e.match(/\/viewgame\/([^\/]+)\/[^\/]+\//);
+                m = e.match(/\/viewgame\/([^\/]+)\/[^\/]+\//);
                 var url = m[0];
                 var gameid = m[1];
                 delete games[id];
@@ -2153,7 +2153,7 @@ function viewMyGameBookmarks()
       result += '<p class="well" id="' + id + '"><a href="' + games[id].url + '">' + games[id].title + '</a>' + removeButtonHTML + '</p>';
     }
   }
-  if (result == "") result = "You don't have any bookmarked games.";
+  if (!result) result = "You don't have any bookmarked games.";
   $("#anbt_userpage").html(result);
   $("#anbt_userpage").on("click", ".anbt_gamedel", function(e)
     {
@@ -2268,29 +2268,30 @@ function betterForum()
 
   $("span.muted, span.text-muted").each(function()
     {
+      var year, month, day, minutes, hours;
       var m, t = $(this), tx = t.text();
       // Don't touch relative times
       if (tx.indexOf('ago') != -1) return;
       if (m = tx.match(/^\s*\(last post (...) (\d+).. (\d+):(\d+)([ap]m)\)\s*$/))
       {
-        var month = months.indexOf(m[1]);
-        var day = parseInt(m[2], 10);
-        var hours = parseInt(m[3], 10) % 12;
-        var minutes = parseInt(m[4], 10);
         var d = new Date();
-        var year = d.getFullYear();
+        month = months.indexOf(m[1]);
+        day = parseInt(m[2], 10);
+        hours = parseInt(m[3], 10) % 12;
+        minutes = parseInt(m[4], 10);
+        year = d.getFullYear();
         if ((d.getMonth() < 6) && (month >= 6)) year--;
         hours += (m[5] == 'pm') ? 12 : 0;
         t.text("(last post " + convertForumTime(year, month, day, hours, minutes) + ")");
       }
       else if (m = tx.match(/^\s*\[ (\d+):(\d+) ([ap]m) ... (...) (\d+).., (\d{4}) \]\s*$/))
       {
-        var hours = parseInt(m[1], 10) % 12;
-        var minutes = parseInt(m[2], 10);
+        hours = parseInt(m[1], 10) % 12;
+        minutes = parseInt(m[2], 10);
         hours += (m[3] == 'pm') ? 12 : 0;
-        var month = months.indexOf(m[4]);
-        var day = parseInt(m[5], 10);
-        var year = parseInt(m[6], 10);
+        month = months.indexOf(m[4]);
+        day = parseInt(m[5], 10);
+        year = parseInt(m[6], 10);
         t.text("[ " + convertForumTime(year, month, day, hours, minutes) + " ]");
       }
     }
@@ -2424,7 +2425,7 @@ function addScriptSettings()
         if (t == "boolean")
         {
           c.append('<input type="checkbox" id="anbt_' + name + '" name="' + name + '" value="1" ' + (v ? 'checked="checked"' : '') + '">');
-          c.append('<label for="anbt_' + name + '">' + desc + '</label>')
+          c.append('<label for="anbt_' + name + '">' + desc + '</label>');
         }
         else if (t == "number")
         {
@@ -2572,7 +2573,7 @@ function stalkNextPanel(forward)
   if (!forward) forward = 1;
   var sid = location.href.match(/\/panel\/[^\/]+\/(\w+)\/[^\/]+\//)[1];
   var sid2 = scrambleID(unscrambleID(sid) + 4 * forward);
-  return location.href = location.href.replace(sid, sid2);
+  location.href = location.href.replace(sid, sid2);
 }
 
 window.drawingHint = drawingHint;
