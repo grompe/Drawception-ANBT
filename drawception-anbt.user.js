@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      0.99.2014.9
+// @version      1.0.2014.9
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "0.99.2014.9";
+var SCRIPT_VERSION = "1.0.2014.9";
 var NEWCANVAS_VERSION = 1; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
@@ -913,7 +913,7 @@ function enhanceCanvas(insandbox)
       {
         this.primary_color = color;
         document.getElementById("primaryColor").style.background =
-          (color === null) ? "url(http://drawception.com/img/draw_eraser.png)" : color;
+          (color === null) ? "url(/img/draw_eraser.png)" : color;
         updateCursorColor((color === null) ? defaultFill : color);
         if (color) lastColor = color;
       };
@@ -921,7 +921,7 @@ function enhanceCanvas(insandbox)
       {
         this.secondary_color = color;
         document.getElementById("secondaryColor").style.background =
-          (color === null) ? "url(http://drawception.com/img/draw_eraser.png)" : color;
+          (color === null) ? "url(/img/draw_eraser.png)" : color;
         updateCursorColor((color === null) ? defaultFill : color);
       };
       drawApp.setColor = function(color, bypass)
@@ -1174,7 +1174,7 @@ function enhanceCanvas(insandbox)
 
       // Add primary and secondary color indicators
       var pr = $('<div id="primaryColor" title="Primary color (left click)" style="background: ' + defaultColor +'">');
-      var se = $('<div id="secondaryColor" title="Secondary color (right click)" style="background: url(http://drawception.com/img/draw_eraser.png)">');
+      var se = $('<div id="secondaryColor" title="Secondary color (right click)" style="background: url(/img/draw_eraser.png)">');
       $(".btn-drawtool").first().before(pr).before(se);
 
       // Adjust palette buttons to handle left and right clicks
@@ -1757,18 +1757,18 @@ function betterView()
   // Panel replay button
   if (options.newCanvas)
   {
-    var replayButton = $('<span class="panel-number anbt_replaypanel glyphicon glyphicon-repeat text-muted" title="Replay"></span>');
-    replayButton.click(function(e)
-    {
-      e.preventDefault();
-      var id = scrambleID($(this).parent().find(".gamepanel").attr("id").slice(6));
-      location.href = "/forums/post-preview/#newcanvas_sandbox/" + id;
-    });
     var addReplayButton = function()
     {
       var panel = $(this).parent();
       checkForRecording(this.src, function()
       {
+        var id = scrambleID(panel.attr("id").slice(6));
+        var replayButton = $('<a href="/sandbox/#' + id + '" class="panel-number anbt_replaypanel glyphicon glyphicon-repeat text-muted" title="Replay"></span>');
+        replayButton.click(function(e)
+        {
+          e.preventDefault();
+          location.href = "/forums/post-preview/#newcanvas_sandbox/" + id;
+        });
         panel.before(replayButton);
       });
     };
@@ -2756,7 +2756,7 @@ function pageEnhancements()
     ".anbt_favpanel:hover {color: #d9534f; cursor:pointer}" +
     ".anbt_favedpanel {color: #d9534f; border-color: #d9534f}" +
     ".anbt_replaypanel {top: 80px; font-weight: normal; padding: 4px 2px}" +
-    ".anbt_replaypanel:hover {color: #8af; cursor:pointer}" +
+    ".anbt_replaypanel:hover {color: #8af; text-decoration: none}" +
     ".gamepanel, .thumbpanel, .comment-body {word-wrap: break-word}" +
     ".comment-body img {max-width: 100%}" +
     ""
@@ -2927,6 +2927,8 @@ localStorage.setItem("gpe_darkCSS",
   ".btn-menu{~#2e2e2e$}.btn-menu:hover{~#232323$}.btn-yellow{~#8a874e$}.btn-yellow:hover{~#747034$}" +
   "a.label{color:#fff$}a.text-muted{color:#999$}a.wrong-order{color:#F99$}div.comment-holder:target{~#454$}" +
   "#jappix_mini a{color:#000$}" +
+  // We have entered specificity hell...
+  "a.anbt_replaypanel:hover{color:#8af$}" +
   // Some lamey compression method!
   "").replace(/~/g, "background-color:").replace(/\$/g, " !important")
 );

@@ -84,6 +84,10 @@ Forum:
 
 ## CHANGELOG
 
+1.0.2014.9
+- Change replay buttons in game page to links
+- Make old canvas eraser CSS HTTPS-friendly
+
 0.99.2014.9
 - Hopefully fixed 404 error appearing for new canvas
 
