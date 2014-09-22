@@ -301,7 +301,7 @@ function setupNewCanvas(insandbox)
     {
       localStorage.setItem("anbt_canvasHTML", this.responseText);
       localStorage.setItem("anbt_canvasHTMLver", NEWCANVAS_VERSION);
-      setupNewCanvas(insandbox)
+      setupNewCanvas(insandbox);
     };
     xhr.onerror = function()
     {
@@ -563,7 +563,7 @@ function bindCanvasEvents()
 
   ID("skip").addEventListener('click', function()
   {
-    if (unsavedStopAction()) return();
+    if (unsavedStopAction()) return;
     ID("skip").disabled = true;
     sendGet("/play/skip.json?game_token=" + window.gameinfo.gameid, function()
     {
@@ -574,7 +574,7 @@ function bindCanvasEvents()
 
   ID("start").addEventListener('click', function()
   {
-    if (unsavedStopAction()) return();
+    if (unsavedStopAction()) return;
     ID("start").disabled = true;
     getParametersFromPlay();
   });
@@ -875,7 +875,7 @@ function enhanceCanvas(insandbox)
       {
         window.onbeforeunload = function(){};
         return old_savePanelDrawing(a, b, c);
-      }
+      };
 
       // And contest panel too
       var old_saveContestDrawing = saveContestDrawing;
@@ -883,7 +883,7 @@ function enhanceCanvas(insandbox)
       {
         window.onbeforeunload = function(){};
         return old_saveContestDrawing(a, b, c);
-      }
+      };
 
       // Workaround for a bug that skips drawing when undoing after timer
       // expired: http://drawception.com/forums/suggestions/18533/-/
@@ -905,7 +905,7 @@ function enhanceCanvas(insandbox)
         drawApp.context.clearRect(0, 0, drawApp.context.canvas.width, drawApp.context.canvas.height);
         save();
         return false;
-      }
+      };
 
       drawApp.old_setColor = drawApp.setColor;
       drawApp.setPrimaryColor = function(color)
@@ -974,7 +974,7 @@ function enhanceCanvas(insandbox)
         var which_game = $('input[name=which_game]');
         if (insandbox || which_game.length && (which_game.val() == backup.game))
         {
-          var img = new Image;
+          var img = new Image();
           img.onload = function()
           {
             drawApp.context.drawImage(this, 0, 0, drawApp.context.canvas.width, drawApp.context.canvas.height);
@@ -1419,7 +1419,7 @@ function empowerPlay(noReload)
       var m = ("0" + p[5]).slice(-2);
       var s = ("0" + p[6]).slice(-2);
       document.title = "[" + m + ":" + s + "] " + origtitle;
-    }
+    };
     $("#timeleft").countdown('option', 'onTick', window.highlightCountdown);
     
     // Add sound to timeout warning
@@ -1438,7 +1438,7 @@ function empowerPlay(noReload)
           alarm.play();
           window.playedWarningSound = true;
         }
-      }
+      };
       $("#timeleft").countdown('option', 'onTick', window.highlightCountdown);
     }
   } else {
@@ -1483,7 +1483,7 @@ function empowerPlay(noReload)
     {
       localStorage.removeItem("anbt_drawingbackup");
       DrawceptionPlay.skipPanel_old();
-    }
+    };
   }
 
   // Handle auto-skipping
@@ -1705,7 +1705,7 @@ function betterView()
       var pos = this.src.match(/-(\d+)\.png$/)[1];
       pos++;
       this.src = this.src.replace(/-(\d+)\.png$/, "-" + pos + ".png");
-    };
+    }
   };
   // TODO: also fix if script is executed after page load
   drawings.on("error", tryNextPanel);
@@ -1770,7 +1770,7 @@ function betterView()
       {
         panel.before(replayButton);
       });
-    }
+    };
     drawings.on("load", addReplayButton);
     drawings.each(function()
     {
@@ -1964,7 +1964,7 @@ function initAjaxRetry()
     var isComment = options.url === "/viewgame/comments/add.json";
     var retryCount = 0;
     
-    options.retryEnabled = true
+    options.retryEnabled = true;
     options.success = function (data, textStatus, jqXHR)
     {
       if (options.url === "/viewgame/like/panel.json" && data && data.error === "Invalid request. You already liked this?")
