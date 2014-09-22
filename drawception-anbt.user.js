@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      0.96.2014.9
+// @version      0.97.2014.9
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "0.96.2014.9";
+var SCRIPT_VERSION = "0.97.2014.9";
 var NEWCANVAS_VERSION = 1; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
@@ -544,6 +544,11 @@ function include(script, callback)
 
 function bindCanvasEvents()
 {
+  var unsavedStopAction = function()
+  {
+    return anbt.unsaved && !confirm("You haven't saved the drawing. Abandon?");
+  };
+  
   ID("exit").addEventListener('click', function()
   {
     if (!confirm("Really exit?")) return;
@@ -558,6 +563,7 @@ function bindCanvasEvents()
 
   ID("skip").addEventListener('click', function()
   {
+    if (unsavedStopAction()) return();
     ID("skip").disabled = true;
     sendGet("/play/skip.json?game_token=" + window.gameinfo.gameid, function()
     {
@@ -568,7 +574,7 @@ function bindCanvasEvents()
 
   ID("start").addEventListener('click', function()
   {
-    if (anbt.unsaved && !confirm("You haven't saved the drawing. Abandon?")) return;
+    if (unsavedStopAction()) return();
     ID("start").disabled = true;
     getParametersFromPlay();
   });
@@ -1454,6 +1460,7 @@ function empowerPlay(noReload)
         timeout: 15000,
         success: function(o)
         {
+          localStorage.removeItem("anbt_drawingbackup");
           if (o.redirect)
           {
             loadNextGameAsync();
@@ -1469,6 +1476,14 @@ function empowerPlay(noReload)
         }
       });
     };
+  } else {
+    // Remove backup in case skipping leads to same gameID, giving double extra time
+    DrawceptionPlay.skipPanel_old = DrawceptionPlay.skipPanel;
+    DrawceptionPlay.skipPanel = function()
+    {
+      localStorage.removeItem("anbt_drawingbackup");
+      DrawceptionPlay.skipPanel_old();
+    }
   }
 
   // Handle auto-skipping

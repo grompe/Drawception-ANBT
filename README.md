@@ -86,6 +86,8 @@ Forum:
 
 0.97.2014.9
 - Dark theme: set default background of thumbnails with old (transparent) drawings
+- New canvas: add warning for skipping with unsaved drawing
+- Old canvas: fix rare chance of backup giving double time after skipping and getting the same game
 
 0.96.2014.9
 - Fix submitting: forgot to remove the leaving warning on submit
