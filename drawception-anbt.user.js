@@ -1759,6 +1759,8 @@ function betterView()
   {
     var addReplayButton = function()
     {
+      if (this.replayAdded) return;
+      this.replayAdded = true;
       var panel = $(this).parent();
       checkForRecording(this.src, function()
       {
@@ -2259,6 +2261,8 @@ function betterPlayer()
       var drawings = $('img[src^="/pub/panels/"]');
       var addReplaySign = function()
       {
+        if (this.replayAdded) return;
+        this.replayAdded = true;
         var panel = $(this).parent().parent();
         checkForRecording(this.src, function()
         {
