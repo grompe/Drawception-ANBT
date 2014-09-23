@@ -14,15 +14,19 @@ A userscript to make Drawception.com better: more drawing tools, tablet pressure
 ## HOW TO USE
 
 - Chrome/Iron: (Recommended: all features, best performance)
-  - add the script in Tampermonkey addon 
+  - add the script in [Tampermonkey extension](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo)
   - or open URL: chrome://extensions then drag and drop the .user.js file on it
-- Firefox: add the script in Greasemonkey addon
-- Opera 12.x: add the script in "site properties"
+- Firefox: add the script in [Greasemonkey add-on](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/)
+- Opera 12: add the script in "site properties"
+- Opera 15+: add the script in [Violentmonkey add-on](https://addons.opera.com/en/extensions/details/violent-monkey/?display=en)
+- Maxthon: add the script in [Violentmonkey add-on](http://extension.maxthon.com/detail/index.php?view_id=1680)
 - Other browsers/Single use:
   - create a bookmark with the following URL:
     `javascript:void($.ajax({dataType:"script",cache:!0,url:"//raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js"}))`
     and follow it while being on drawception.com site; you can also use the shortened URL:
     `javascript:void($.ajax({dataType:"script",cache:!0,url:"//goo.gl/a6rzzP"}))`
+
+After installing script management add-on, just click on the [**Direct script link**](https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js).
 
 
 ## FEATURES
