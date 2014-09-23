@@ -1765,12 +1765,7 @@ function betterView()
       checkForRecording(this.src, function()
       {
         var id = scrambleID(panel.attr("id").slice(6));
-        var replayButton = $('<a href="/sandbox/#' + id + '" class="panel-number anbt_replaypanel glyphicon glyphicon-repeat text-muted" title="Replay"></span>');
-        replayButton.click(function(e)
-        {
-          e.preventDefault();
-          location.href = "/forums/post-preview/#newcanvas_sandbox/" + id;
-        });
+        var replayButton = $('<a href="/forums/post-preview/#newcanvas_sandbox/' + id + '" class="panel-number anbt_replaypanel glyphicon glyphicon-repeat text-muted" title="Replay"></span>');
         panel.before(replayButton);
       });
     };
