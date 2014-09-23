@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      1.1.2014.9
+// @version      1.2.2014.9
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.1.2014.9";
+var SCRIPT_VERSION = "1.2.2014.9";
 var NEWCANVAS_VERSION = 1; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
@@ -2255,10 +2255,10 @@ function betterPlayer()
       panelPositions.save();
     }
   } else {
+    var drawings = $('img[src^="/pub/panels/"]');
     // Show replayable panels; links are not straightforward to make since there's no panel ID
     if (options.newCanvas)
     {
-      var drawings = $('img[src^="/pub/panels/"]');
       var addReplaySign = function()
       {
         if (this.replayAdded) return;
@@ -2277,6 +2277,16 @@ function betterPlayer()
         if (this.complete) addReplaySign.call(this);
       });
     }
+    // Detect Draw Firsts
+    drawings.each(function()
+    {
+      if (this.src.match(/-1\.png$/))
+      {
+        var drawFirstSign = $('<span class="pull-right" title="Draw First game"><img src="/img/icon-coins.png"></span>');
+        $(this).parent().parent().append(drawFirstSign);
+        drawFirstSign.tooltip();
+      }
+    });
   }
 }
 

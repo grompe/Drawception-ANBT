@@ -84,8 +84,12 @@ Forum:
 
 ## CHANGELOG
 
+1.2.2014.9
+- Show Draw First panels in users' galleries
+- Small fixes
+
 1.1.2014.9
-- Show replayable panels on users' galleries
+- Show replayable panels in users' galleries
 
 1.0.2014.9
 - Change replay buttons in game page to links
