@@ -2504,8 +2504,8 @@ function addScriptSettings()
   addGroup("Miscellaneous",
     [
       ["removeFlagging", "boolean", "Remove flagging buttons"],
-      ["ownPanelLikesSecret", "boolean", "Make likes for your own panels secret (in game only)"],
-      ["proxyImgur", "boolean", "Use Google proxy to load imgur links, in case your ISP blocks them"],
+      ["ownPanelLikesSecret", "boolean", "Hide your own panels' number of Likes (in game only)"],
+      ["proxyImgur", "boolean", "Use Google proxy to load links from imgur, in case your ISP blocks them"],
       ["ajaxRetry", "boolean", "Retry failed AJAX requests"]
     ]
   );
@@ -2800,16 +2800,16 @@ function pageEnhancements()
   var p = $("#open-left").parent();
   //p.prepend('<a href="/" class="gpe-wide" style="float:left; margin-right:8px"><img src="/img/logo-sm.png" width="166" height="43" alt="drawception" /></a>');
   p.append('<span class="gpe-wide gpe-spacer">&nbsp</span>');
-  p.append('<a href="/sandbox/" class="gpe-wide gpe-btn btn btn-success navbar-btn navbar-user-item" style="background:#5A5"><span class="glyphicon glyphicon-edit" style="color:#BFB" title="Sandbox" /></a>');
-  p.append('<a href="/browse/all-games/" class="gpe-wide gpe-btn btn btn-success navbar-btn navbar-user-item"><span class="glyphicon glyphicon-folder-open" title="Browse Games" /></a>');
-  p.append('<a href="/contests/" class="gpe-wide gpe-btn btn btn-success navbar-btn navbar-user-item"><span class="glyphicon glyphicon-tower" title="Contests" /></a>');
-  p.append('<a href="javascript:toggleLight()" class="gpe-wide gpe-btn btn btn-success navbar-btn navbar-user-item" style="background:#AA5"><span class="glyphicon glyphicon-eye-open" style="color:#FFB" title="Toggle light" /></a>');
-  p.append('<a href="/leaderboard/" class="gpe-wide gpe-btn btn btn-success navbar-btn navbar-user-item"><span class="glyphicon glyphicon-fire" title="Leaderboards" /></a>');
-  p.append('<a href="/faq/" class="gpe-wide gpe-btn btn btn-success navbar-btn navbar-user-item"><span class="glyphicon glyphicon-info-sign" title="FAQ" /></a>');
-  p.append('<a href="/forums/" class="gpe-wide gpe-btn btn btn-success navbar-btn navbar-user-item" style="background:#55A"><span class="glyphicon glyphicon-comment" style="color:#BBF" title="Forums" /></a>');
-  p.append('<a href="/search/" class="gpe-wide gpe-btn btn btn-success navbar-btn navbar-user-item"><span class="glyphicon glyphicon-search" title="Search" /></a>');
-  p.append('<a href="/settings/" class="gpe-wide gpe-btn btn btn-success navbar-btn navbar-user-item"><span class="glyphicon glyphicon-cog" title="Settings" /></a>');
-  p.append('<a href="/logout/" class="gpe-wide gpe-btn btn btn-success navbar-btn navbar-user-item" style="background:#A55"><span class="glyphicon glyphicon-log-out" style="color:#FBB" title="Log Out" /></a>');
+  p.append('<a href="/sandbox/" title="Sandbox" class="gpe-wide gpe-btn btn btn-success navbar-btn navbar-user-item" style="background:#5A5"><span class="glyphicon glyphicon-edit" style="color:#BFB" /></a>');
+  p.append('<a href="/browse/all-games/" title="Browse Games" class="gpe-wide gpe-btn btn btn-success navbar-btn navbar-user-item"><span class="glyphicon glyphicon-folder-open" /></a>');
+  p.append('<a href="/contests/" title="Contests" class="gpe-wide gpe-btn btn btn-success navbar-btn navbar-user-item"><span class="glyphicon glyphicon-tower" /></a>');
+  p.append('<a href="javascript:toggleLight()" title="Toggle light" class="gpe-wide gpe-btn btn btn-success navbar-btn navbar-user-item" style="background:#AA5"><span class="glyphicon glyphicon-eye-open" style="color:#FFB" /></a>');
+  p.append('<a href="/leaderboard/" title="Leaderboards" class="gpe-wide gpe-btn btn btn-success navbar-btn navbar-user-item"><span class="glyphicon glyphicon-fire" /></a>');
+  p.append('<a href="/faq/" title="FAQ" class="gpe-wide gpe-btn btn btn-success navbar-btn navbar-user-item"><span class="glyphicon glyphicon-info-sign" /></a>');
+  p.append('<a href="/forums/" title="Forums" class="gpe-wide gpe-btn btn btn-success navbar-btn navbar-user-item" style="background:#55A"><span class="glyphicon glyphicon-comment" style="color:#BBF" /></a>');
+  p.append('<a href="/search/" title="Search" class="gpe-wide gpe-btn btn btn-success navbar-btn navbar-user-item"><span class="glyphicon glyphicon-search" /></a>');
+  p.append('<a href="/settings/" title="Settings" class="gpe-wide gpe-btn btn btn-success navbar-btn navbar-user-item"><span class="glyphicon glyphicon-cog" /></a>');
+  p.append('<a href="/logout/" title="Log Out" class="gpe-wide gpe-btn btn btn-success navbar-btn navbar-user-item" style="background:#A55"><span class="glyphicon glyphicon-log-out" style="color:#FBB" /></a>');
 
   // Make new notifications actually discernable from the old ones
   var num = $("#user-notify-count").text().trim();
