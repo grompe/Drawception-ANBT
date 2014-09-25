@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      1.2.2014.9
+// @version      1.3.2014.9
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.2.2014.9";
+var SCRIPT_VERSION = "1.3.2014.9";
 var NEWCANVAS_VERSION = 1; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
@@ -38,7 +38,8 @@ var options =
   newCanvas: 0,
   proxyImgur: 0,
   rememberPosition: 0,
-  ajaxRetry: 1
+  ajaxRetry: 1,
+  localeTimestamp: 0
 };
 
 /*
@@ -2053,6 +2054,7 @@ function randomGreeting()
 function formatTimestamp(d)
 {
   if (typeof d == "number") d = new Date(d);
+  if (options.localeTimestamp) return d.toLocaleString();
   var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   var s = [
     (100 + d.getDate() + "").slice(-2),
@@ -2503,6 +2505,7 @@ function addScriptSettings()
   );
   addGroup("Miscellaneous",
     [
+      ["localeTimestamp", "boolean", "Format timestamps as your system locale (" + (new Date()).toLocaleString() +")"],
       ["removeFlagging", "boolean", "Remove flagging buttons"],
       ["ownPanelLikesSecret", "boolean", "Hide your own panels' number of Likes (in game only)"],
       ["proxyImgur", "boolean", "Use Google proxy to load links from imgur, in case your ISP blocks them"],

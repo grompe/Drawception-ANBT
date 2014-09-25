@@ -88,6 +88,10 @@ Forum:
 
 ## CHANGELOG
 
+1.3.2014.9
+- Small style and language fixes
+- Option to display timestamps according to your system locale
+
 1.2.2014.9
 - Show Draw First panels in users' galleries
 - Small fixes
