@@ -88,6 +88,10 @@ Forum:
 
 ## CHANGELOG
 
+1.4.2014.9
+- New canvas: correct behavior when got to caption a broken image
+- New canvas: prevent context menu when drawing with right mouse button
+
 1.3.2014.9
 - Small style and language fixes
 - Option to display timestamps according to your system locale

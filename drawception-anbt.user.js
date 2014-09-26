@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      1.3.2014.9
+// @version      1.4.2014.9
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,8 +14,8 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.3.2014.9";
-var NEWCANVAS_VERSION = 1; // Increase to update the cached canvas
+var SCRIPT_VERSION = "1.4.2014.9";
+var NEWCANVAS_VERSION = 2; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
 
@@ -398,7 +398,7 @@ function getParametersFromPlay()
       drawfirst: extract(/DrawceptionPlay\.abortDrawFirst\(\)/), // FIXME
       timeleft: extract(/<span id="timeleft">\s+(\d+)\s+<\/span>/),
       caption: extract(/<p class="play-phrase">\s+([^<]+)\s+<\/p>/),
-      image: extract(/<img src="(data:image\/png;base64,[^"]+)"/),
+      image: extract(/<img src="(data:image\/png;base64,[^"]*)"/),
       palette: extract(/theme item was applied to this game">([^<]+)<\/span>/),
       bgbutton: extract(/<img src="\/img\/draw_bglayer.png"/),
     };
@@ -487,7 +487,13 @@ function handleParameters()
 
   if (info.image)
   {
-    ID("tocaption").src = info.image;
+    if (info.image.length <= 30)
+    {
+      // Broken drawing =(
+      ID("tocaption").src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAD6AQMAAAAho+iwAAAABlBMVEWAQEAAAAB4MK1jAAAAfElEQVR4Xu3VgQaAQBBF0ZjfWvbXh/2tYWLjIQHBS/dkhS7s1uh4AgAAACDKNxuRsyXNspWHDKssKvwyscr8z83/e/OfhVh72WQS+7GWQeZ9bszC+//C7O6yyjQLkftumckfMzIymS3plPnTRsoyi7yuW0D2tXcKAAAA4AQpWEKQW53dgwAAAABJRU5ErkJggg==";
+    } else {
+      ID("tocaption").src = info.image;
+    }
     ID("caption").focus();
   }
 
