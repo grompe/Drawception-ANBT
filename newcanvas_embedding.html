@@ -2162,6 +2162,10 @@ function bindEvents()
     var y = e.pageY - rect.top - pageYOffset;
     anbt.MoveCursor(x, y);
   });
+  window.addEventListener('contextmenu', function(e)
+  {
+    if (anbt.isStroking) e.preventDefault();
+  });
 
   var touchSingle = false;
   var lastTouch;

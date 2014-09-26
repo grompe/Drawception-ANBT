@@ -13,6 +13,15 @@ function svgElement(name, attrs)
   }
   return el;
 }
+function require(script, callback)
+{
+  var tag = document.querySelector('script[src="' + script + '"]');
+  if (tag) return callback();
+  tag = document.createElement("script");
+  tag.src = script;
+  tag.onload = callback;
+  document.body.appendChild(tag);
+}
 function bytes2string(bytes)
 {
   var len = bytes.length;
@@ -1277,9 +1286,14 @@ var anbt =
     var p = this.ctx.getImageData(x, y, 1, 1).data;
     return (p[3] > 0) ? ("#" + valueToHex(p[0]) + valueToHex(p[1]) + valueToHex(p[2])) : this.background;
   },
-  RequestSave: function()
+  RequestSave: function(dataurl, extension)
   {
-    if (!this.pngBase64) return false;
+    if (!dataurl)
+    {
+      dataurl = this.pngBase64;
+      extension = ".png";
+      this.unsaved = false;
+    }
     if (!this.saveLink)
     {
       this.saveLink = document.createElement("a");
@@ -1287,7 +1301,7 @@ var anbt =
     }
     if ("download" in this.saveLink)
     {
-      this.saveLink.href = this.pngBase64;
+      this.saveLink.href = dataurl;
       var d = new Date();
       this.saveLink.download =
       [
@@ -1300,13 +1314,12 @@ var anbt =
         (100 + d.getHours() + "").slice(-2),
         (100 + d.getMinutes() + "").slice(-2),
         (100 + d.getSeconds() + "").slice(-2),
-        ".png"
+        extension
       ].join("");
       this.saveLink.click();
     } else {
-      window.open(this.pngBase64);
+      window.open(dataurl);
     }
-    this.unsaved = false;
     return true;
   },
   UploadToImgur: function(callback)
@@ -1420,6 +1433,39 @@ var anbt =
   {
     this.pattern = patid;
   },
+  ExportWebM: function()
+  {
+    var anbt = this;
+    require("whammy.min.js", function()
+    {
+      var canvas = document.createElement("canvas");
+      canvas.width = 600;
+      canvas.height = 500;
+      var context = canvas.getContext("2d");
+      context.fillStyle = anbt.background;
+      var encoder = new Whammy.Video(15);
+      var maxpos = anbt.svg.childNodes.length - 1;
+      var i = 0;
+      var nextFrame = function()
+      {
+        anbt.Seek(i);
+        anbt.MoveSeekbar(anbt.position / maxpos);
+        context.fillRect(0, 0, 600, 500);
+        context.drawImage(anbt.canvas, 0, 0, 600, 500);
+        encoder.add(canvas);
+        i++;
+        if (i <= maxpos)
+        {
+          setTimeout(nextFrame, 1);
+        } else {
+          var output = encoder.compile();
+          var url = (window.webkitURL || window.URL).createObjectURL(output);
+          anbt.RequestSave(url, ".webm");
+        }
+      }
+      nextFrame();
+    });
+  },
 };
 
 var timerStart, timerCallback;
@@ -1495,6 +1541,10 @@ function bindEvents()
     var x = e.pageX - rect.left - pageXOffset;
     var y = e.pageY - rect.top - pageYOffset;
     anbt.MoveCursor(x, y);
+  });
+  window.addEventListener('contextmenu', function(e)
+  {
+    if (anbt.isStroking) e.preventDefault();
   });
 
   var touchSingle = false;
@@ -2045,6 +2095,14 @@ function bindEvents()
   };
   ID("enablepatterns").addEventListener('mousedown', enablePatterns);
   ID("enablepatterns").addEventListener('touchend', enablePatterns);
+
+  var exportWebM = function(e)
+  {
+    e.preventDefault();
+    anbt.ExportWebM();
+  }
+  ID("exportwebm").addEventListener('mousedown', exportWebM);
+  ID("exportwebm").addEventListener('touchend', exportWebM);
   
   var usageTips = function(e)
   {
