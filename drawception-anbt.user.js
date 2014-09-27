@@ -1708,11 +1708,12 @@ function betterView()
   // Fix misaligned panels
   var tryNextPanel = function()
   {
-    if (!this.naturalWidth)
+    if (!this.naturalWidth && !this.triedFixing)
     {
       var pos = this.src.match(/-(\d+)\.png$/)[1];
       pos++;
       this.src = this.src.replace(/-(\d+)\.png$/, "-" + pos + ".png");
+      this.triedFixing = true;
     }
   };
   // TODO: also fix if script is executed after page load
