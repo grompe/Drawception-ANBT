@@ -88,6 +88,10 @@ Forum:
 
 ## CHANGELOG
 
+1.5.2014.9
+- Make links in game comments clickable
+- Dark theme: remove border from panels of visited games
+
 1.4.2014.9
 - New canvas: correct behavior when got to caption a broken image
 - New canvas: prevent context menu when drawing with right mouse button
