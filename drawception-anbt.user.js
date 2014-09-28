@@ -2981,6 +2981,7 @@ localStorage.setItem("gpe_darkCSS",
   ".btn-menu{~#2e2e2e$}.btn-menu:hover{~#232323$}.btn-yellow{~#8a874e$}.btn-yellow:hover{~#747034$}" +
   "a.label{color:#fff$}a.text-muted{color:#999$}a.wrong-order{color:#F99$}div.comment-holder:target{~#454$}" +
   "#jappix_mini a{color:#000$}" +
+  "a:visited.thumbnail{border-color:#555$}" +
   // We have entered specificity hell...
   "a.anbt_replaypanel:hover{color:#8af$}" +
   // Some lamey compression method!
