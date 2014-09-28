@@ -1789,6 +1789,15 @@ function betterView()
     });
   }
   
+  // Linkify the links
+  $('.comment-body').each(function()
+    {
+      var t = $(this);
+      if (t.text().indexOf("://") == -1) return;
+      t.html(t.html().replace(/([^"]|^)(https?:\/\/[^\s<]+)/g, '$1<a href="$2">$2</a>'));
+    }
+  );
+
   // Highlight new comments and remember seen comments
   var gameid = document.location.href.match(/viewgame\/([^\/]+)\//)[1];
   var comments = $("#comments").parent();
