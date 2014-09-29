@@ -36,8 +36,42 @@ body {
   overflow: hidden;
   display: block;
 }
+#headercont {
+  max-width: 1280px;
+  margin: auto;
+}
 #myheader img {
   vertical-align: middle;
+}
+.headerleft {
+  float: left;
+  margin-left: 50px;
+}
+.headerright {
+  float: right;
+  margin-right: 50px;
+}
+#infoavatar {
+  border: 1px solid #555;
+}
+.headerbutton {
+  font-size: 10.5pt;
+  font-weight: bold;
+  padding: 4px 10px;
+  background: #2e2e2e;
+  vertical-align: middle;
+  text-decoration: none;
+  cursor: pointer;
+}
+.headerbutton.active {
+  background: #248;
+  color: #eee;
+}
+.headerbutton.active:hover {
+  background: #236;
+}
+.headerbutton img {
+  margin: 0 3px;
 }
 a {
   color: #999;
@@ -154,6 +188,23 @@ hr {
   border-color: #faa;
   color: #faa;
   background: #744;
+}
+#timeplus {
+  display: none;
+  background: url("/img/icon-time_plus_60.png") center no-repeat;
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+  padding: 10px;
+  margin-left: 3px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+#timeplus.show {
+  display: inline;
+}
+#timeplus:hover {
+  background-color: #222;
 }
 #palettechooser {
   display: none;
@@ -432,6 +483,9 @@ button:disabled {
   #myheader {
     font-size: 11pt;
   }
+  .hideonsmall {
+    display: none;
+  }
   #toolpane {
     width: 580px;
     margin: auto;
@@ -575,14 +629,28 @@ button:disabled {
 <title>New Canvas - Drawception</title>
 <body id="newcanvasyo" class="sandbox">
   <div id="myheader">
-    <a href="/" title="Home"><img src="/img/logo-d.png"></a>
-    <span id="headerinfo">New Canvas v1</span>
+    <div id="headercont">
+      <div class="headerleft">
+        <a href="/" title="Home"><img src="http://drawception.com/img/logo-d.png"></a>
+        <span id="headerinfo">New Canvas v3</span>
+      </div>
+      <div class="headerright">
+        <a id="start" title="Play Drawception!" class="headerbutton active onlysandbox">Play</a>
+        <a href="/create/" class="headerbutton active" title="Create new game">+</a>
+        <a href="/player/" title="Profile"><img id="infoavatar" src="http://drawception.com/img/avatar.jpg" width="25" height="25"></a>
+        <a href="/store/" class="headerbutton hideonsmall"><img src="http://drawception.com/img/icon-box.png"></a>
+        <a href="/store/" class="headerbutton hideonsmall"><img src="http://drawception.com/img/icon-coins.png"><span id="infocoins">0</span></a>
+        <a href="/player/" class="headerbutton"><img src="http://drawception.com/img/icon-public-games.png"><span id="infogames">0/32</span></a>
+        <a class="headerbutton hideonsmall"><img src="http://drawception.com/img/icon-friend-games.png"><span id="infofriendgames">0</span></a>
+        <a class="headerbutton"><img src="http://drawception.com/img/icon-notifications.png"><span id="infonotifications">0</span></a>
+      </div>
+    </div>
   </div>
   <div id="drawthis" class="onlyplay">Fetching your Drawception game...</div>
   <div id="emptytitle" class="onlysandbox"></div>
   <div id="bl">
     <div id="toolpane">
-      <div id="timer" class="panel">00:00</div>
+      <div id="timer" class="panel">00:00<button id="timeplus" class="onlyunlocked onlyplay onlydraw" title="Use Time+ item - add extra 60 seconds"></button></div>
       <div id="colors" class="panel onlydraw">
         <div id="palettename">Normal</div>
         <div id="palettechooser" class="onlysandbox"></div>
@@ -647,7 +715,6 @@ button:disabled {
         <button id="skip" class="onlyplay no-friend">Skip</button>
         <button id="report" class="onlyplay no-friend">Report</button>
         <button id="exit" class="onlyplay">Exit</button>
-        <button id="start" class="onlysandbox">Play Drawception!</button>
         <button id="import" class="onlysandbox">Import drawing</button>
         <button id="export" class="onlysandbox">Export drawing</button>
         <button id="imgur" class="onlysandbox">Upload to imgur</button>
@@ -1923,7 +1990,7 @@ var anbt =
         }
       }
     }
-    this.MoveSeekbar((this.position + this.animateIndex / maxidx) / posmax);
+    this.MoveSeekbar((this.position + (maxidx ? this.animateIndex / maxidx : 0)) / posmax);
     if (this.position < posmax)
     {
       setTimeout(this.playTimer, delay);

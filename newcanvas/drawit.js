@@ -1203,7 +1203,7 @@ var anbt =
         }
       }
     }
-    this.MoveSeekbar((this.position + this.animateIndex / maxidx) / posmax);
+    this.MoveSeekbar((this.position + (maxidx ? this.animateIndex / maxidx : 0)) / posmax);
     if (this.position < posmax)
     {
       setTimeout(this.playTimer, delay);

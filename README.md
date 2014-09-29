@@ -88,6 +88,13 @@ Forum:
 
 ## CHANGELOG
 
+1.6.2014.9
+- New canvas: backup option now saves the drawing before submitting
+- New canvas: better header
+- New canvas: sandbox now displays author info when replaying
+- New canvas: add Time+ button, it appears when time left is 2 minutes or less
+- New canvas: fix play button (in playing controls)
+
 1.5.2014.9
 - Make links in game comments clickable
 - Dark theme: remove border from panels of visited games

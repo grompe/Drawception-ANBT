@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      1.5.2014.9
+// @version      1.6.2014.9
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,8 +14,8 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.5.2014.9";
-var NEWCANVAS_VERSION = 2; // Increase to update the cached canvas
+var SCRIPT_VERSION = "1.6.2014.9";
+var NEWCANVAS_VERSION = 3; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
 
@@ -39,7 +39,8 @@ var options =
   proxyImgur: 0,
   rememberPosition: 0,
   ajaxRetry: 1,
-  localeTimestamp: 0
+  localeTimestamp: 0,
+  autoplay: 1, // Whether to automatically start playback of a recorded drawing
 };
 
 /*
@@ -281,10 +282,8 @@ if (typeof GM_addStyle == 'undefined')
 /*
 
 canvas integration todo:
-- add time+ button
 - autoskipping captions/drawings
-- show buttons in menu bar?
-
+- handle draw first exiting (when Drawception itself isn't buggy with that)
 */
 
 // Executed on completely empty page. That means no jQuery!
@@ -372,6 +371,36 @@ function sendPost(url, params, onloadfunc, onerrorfunc)
   xhr.send(params);
 }
 
+function extractInfoFromHTML(html)
+{
+  var extract = function(r)
+  {
+    var m = html.match(r);
+    return m && m[1] || !!m;
+  };
+  return {
+    error: extract(/<div class="error">\s+([^<]+)\s+<\/div>/),
+    gameid: extract(/<input type="hidden" name="which_game" value="([^"]+)"/),
+    blitz: extract(/BLITZ MODE<br \/>/),
+    nsfw: extract(/>This game Not Safe For Work \(18\+\)<\/span>/),
+    friend: extract(/<legend>\s+Friend Game/),
+    drawfirst: extract(/DrawceptionPlay\.abortDrawFirst\(\)/), // FIXME
+    timeleft: extract(/<span id="timeleft">\s+(\d+)\s+<\/span>/),
+    caption: extract(/<p class="play-phrase">\s+([^<]+)\s+<\/p>/),
+    image: extract(/<img src="(data:image\/png;base64,[^"]*)"/),
+    palette: extract(/theme item was applied to this game">([^<]+)<\/span>/),
+    bgbutton: extract(/<img src="\/img\/draw_bglayer.png"/),
+    playerid: extract(/<a href="\/player\/(\d+)\//),
+    playername: extract(/<span class="glyphicon glyphicon-user"><\/span> (.+)\n/),
+    coins: extract(/<span id="user-coins-value">(\d+)<\/span>/),
+    pubgames: extract(/alt="pubgames" \/> (\d+\/\d+)/),
+    friendgames: extract(/alt="friendgames" \/> (\d+)/),
+    notifications: extract(/<span id="user-notify-count">(\d+)<\/span>/),
+    drawingbylink: extract(/drawing by (<a href="\/player\/\d+\/\S+\/">[^<]+<\/a>)/),
+    title: extract(/<title>([^<]+)<\/title>/),
+  };
+}
+
 function getParametersFromPlay()
 {
   var url = "/play/";
@@ -382,32 +411,14 @@ function getParametersFromPlay()
   }
   sendGet(url, function()
   {
-    var res = this.responseText;
-    var extract = function(r)
-    {
-      var m = res.match(r);
-      return m && m[1] || !!m;
-    };
-    window.gameinfo = {
-      error: extract(/<div class="error">\s+([^<]+)\s+<\/div>/),
-      gameid: extract(/<input type="hidden" name="which_game" value="([^"]+)"/),
-      blitz: extract(/BLITZ MODE<br \/>/),
-      nsfw: extract(/>This game Not Safe For Work \(18\+\)<\/span>/),
-      friend: extract(/<legend>\s+Friend Game/),
-      drawfirst: extract(/DrawceptionPlay\.abortDrawFirst\(\)/), // FIXME
-      timeleft: extract(/<span id="timeleft">\s+(\d+)\s+<\/span>/),
-      caption: extract(/<p class="play-phrase">\s+([^<]+)\s+<\/p>/),
-      image: extract(/<img src="(data:image\/png;base64,[^"]*)"/),
-      palette: extract(/theme item was applied to this game">([^<]+)<\/span>/),
-      bgbutton: extract(/<img src="\/img\/draw_bglayer.png"/),
-    };
-    handleParameters();
+    window.gameinfo = extractInfoFromHTML(this.responseText);
+    handlePlayParameters();
   }, function()
   {
     window.gameinfo = {
       error: "Server error: " + this.statusText
     };
-    handleParameters();
+    handlePlayParameters();
   });
 }
 
@@ -418,15 +429,47 @@ function exitToSandbox()
   timerCallback = function(){};
   document.title = "Sandbox - Drawception";
   ID("gamemode").innerHTML = "Sandbox";
+  ID("headerinfo").innerHTML = 'Sandbox with ' + vertitle;
 }
 
-function handleParameters()
+function handleCommonParameters()
+{
+  ID("infoavatar").src="/pub/avatars/" + gameinfo.playerid + ".jpg";
+  ID("infocoins").innerHTML = gameinfo.coins;
+  ID("infogames").innerHTML = gameinfo.pubgames;
+  ID("infofriendgames").innerHTML = gameinfo.friendgames;
+  ID("infonotifications").innerHTML = gameinfo.notifications;
+}
+
+function handleSandboxParameters()
+{
+  if (gameinfo.drawingbylink)
+  {
+    var playerid = gameinfo.drawingbylink.match(/\d+/);
+    var avatar = '<img src="/pub/avatars/' + playerid + '.jpg" width="25" height="25">';
+    ID("headerinfo").innerHTML = 'Playback of drawing by ' + avatar + " " + gameinfo.drawingbylink;
+    ID("drawthis").innerHTML = '"' + gameinfo.title.replace(/ \(drawing by .+\)$/, '"');
+    ID("drawthis").classList.remove("onlyplay");
+    if (options.autoplay) anbt.Play();
+  } else {
+    ID("headerinfo").innerHTML = 'Sandbox with ' + vertitle;
+    ID("drawthis").classList.add("onlyplay");
+  }
+
+  handleCommonParameters();
+}
+
+function handlePlayParameters()
 {
   ID("skip").disabled = false;
   ID("report").disabled = false;
   ID("exit").disabled = false;
   ID("start").disabled = false;
   ID("bookmark").disabled = false;
+  ID("timeplus").disabled = false;
+
+  ID("headerinfo").innerHTML = 'Playing with ' + vertitle;
+  ID("drawthis").classList.add("onlyplay");
 
   var info = window.gameinfo;
 
@@ -496,10 +539,9 @@ function handleParameters()
     ID("caption").focus();
   }
 
-  // TODO: put Time+ button
-
   timerStart = Date.now() + 1000 * info.timeleft;
   window.timesup = false;
+  window.timeplus = false;
 
   if ((options.timeoutSound && !info.blitz) || (options.timeoutSoundBlitz && info.blitz))
   {
@@ -509,7 +551,12 @@ function handleParameters()
 
   timerCallback = function(s)
   {
-    if (alarm && !window.playedWarningSound && s <= (info.blitz ? 5 : 61))
+    if (s <= 121 && !window.timeplus)
+    {
+      ID("timeplus").classList.add("show");
+      window.timeplus = true;
+    }
+    if (alarm && !window.playedWarningSound && s <= (info.blitz ? 5 : 61) && s > 0)
     {
       alarm.play();
       window.playedWarningSound = true;
@@ -539,6 +586,8 @@ function handleParameters()
       document.title = "[" + m1 + ":" + s1 + "] Playing Drawception";
     }
   };
+
+  handleCommonParameters();
 }
 
 function include(script, callback)
@@ -650,7 +699,6 @@ function bindCanvasEvents()
     ID("submitcaption").disabled = true;
     sendPost('/play/describe.json', params, function()
     {
-      window.dude = this;
       var o = JSON.parse(this.responseText);
       if (o.error)
       {
@@ -683,19 +731,49 @@ function bindCanvasEvents()
       }
     });
   }
+
+  ID("timeplus").addEventListener('click', function()
+  {
+    ID("timeplus").disabled = true;
+    sendGet("/play/add-time.json?game_token=" + window.gameinfo.gameid, function()
+    {
+      var o = JSON.parse(this.responseText);
+      if (o.error)
+      {
+        alert(o.error);
+      } else if (o.callJS == "updatePlayTime") {
+        timerStart += o.data.seconds * 1000;
+        ID("timeplus").classList.remove("show");
+      }
+      ID("timeplus").disabled = false;
+    }, function()
+    {
+      ID("timeplus").disabled = false;
+      alert("Server error. :( Try again?");
+    });
+  });
 }
 
 function deeper_main()
 {
   if (options.fixTabletPluginGoingAWOL) fixPluginGoingAWOL();
-  ID("headerinfo").innerHTML = window.vertitle + ' <a href="/player/">(Go to your userpage)</a>';
   bindCanvasEvents();
   if (window.insandbox)
   {
     if (window.panelid)
     {
       anbt.FromURL("/panel/drawing/" + window.panelid + "/");
+      sendGet("/panel/drawing/" + window.panelid + "/-/", function()
+      {
+        window.gameinfo = extractInfoFromHTML(this.responseText);
+        handleSandboxParameters();
+      }, function() {});
     } else {
+      sendGet("/sandbox/", function()
+      {
+        window.gameinfo = extractInfoFromHTML(this.responseText);
+        handleSandboxParameters();
+      }, function() {});
       if (options.backup)
       {
         var pngdata = localStorage.getItem("anbt_drawingbackup_newcanvas");
@@ -2541,7 +2619,8 @@ function addScriptSettings()
       ["removeFlagging", "boolean", "Remove flagging buttons"],
       ["ownPanelLikesSecret", "boolean", "Hide your own panels' number of Likes (in game only)"],
       ["proxyImgur", "boolean", "Use Google proxy to load links from imgur, in case your ISP blocks them"],
-      ["ajaxRetry", "boolean", "Retry failed AJAX requests"]
+      ["ajaxRetry", "boolean", "Retry failed AJAX requests"],
+      ["autoplay", "boolean", "Automatically start replay when watching playback"],
     ]
   );
   theForm.append('<div class="control-group"><div class="controls"><input name="submit" type="submit" class="btn btn-primary" value="Apply"> <b id="anbtSettingsOK" class="label label-theme_holiday" style="display:none">Saved!</b></div></div>');
