@@ -2914,16 +2914,16 @@ function pageEnhancements()
   var p = $("#open-left").parent();
   //p.prepend('<a href="/" class="gpe-wide" style="float:left; margin-right:8px"><img src="/img/logo-sm.png" width="166" height="43" alt="drawception" /></a>');
   p.append('<span class="gpe-wide gpe-spacer">&nbsp</span>');
-  p.append('<a href="/sandbox/" title="Sandbox" class="gpe-wide gpe-btn btn btn-success navbar-btn navbar-user-item" style="background:#5A5"><span class="glyphicon glyphicon-edit" style="color:#BFB" /></a>');
-  p.append('<a href="/browse/all-games/" title="Browse Games" class="gpe-wide gpe-btn btn btn-success navbar-btn navbar-user-item"><span class="glyphicon glyphicon-folder-open" /></a>');
-  p.append('<a href="/contests/" title="Contests" class="gpe-wide gpe-btn btn btn-success navbar-btn navbar-user-item"><span class="glyphicon glyphicon-tower" /></a>');
-  p.append('<a href="javascript:toggleLight()" title="Toggle light" class="gpe-wide gpe-btn btn btn-success navbar-btn navbar-user-item" style="background:#AA5"><span class="glyphicon glyphicon-eye-open" style="color:#FFB" /></a>');
-  p.append('<a href="/leaderboard/" title="Leaderboards" class="gpe-wide gpe-btn btn btn-success navbar-btn navbar-user-item"><span class="glyphicon glyphicon-fire" /></a>');
-  p.append('<a href="/faq/" title="FAQ" class="gpe-wide gpe-btn btn btn-success navbar-btn navbar-user-item"><span class="glyphicon glyphicon-info-sign" /></a>');
-  p.append('<a href="/forums/" title="Forums" class="gpe-wide gpe-btn btn btn-success navbar-btn navbar-user-item" style="background:#55A"><span class="glyphicon glyphicon-comment" style="color:#BBF" /></a>');
-  p.append('<a href="/search/" title="Search" class="gpe-wide gpe-btn btn btn-success navbar-btn navbar-user-item"><span class="glyphicon glyphicon-search" /></a>');
-  p.append('<a id="menusettings" href="/settings/" title="Settings" class="gpe-wide gpe-btn btn btn-success navbar-btn navbar-user-item"><span class="glyphicon glyphicon-cog" /></a>');
-  p.append('<a href="/logout/" title="Log Out" class="gpe-wide gpe-btn btn btn-success navbar-btn navbar-user-item" style="background:#A55"><span class="glyphicon glyphicon-log-out" style="color:#FBB" /></a>');
+  p.append('<a href="/sandbox/" title="Sandbox" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item" style="background:#5A5"><span class="glyphicon glyphicon-edit" style="color:#BFB" /></a>');
+  p.append('<a href="/browse/all-games/" title="Browse Games" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item"><span class="glyphicon glyphicon-folder-open" /></a>');
+  p.append('<a href="/contests/" title="Contests" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item"><span class="glyphicon glyphicon-tower" /></a>');
+  p.append('<a href="javascript:toggleLight()" title="Toggle light" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item" style="background:#AA5"><span class="glyphicon glyphicon-eye-open" style="color:#FFB" /></a>');
+  p.append('<a href="/leaderboard/" title="Leaderboards" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item"><span class="glyphicon glyphicon-fire" /></a>');
+  p.append('<a href="/faq/" title="FAQ" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item"><span class="glyphicon glyphicon-info-sign" /></a>');
+  p.append('<a href="/forums/" title="Forums" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item" style="background:#55A"><span class="glyphicon glyphicon-comment" style="color:#BBF" /></a>');
+  p.append('<a href="/search/" title="Search" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item"><span class="glyphicon glyphicon-search" /></a>');
+  p.append('<a id="menusettings" href="/settings/" title="Settings" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item"><span class="glyphicon glyphicon-cog" /></a>');
+  p.append('<a href="/logout/" title="Log Out" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item" style="background:#A55"><span class="glyphicon glyphicon-log-out" style="color:#FBB" /></a>');
 
   // Tell to look at settings if freshly installed
   var newSettingsSeen = localStorage.getItem("anbt_newSettingsSeen");
