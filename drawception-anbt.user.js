@@ -103,8 +103,6 @@ var playMode = localStorage.getItem("gpe_playMode");
 playMode = (playMode === null) ? 0 : parseInt(playMode, 10);
 var inDark = localStorage.getItem("gpe_inDark");
 inDark = (inDark === null) ? 0 : parseInt(inDark, 10);
-var seenComments = localStorage.getItem("gpe_seenComments");
-seenComments = (seenComments === null) ? {} : JSON.parse(seenComments);
 
 var MODE_ALL = 0;
 var MODE_CAPTION_ONLY = 1;
@@ -1893,41 +1891,38 @@ function betterView()
   );
 
   // Highlight new comments and remember seen comments
+  var seenComments = localStorage.getItem("gpe_seenComments");
+  seenComments = (seenComments === null) ? {} : JSON.parse(seenComments);
   var gameid = document.location.href.match(/viewgame\/([^\/]+)\//)[1];
   var comments = $("#comments").parent();
-  var check = setInterval(function()
+  var holders = comments.find(".comment-holder");
+  if (!holders.length) return;
+  // Clear old tracked comments
+  var hour = Math.floor(Date.now() / (1000 * 60*60)); // timestamp with 1 hour precision
+  for (var tempgame in seenComments)
   {
-    var holders = comments.find(".comment-holder");
-    if (!holders.length) return;
-    clearInterval(check);
-    // Clear old tracked comments
-    var hour = Math.floor(Date.now() / (1000 * 60*60)); // timestamp with 1 hour precision
-    for (var tempgame in seenComments)
+    // Store game entry for up to a week after last tracked comment
+    if (seenComments[tempgame].h + 24*7 < hour)
     {
-      // Store game entry for up to a week after last tracked comment
-      if (seenComments[tempgame].h + 24*7 < hour)
-      {
-        delete seenComments[tempgame];
-      }
+      delete seenComments[tempgame];
     }
-
-    var maxseenid = 0;
-    holders.each(function()
+  }
+  var maxseenid = 0;
+  holders.each(function()
+  {
+    var t = $(this);
+    var ago = t.find(".text-muted").text();
+    var commentid = parseInt(t.attr("id").slice(1), 10);
+    // Track comments from up to week ago
+    if (ago.match(/just now|min|hour| [1-7] day/))
     {
-      var t = $(this);
-      var ago = t.find(".text-muted").text();
-      var commentid = parseInt(t.attr("id").slice(1), 10);
-      // Track comments from up to week ago
-      if (ago.match(/just now|min|hour| [1-7] day/))
-      {
-        if (seenComments[gameid] && seenComments[gameid].id >= commentid) return;
-        t.addClass("comment-new");
-        if (maxseenid < commentid) maxseenid = commentid;
-      }
-    });
-    if (maxseenid) seenComments[gameid] = {h: hour, id: maxseenid};
-    localStorage.setItem("gpe_seenComments", JSON.stringify(seenComments));
-  }, 500);
+      if (seenComments[gameid] && seenComments[gameid].id >= commentid) return;
+      t.addClass("comment-new");
+      if (maxseenid < commentid) maxseenid = commentid;
+    }
+  });
+  if (maxseenid) seenComments[gameid] = {h: hour, id: maxseenid};
+  localStorage.setItem("gpe_seenComments", JSON.stringify(seenComments));
 }
 
 function checkForRecording(url, yesfunc)
