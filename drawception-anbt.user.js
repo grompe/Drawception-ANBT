@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      1.8.2014.9
+// @version      1.9.2014.9
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.8.2014.9";
+var SCRIPT_VERSION = "1.9.2014.9";
 var NEWCANVAS_VERSION = 3; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
@@ -3022,17 +3022,31 @@ function pageEnhancements()
   
   if (options.newCanvas)
   {
-    var directToNewSandbox = function(e)
+    var directToNewSandbox, directToNewPlay;
+    if ($.browser.chrome)
     {
-      e.preventDefault();
-      var panelid = this.href.match(/sandbox\/#(.+)/);
-      location.href = "/forums/post-preview/#newcanvas_sandbox" + (panelid ? "/" + panelid[1] : "");
-    };
-    var directToNewPlay = function(e)
-    {
-      e.preventDefault();
-      location.href = "/forums/post-preview/#newcanvas_play";
-    };
+      directToNewSandbox = function(e)
+      {
+        var panelid = this.href.match(/sandbox\/#(.+)/);
+        this.href = "/forums/post-preview/#newcanvas_sandbox" + (panelid ? "/" + panelid[1] : "");
+      };
+      directToNewPlay = function(e)
+      {
+        this.href = "/forums/post-preview/#newcanvas_play";
+      };
+    } else {
+      directToNewSandbox = function(e)
+      {
+        e.preventDefault();
+        var panelid = this.href.match(/sandbox\/#(.+)/);
+        location.href = "/forums/post-preview/#newcanvas_sandbox" + (panelid ? "/" + panelid[1] : "");
+      };
+      directToNewPlay = function(e)
+      {
+        e.preventDefault();
+        location.href = "/forums/post-preview/#newcanvas_play";
+      };
+    }
     $('a[href^="/sandbox/"]').click(directToNewSandbox);
     $('a[href="/play/"]').click(directToNewPlay);
   }

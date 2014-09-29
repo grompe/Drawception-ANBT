@@ -88,6 +88,11 @@ Forum:
 
 ## CHANGELOG
 
+1.9.2014.9
+- Make sure to remove the settings hint
+- Nicer menu buttons color
+- Fix middle-click on sandbox and play links in Chrome, when new canvas is enabled
+
 1.8.2014.9
 - New canvas: black and white palette detection fix
 
