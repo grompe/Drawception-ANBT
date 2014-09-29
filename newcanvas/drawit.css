@@ -346,7 +346,7 @@ button:disabled {
   position: absolute;
   width: 48px;
   height: 38px;
-  margin-top: -19px; 
+  margin-top: -19px;
   margin-left: 492px; /* -10px min */
   border-radius: 10px;
   background-color: #fbb;

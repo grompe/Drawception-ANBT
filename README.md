@@ -151,7 +151,7 @@ Forum:
 
 0.94.2014.9
 - New canvas: fix error for Firefox Greasemonkey
-- New canvas: Add userpage link in the header 
+- New canvas: Add userpage link in the header
 
 0.93.2014.9
 - Support Enter to caption in new canvas
@@ -231,7 +231,7 @@ Forum:
 - Numpad +/- also changes brush size
 
 0.43.2014.3
-- If Ctrl is pressed, ignore brush color and size shortcuts 
+- If Ctrl is pressed, ignore brush color and size shortcuts
 
 0.42.2014.3
 - Delete saved drawing if playing another game
@@ -348,7 +348,7 @@ Forum:
 0.13.2013.11
 - Fixed broken link to Leaderboards in quick menu
 - More colorful quick menu
-- Fixed canvas broken with the site script change 
+- Fixed canvas broken with the site script change
 
 0.12.2013.11
 - Minor fixes

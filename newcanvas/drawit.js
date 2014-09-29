@@ -974,7 +974,7 @@ var anbt =
   StrokeEnd: function()
   {
     this.unsaved = true;
-    var p = this.points; 
+    var p = this.points;
     if (p.length > 2)
     {
       p = simplifyDouglasPeucker(p, this.smoothening);
@@ -1351,7 +1351,7 @@ var anbt =
       callback("error: " + e);
     };
     xhr.setRequestHeader('Authorization', 'Client-ID 4809db83c8897af');
-    var fd = new FormData(); 
+    var fd = new FormData();
     fd.append("image", new Blob([base642bytes(this.pngBase64.substr(22)).buffer], {type: "image/png"}));
     fd.append("type", "file");
     fd.append("title", "Made with Drawing in Time");
@@ -2103,7 +2103,7 @@ function bindEvents()
   }
   ID("exportwebm").addEventListener('mousedown', exportWebM);
   ID("exportwebm").addEventListener('touchend', exportWebM);
-  
+
   var usageTips = function(e)
   {
     e.preventDefault();
@@ -2114,14 +2114,14 @@ function bindEvents()
   ID("usagetips").addEventListener('touchend', usageTips);
 
   // ---
-  
+
   ID("popupclose").addEventListener('click', function(e)
   {
     e.preventDefault();
     ID("popup").classList.remove("show");
   });
 
- 
+
   document.addEventListener('keyup', function(e)
   {
     if (e.keyCode == 18) // Alt

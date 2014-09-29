@@ -46,7 +46,7 @@ var options =
 /*
 == HOW TO USE ==
 - Chrome/Iron: (Recommended: all features, best performance)
-  - add the script in Tampermonkey addon 
+  - add the script in Tampermonkey addon
   - or open URL: chrome://extensions then drag and drop this .user.js file on it
 - Firefox: add the script in Greasemonkey addon
 - Opera 12.x: add the script in "site properties"
@@ -602,7 +602,7 @@ function bindCanvasEvents()
   {
     return anbt.unsaved && !confirm("You haven't saved the drawing. Abandon?");
   };
-  
+
   ID("exit").addEventListener('click', function()
   {
     if (!confirm("Really exit?")) return;
@@ -997,7 +997,7 @@ function enhanceCanvas(insandbox)
       {
         if (restorePoints !== 0) old_redo();
       };
-      
+
       // Make resetting have no confirmation but undoable, and reset sandbox timer
       drawApp.reset = function()
       {
@@ -1088,7 +1088,7 @@ function enhanceCanvas(insandbox)
           localStorage.removeItem("anbt_drawingbackup");
         }
       }
-      
+
       drawApp.old_canvasMouseDown = drawApp.onCanvasMouseDown();
       drawApp.canvas.on('mousedown', function(e)
         {
@@ -1291,7 +1291,7 @@ function enhanceCanvas(insandbox)
           }
         }
       );
-      $(".eraserPicker").parent().contextmenu(function(e){ return false; }); 
+      $(".eraserPicker").parent().contextmenu(function(e){ return false; });
       $(".colorPicker").parent().mousedown(colorPickerMousedown);
       $(".colorPicker").parent().contextmenu(function(e){ return false; });
 
@@ -1343,7 +1343,7 @@ function enhanceCanvas(insandbox)
     pallabel.popover({container: "body", placement: "bottom", html: 1, content: paloptions});
     pallabel.attr("title", "Click to choose the palette");
     $("#colorOptions").prepend($('<p style="text-align: center"></p>').append(pallabel));
-    
+
     // Re-add missing background color selection in sandbox
     bgoptions = $('<div id="bgOptions">');
     $(".colorPicker").each(
@@ -1403,12 +1403,12 @@ function documentReadyOnPlay() // Mostly copied from the $(document).ready funct
     defaultBgColor = $('#colorOptions').find('.defaultBgColor').attr('data-color');
     $('#drawingCanvas').css('background', defaultBgColor ? defaultBgColor : defaultFill);
 
-    $('#btn-color').popover({ 
+    $('#btn-color').popover({
       html: true,
       content: function() {
         return $('#colorOptions').html();
       }
-    }); 
+    });
 
     if ($('#btn-bglayer').html() != null) {
       $('#btn-bglayer').popover({ html : true, placement: 'top' });
@@ -1427,7 +1427,7 @@ function documentReadyOnPlay() // Mostly copied from the $(document).ready funct
 
     var ctx = drawApp.context;
     restorePoints = [ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height)];
-    
+
     $('#timeleft').countdown({until: +timeleft, compact: true, format: "MS", onTick: highlightCountdown, onExpiry: timesUpWarning});
 
     $('#undo-button').click(function() {
@@ -1498,7 +1498,7 @@ function empowerPlay(noReload)
 {
   if (!document.getElementById("gameForm")) return;
 
-  // Add options 
+  // Add options
   var optionsButton = $('<input type="button" value="Options &#x25BC;" class="btn btn-primary btn-sm">');
   var optionsDiv = $('<div>');
   var playModeButton = $('<input id="playMode" type="button" onclick="return playModeClick();" class="btn btn-default btn-sm">');
@@ -1507,7 +1507,7 @@ function empowerPlay(noReload)
 
   $(".gameControls").prepend(optionsButton);
   optionsButton.popover({container: "body", placement: "bottom", html: 1, content: optionsDiv});
-  
+
   if (!noReload)
   {
     // Show time remaining in document title
@@ -1521,7 +1521,7 @@ function empowerPlay(noReload)
       document.title = "[" + m + ":" + s + "] " + origtitle;
     };
     $("#timeleft").countdown('option', 'onTick', window.highlightCountdown);
-    
+
     // Add sound to timeout warning
     var blitz = isBlitzInPlay();
     if ((options.timeoutSound && !blitz) || (options.timeoutSoundBlitz && blitz))
@@ -1787,7 +1787,7 @@ function toggleLight()
 function betterView()
 {
   var drawings = $('img[src^="/pub/panels/"]');
-	
+
   // Show approximate creation time from the first drawing panel
   var m = drawings.attr("src").match(/\/pub\/panels\/(\d+)\/(\d+)-(\d+)\//);
   var monthNames = ["January", "February", "March", "April", "May", "June",
@@ -1796,7 +1796,7 @@ function betterView()
   var startDate = monthNames[parseInt(m[2], 10) - 1] + " " + day + ", " + m[1];
   var lead = $("#main .lead");
   lead.text(lead.text().replace("game completed", "game started on " + startDate + " and completed"));
-  
+
   // Fix misaligned panels
   var tryNextPanel = function()
   {
@@ -1810,11 +1810,11 @@ function betterView()
   };
   // TODO: also fix if script is executed after page load
   drawings.on("error", tryNextPanel);
-  
+
   // Hide your own number of likes
   if (options.ownPanelLikesSecret)
     $(".panel-user").find('a[href*="/' + userid + '/"]').parent().parent().find("span.disabled .numlikes").text("?").css("opacity", "0.5");
-  
+
   // Reverse panels button and like all button
   $("#btn-copy-url")
     .after(' <a href="#" class="btn btn-default" onclick="return reversePanels();" title="Reverse panels"><span class="glyphicon glyphicon-refresh"></span> Reverse</a>')
@@ -1880,7 +1880,7 @@ function betterView()
       if (this.complete) addReplayButton.call(this);
     });
   }
-  
+
   // Linkify the links
   $('.comment-body').each(function()
     {
@@ -2001,12 +2001,12 @@ function betterPanel()
       });
     }
   }
-  
+
   if (options.rememberPosition && $(".regForm > .lead").text().match(/public game/)) // your own panel
   {
     panelPositions.load();
     if (panelPositions.player[panelId]) return;
-    
+
     var profileUrl = $(".btn").has(".avatar").attr("href");
     $.get(profileUrl, function (html)
     {
@@ -2021,7 +2021,7 @@ function betterPanel()
   }
 }
 
-var panelPositions = 
+var panelPositions =
 {
   player: null,
   last: null,
@@ -2032,7 +2032,7 @@ var panelPositions =
       var val = localStorage.getItem(key);
       return val && JSON.parse(val) || {};
     }
-    
+
     panelPositions.player = loadObj("gpe_panelPositions");
     panelPositions.last = loadObj("gpe_lastGamePositions");
   },
@@ -2047,8 +2047,8 @@ var panelPositions =
     {
       $.each(obj, function (k) { if (keys.indexOf(k) < 0) delete obj[k]; });
     }
-    
-    var existingIds = $(page).find(".progress-striped").map(function () 
+
+    var existingIds = $(page).find(".progress-striped").map(function()
     {
       return getPanelId($(this).prev().attr("href"));
     }).get();
@@ -2060,37 +2060,37 @@ var panelPositions =
 function initAjaxRetry()
 {
   if (!options.ajaxRetry) return;
-  
+
   var requestCount = 0;
-  
+
   $.ajaxPrefilter(function (options, originalOptions)
   {
     requestCount++;
     $("body").css("cursor", "progress");
-    
+
     if (options.retryEnabled) return;
-    
+
     var isComment = options.url === "/viewgame/comments/add.json";
     var retryCount = 0;
-    
+
     options.retryEnabled = true;
     options.success = function (data, textStatus, jqXHR)
     {
       if (options.url === "/viewgame/like/panel.json" && data && data.error === "Invalid request. You already liked this?")
         data = { callJS: "updateLikeDisplay", data: { panelid: options.data.panelid, setstatus: options.data.action === "Like" ? "on" : "off"} };
-        
+
       if (options.url === "/play/skip.json" && data && data.error === "Sorry, but we couldn\u0027t find your current game.")
       {
         location.reload();
         return;
       }
-        
+
       if (options.url === "/play/exit.json" && data && data.error === "Sorry, but we couldn\u0027t find your current game.")
       {
         location.pathname = "/";
         return;
       }
-      
+
       originalOptions.success && originalOptions.success(data, textStatus, jqXHR);
     };
     options.error = function ()
@@ -2099,14 +2099,14 @@ function initAjaxRetry()
         $.ajax(options);
       else
         originalOptions.error && originalOptions.error.apply(this, arguments);
-      
+
       if (isComment)
         $("#commentButton").button("reset");
     };
     options.complete = function ()
     {
       originalOptions.complete && originalOptions.complete.apply(this, arguments);
-      
+
       if (--requestCount <= 0)
         $("body").css("cursor", "");
     };
@@ -2305,12 +2305,12 @@ function betterPlayer()
         }
       );
     };
-    
+
     if (options.rememberPosition)
     {
       panelPositions.load();
       panelPositions.clear(document);
-      
+
       $(".progress-striped").each(function ()
       {
         var panelId = getPanelId($(this).prev().attr("href"));
@@ -2319,8 +2319,8 @@ function betterPlayer()
         var panelProgress = $(this).find(".progress-bar-text");
         var panelProgressText = panelProgress.text();
         var panelPosition = parseInt(panelProgressText.match(/\d+/)[0]);
-        var totalPanelCount = parseInt(panelProgressText.match(/\d+/g)[1]); 
-        
+        var totalPanelCount = parseInt(panelProgressText.match(/\d+/g)[1]);
+
         panelProgress.css("pointer-events", "none"); // to make tooltips work under label
         if ((playerPanelPosition || lastSeenPanelPosition || panelPosition) < panelPosition)
         {
@@ -2355,10 +2355,10 @@ function betterPlayer()
             .insertBefore(this)
             .tooltip();
         }
-        
+
         panelPositions.last[panelId] = panelPosition;
       });
-      
+
       panelPositions.save();
     }
   } else {
@@ -2733,7 +2733,7 @@ function drawingHint()
       complete: function(result)
       {
         result = JSON.parse(result.responseText);
-        
+
         alert("Title: " + result.data.title + "\nImage: http://drawception.com" + result.data.image);
       }
     }
@@ -2816,7 +2816,7 @@ function pageEnhancements()
   loadScriptSettings();
   if (loc.match(/drawception\.com\/forums\/post-preview\/#newcanvas_sandbox/)) return(setupNewCanvas(true));
   if (loc.match(/drawception\.com\/forums\/post-preview\/#newcanvas_play/)) return(setupNewCanvas(false));
-  
+
   if (pagodaBoxError()) return;
 
   if (typeof jQuery == "undefined") return; // Firefox Greasemonkey seems to call pageEnhancements() after document.write...
@@ -3014,7 +3014,7 @@ function pageEnhancements()
     versionDisplay = "ANBT v" + SCRIPT_VERSION + " | js/css unknown";
   }
   $("#navbar-user").append('<div id="anbtver">' + versionDisplay + '</div>');
-  
+
   if (options.newCanvas)
   {
     var directToNewSandbox, directToNewPlay;
