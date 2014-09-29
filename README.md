@@ -88,6 +88,12 @@ Forum:
 
 ## CHANGELOG
 
+1.7.2014.9
+- Tell to look at settings if freshly installed
+- Dark style: fixes for store, popovers, search page
+- New canvas: thanksgiving palette detection fix
+- Add standalone chat link in settings
+
 1.6.2014.9
 - New canvas: backup option now saves the drawing before submitting
 - New canvas: better header
