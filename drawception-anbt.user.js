@@ -2607,7 +2607,7 @@ function addScriptSettings()
       ["rememberPosition", "boolean", "Show your panel position and track changes in unfinished games list"],
     ]
   );
-  addGroup("Chat",
+  addGroup('Chat (Standalone address: <a href="http://chat.grompe.org.ru/#drawception">http://chat.grompe.org.ru/#drawception</a>)',
     [
       ["loadChat", "boolean", "Load the embedded chat"],
       ["chatAutoConnect", "boolean", "Automatically connect to the chat"],
