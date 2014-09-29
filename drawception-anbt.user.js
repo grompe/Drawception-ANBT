@@ -508,7 +508,7 @@ function handlePlayParameters()
     normal: ["Normal", "#fffdc9"],
     sepia: ["Sepia", "#ffe2c4"],
     grayscale: ["Grayscale", "#eee"],
-    "b&w": ["Black and white", "#fff"],
+    "b&amp;w": ["Black and white", "#fff"],
     cga: ["CGA", "#ff5"],
     gameboy: ["Gameboy", "#9bbc0f"],
     neon: ["Neon", "#00abff"],
