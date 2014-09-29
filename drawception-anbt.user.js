@@ -2933,10 +2933,13 @@ function pageEnhancements()
     $("#menusettings").attr("title", "");
     $("#menusettings").tooltip({container: "body", placement: "bottom", title: freshSettingsHint});
     $("#menusettings").tooltip("show");
-    $("#menusettings").click(function()
+    var freshHintRemove = function()
     {
       localStorage.setItem("anbt_newSettingsSeen", 1);
-    });
+    };
+    $("#menusettings").on('click', freshHintRemove);
+    $("#menusettings").on('mousedown', freshHintRemove);
+    $("#menusettings").on('touchstart', freshHintRemove);
   }
   // Make new notifications actually discernable from the old ones
   var num = $("#user-notify-count").text().trim();
