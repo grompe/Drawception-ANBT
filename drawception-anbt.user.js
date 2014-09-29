@@ -2922,9 +2922,22 @@ function pageEnhancements()
   p.append('<a href="/faq/" title="FAQ" class="gpe-wide gpe-btn btn btn-success navbar-btn navbar-user-item"><span class="glyphicon glyphicon-info-sign" /></a>');
   p.append('<a href="/forums/" title="Forums" class="gpe-wide gpe-btn btn btn-success navbar-btn navbar-user-item" style="background:#55A"><span class="glyphicon glyphicon-comment" style="color:#BBF" /></a>');
   p.append('<a href="/search/" title="Search" class="gpe-wide gpe-btn btn btn-success navbar-btn navbar-user-item"><span class="glyphicon glyphicon-search" /></a>');
-  p.append('<a href="/settings/" title="Settings" class="gpe-wide gpe-btn btn btn-success navbar-btn navbar-user-item"><span class="glyphicon glyphicon-cog" /></a>');
+  p.append('<a id="menusettings" href="/settings/" title="Settings" class="gpe-wide gpe-btn btn btn-success navbar-btn navbar-user-item"><span class="glyphicon glyphicon-cog" /></a>');
   p.append('<a href="/logout/" title="Log Out" class="gpe-wide gpe-btn btn btn-success navbar-btn navbar-user-item" style="background:#A55"><span class="glyphicon glyphicon-log-out" style="color:#FBB" /></a>');
 
+  // Tell to look at settings if freshly installed
+  var newSettingsSeen = localStorage.getItem("anbt_newSettingsSeen");
+  if (!newSettingsSeen)
+  {
+    var freshSettingsHint = "Thanks for choosing ANBT! Script settings are on the settings page. Don't forget to try the new canvas!";
+    $("#menusettings").attr("title", "");
+    $("#menusettings").tooltip({container: "body", placement: "bottom", title: freshSettingsHint});
+    $("#menusettings").tooltip("show");
+    $("#menusettings").click(function()
+    {
+      localStorage.setItem("anbt_newSettingsSeen", 1);
+    });
+  }
   // Make new notifications actually discernable from the old ones
   var num = $("#user-notify-count").text().trim();
   GM_addStyle(
