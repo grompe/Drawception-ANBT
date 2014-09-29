@@ -283,7 +283,6 @@ if (typeof GM_addStyle == 'undefined')
 canvas integration todo:
 - add time+ button
 - autoskipping captions/drawings
-- backup drawing?
 - show buttons in menu bar?
 
 */
@@ -610,6 +609,10 @@ function bindCanvasEvents()
   {
     ID("submit").disabled = true;
     anbt.MakePNG(300, 250, true);
+    if (options.backup)
+    {
+      localStorage.setItem("anbt_drawingbackup_newcanvas", anbt.pngBase64);
+    }
     var params = "game_token=" + window.gameinfo.gameid + "&panel=" + encodeURIComponent(anbt.pngBase64);
     sendPost('/play/draw.json', params, function()
     {
@@ -689,7 +692,20 @@ function deeper_main()
   bindCanvasEvents();
   if (window.insandbox)
   {
-    if (window.panelid) anbt.FromURL("/panel/drawing/" + window.panelid + "/");
+    if (window.panelid)
+    {
+      anbt.FromURL("/panel/drawing/" + window.panelid + "/");
+    } else {
+      if (options.backup)
+      {
+        var pngdata = localStorage.getItem("anbt_drawingbackup_newcanvas");
+        if (pngdata)
+        {
+          anbt.FromPNG(base642bytes(pngdata.substr(22)).buffer);
+          localStorage.removeItem("anbt_drawingbackup_newcanvas");
+        }
+      }
+    }
   } else {
     ID("newcanvasyo").className = "play";
     getParametersFromPlay();
@@ -2507,7 +2523,7 @@ function addScriptSettings()
       ["asyncSkip", "boolean", "Fast Async Skip (experimental)"],
       ["hideCross", "boolean", "Hide the cross when drawing"],
       ["enterToCaption", "boolean", "Submit captions by pressing Enter"],
-      ["backup", "boolean", "Save drawings from page reload and place timed out ones in sandbox"],
+      ["backup", "boolean", "Save the drawing in case of error and restore it in sandbox"],
       ["timeoutSound", "boolean", "Warning sound when only a minute is left (normal games)"],
       ["timeoutSoundBlitz", "boolean", "Warning sound when only 5 seconds left (blitz)"],
       ["rememberPosition", "boolean", "Show your panel position and track changes in unfinished games list"],
