@@ -88,6 +88,9 @@ Forum:
 
 ## CHANGELOG
 
+1.8.2014.9
+- New canvas: black and white palette detection fix
+
 1.7.2014.9
 - Tell to look at settings if freshly installed
 - Dark style: fixes for store, popovers, search page
