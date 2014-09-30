@@ -444,10 +444,13 @@ function handleSandboxParameters()
   if (gameinfo.drawingbylink)
   {
     var playerid = gameinfo.drawingbylink.match(/\d+/);
+    var playername = gameinfo.drawingbylink.match(/>([^<]+)</);
     var avatar = '<img src="/pub/avatars/' + playerid + '.jpg" width="25" height="25">';
     ID("headerinfo").innerHTML = 'Playback of drawing by ' + avatar + " " + gameinfo.drawingbylink;
+    if (playername) document.title = playername[1] + "'s drawing - Drawception";
     ID("drawthis").innerHTML = '"' + gameinfo.title.replace(/ \(drawing by .+\)$/, '"');
     ID("drawthis").classList.remove("onlyplay");
+    ID("emptytitle").classList.add("onlyplay");
     if (options.autoplay) anbt.Play();
   } else {
     ID("headerinfo").innerHTML = 'Sandbox with ' + vertitle;
@@ -468,6 +471,7 @@ function handlePlayParameters()
 
   ID("headerinfo").innerHTML = 'Playing with ' + vertitle;
   ID("drawthis").classList.add("onlyplay");
+  ID("emptytitle").classList.remove("onlyplay");
 
   var info = window.gameinfo;
 
