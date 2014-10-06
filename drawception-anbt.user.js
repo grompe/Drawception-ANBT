@@ -491,6 +491,7 @@ function handlePlayParameters()
   var newcanvas = ID("newcanvasyo");
   newcanvas.className = "play";
   if (info.friend) newcanvas.classList.add("friend");
+  ID("palettechooser").className = info.friend ? "" : "onlysandbox";
   if (info.nsfw) newcanvas.classList.add("nsfw");
   if (info.blitz) newcanvas.classList.add("blitz");
   newcanvas.classList.add(info.image ? "captioning" : "drawing");
