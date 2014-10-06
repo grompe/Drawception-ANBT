@@ -88,6 +88,10 @@ Forum:
 
 ## CHANGELOG
 
+1.10.2014.10
+- New canvas: allow changing the palette in friend games
+- New canvas: make default, remove experimental status, add link to players with replayable panels, show notice if using old canvas
+
 1.9.2014.9
 - Make sure to remove the settings hint
 - Nicer menu buttons color

@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      1.9.2014.9
+// @version      1.10.2014.9
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.9.2014.9";
+var SCRIPT_VERSION = "1.10.2014.9";
 var NEWCANVAS_VERSION = 3; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
@@ -35,7 +35,7 @@ var options =
   backup: 1,
   timeoutSound: 0,
   timeoutSoundBlitz: 0,
-  newCanvas: 0,
+  newCanvas: 1,
   proxyImgur: 0,
   rememberPosition: 0,
   ajaxRetry: 1,
@@ -828,6 +828,7 @@ function enhanceCanvas(insandbox)
 
   var drawCursor = document.getElementById("drawCursor");
 
+  $("#gameForm").before('<b>Note: you are using the old canvas! New canvas can be enabled on the <a href="/settings/"><span class="glyphicon glyphicon-cog" /> settings page</a>.</b>');
   $(document.body).append('<object id="wtPlugin" type="application/x-wacomtabletplugin" width="1" height="1"></object>');
   var wtPlugin = document.getElementById("wtPlugin");
   var penAPI, strokeSize, dynSize, pressureUpdater, backupTimer;
@@ -2597,7 +2598,7 @@ function addScriptSettings()
   );
   addGroup("Play",
     [
-      ["newCanvas", "boolean", "New drawing canvas (experimental, allows watching playback)"],
+      ["newCanvas", "boolean", 'New drawing canvas (also allows <a href="http://grompe.org.ru/replayable-drawception/">watching playback</a>)'],
       ["asyncSkip", "boolean", "Fast Async Skip (experimental)"],
       ["hideCross", "boolean", "Hide the cross when drawing"],
       ["enterToCaption", "boolean", "Submit captions by pressing Enter"],
