@@ -567,9 +567,9 @@ function handlePlayParameters()
     if (s < 1)
     {
       document.title = "[TIME'S UP!] Playing Drawception";
-      if (!info.caption || window.timesup)
+      if (info.image || window.timesup)
       {
-        if (info.caption)
+        if (!info.image)
         {
           getParametersFromPlay();
         } else {
