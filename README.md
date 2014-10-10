@@ -88,6 +88,10 @@ Forum:
 
 ## CHANGELOG
 
+1.11.2014.10
+- New canvas: fix missing 15 seconds timer to submit in draw first
+- New canvas: option to confirm submitting if more than a minute is left
+
 1.10.2014.10
 - New canvas: allow changing the palette in friend games
 - New canvas: make default, remove experimental status, add link to players with replayable panels, show notice if using old canvas
