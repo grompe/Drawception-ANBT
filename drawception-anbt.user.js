@@ -41,6 +41,7 @@ var options =
   ajaxRetry: 1,
   localeTimestamp: 0,
   autoplay: 1, // Whether to automatically start playback of a recorded drawing
+  submitConfirm: 1,
 };
 
 /*
@@ -659,6 +660,8 @@ function bindCanvasEvents()
 
   ID("submit").addEventListener('click', function()
   {
+    var moreThanMinuteLeft = timerStart - Date.now() > 60000;
+    if (options.submitConfirm && moreThanMinuteLeft && !confirm("Ready to submit this drawing?")) return;
     ID("submit").disabled = true;
     anbt.MakePNG(300, 250, true);
     if (options.backup)
@@ -2599,7 +2602,8 @@ function addScriptSettings()
   addGroup("Play",
     [
       ["newCanvas", "boolean", 'New drawing canvas (also allows <a href="http://grompe.org.ru/replayable-drawception/">watching playback</a>)'],
-      ["asyncSkip", "boolean", "Fast Async Skip (experimental)"],
+      ["submitConfirm", "boolean", "Confirm submitting if more than a minute is left (New canvas only)"],
+      ["asyncSkip", "boolean", "Fast Async Skip (experimental, applies to old canvas only)"],
       ["hideCross", "boolean", "Hide the cross when drawing"],
       ["enterToCaption", "boolean", "Submit captions by pressing Enter"],
       ["backup", "boolean", "Save the drawing in case of error and restore it in sandbox"],
