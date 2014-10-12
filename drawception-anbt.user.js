@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      1.11.2014.10
+// @version      1.12.2014.10
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.11.2014.10";
+var SCRIPT_VERSION = "1.12.2014.10";
 var NEWCANVAS_VERSION = 3; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
@@ -831,7 +831,7 @@ function enhanceCanvas(insandbox)
 
   var drawCursor = document.getElementById("drawCursor");
 
-  $("#gameForm").before('<b>Note: you are using the old canvas! New canvas can be enabled on the <a href="/settings/"><span class="glyphicon glyphicon-cog" /> settings page</a>.</b>');
+  $("#gameForm").after('<b>ANBT Note: you are using the old canvas! New canvas can be enabled on the <a href="/settings/"><span class="glyphicon glyphicon-cog" /> settings page</a>.</b>');
   $(document.body).append('<object id="wtPlugin" type="application/x-wacomtabletplugin" width="1" height="1"></object>');
   var wtPlugin = document.getElementById("wtPlugin");
   var penAPI, strokeSize, dynSize, pressureUpdater, backupTimer;

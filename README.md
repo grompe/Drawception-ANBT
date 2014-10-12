@@ -88,6 +88,9 @@ Forum:
 
 ## CHANGELOG
 
+1.12.2014.10
+- Move notice for old canvas to the bottom of the page
+
 1.11.2014.10
 - New canvas: fix missing 15 seconds timer to submit in draw first
 - New canvas: option to confirm submitting if more than a minute is left
