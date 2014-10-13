@@ -88,6 +88,9 @@ Forum:
 
 ## CHANGELOG
 
+1.13.2014.10
+- New canvas more resilient to server errors
+
 1.12.2014.10
 - Move notice for old canvas to the bottom of the page
 

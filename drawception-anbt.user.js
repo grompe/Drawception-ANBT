@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      1.12.2014.10
+// @version      1.13.2014.10
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.12.2014.10";
+var SCRIPT_VERSION = "1.13.2014.10";
 var NEWCANVAS_VERSION = 3; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
@@ -474,6 +474,7 @@ function handlePlayParameters()
   ID("drawthis").classList.add("onlyplay");
   ID("emptytitle").classList.remove("onlyplay");
 
+  window.submitting = false;
   var info = window.gameinfo;
 
   if (info.error)
@@ -570,12 +571,16 @@ function handlePlayParameters()
       document.title = "[TIME'S UP!] Playing Drawception";
       if (info.image || window.timesup)
       {
-        if (!info.image)
+        // If pressed submit before timer expired, let it process or retry in case of error
+        if (!window.submitting)
         {
-          getParametersFromPlay();
-        } else {
-          // Allow to save the drawing after time's up
-          exitToSandbox();
+          if (!info.image)
+          {
+            getParametersFromPlay();
+          } else {
+            // Allow to save the drawing after time's up
+            exitToSandbox();
+          }
         }
       } else {
         newcanvas.classList.add("locked");
@@ -668,10 +673,17 @@ function bindCanvasEvents()
     {
       localStorage.setItem("anbt_drawingbackup_newcanvas", anbt.pngBase64);
     }
+    window.submitting = true;
     var params = "game_token=" + window.gameinfo.gameid + "&panel=" + encodeURIComponent(anbt.pngBase64);
     sendPost('/play/draw.json', params, function()
     {
-      var o = JSON.parse(this.responseText);
+      var o;
+      try
+      {
+        o = JSON.parse(this.responseText);
+      } catch (e) {
+        o = {error: this.responseText};
+      }
       if (o.error)
       {
         ID("submit").disabled = false;
@@ -701,11 +713,18 @@ function bindCanvasEvents()
       ID("caption").focus();
       return alert("You haven't entered a caption!");
     }
+    window.submitting = true;
     var params = "game_token=" + window.gameinfo.gameid + "&title=" + encodeURIComponent(title);
     ID("submitcaption").disabled = true;
     sendPost('/play/describe.json', params, function()
     {
-      var o = JSON.parse(this.responseText);
+      var o;
+      try
+      {
+        o = JSON.parse(this.responseText);
+      } catch (e) {
+        o = {error: this.responseText};
+      }
       if (o.error)
       {
         ID("submitcaption").disabled = false;
