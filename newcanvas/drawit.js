@@ -378,6 +378,7 @@ var anbt =
     width: "600", height: "500",
   }),
   canvas: document.createElement("canvas"),
+  canvasDisp: document.createElement("canvas"),
   svgDisp: svgElement("svg",
   {
     //xmlns: "http://www.w3.org/2000/svg",
@@ -413,6 +414,18 @@ var anbt =
     this.ctx.lineJoin = "round";
     this.ctx.lineCap = "round";
     this.container.appendChild(this.canvas);
+    if (!navigator.userAgent.match(/\bPresto\b/))
+    {
+      this.canvasDisp.width = 600;
+      this.canvasDisp.height = 500;
+      this.ctxDisp = this.canvasDisp.getContext("2d");
+      this.ctxDisp.lineJoin = "round";
+      this.ctxDisp.lineCap = "round";
+      this.container.appendChild(this.canvasDisp);
+    } else {
+      // Opera Presto is faster with SVG redrawing
+      this.DrawDispLine = this.DrawDispLinePresto;
+    }
     this.container.appendChild(this.svgDisp);
     var rect = svgElement("rect",
       {
@@ -425,9 +438,6 @@ var anbt =
       }
     );
     this.svg.appendChild(rect);
-    // This fixes a bug in older Firefox where strokes
-    // on transparent background are rendered incorrectly
-    this.DrawSVGElement(rect);
   },
   FromOldSVG: function(buf) // TODO: This function is messy
   {
@@ -943,6 +953,21 @@ var anbt =
       this.DrawSVGElement(this.svg.childNodes[i]);
     }
   },
+  DrawDispLinePresto: function(x1, y1, x2, y2, first)
+  {
+    if (first) this.svgDisp.insertBefore(this.path, this.svgDisp.firstChild);
+  },
+  DrawDispLine: function(x1, y1, x2, y2, first)
+  {
+    var ctx = this.ctxDisp;
+    var c = this.lastcolor;
+    ctx.strokeStyle = this.pattern ? this.MakePattern(c, this.pattern) : c;
+    ctx.lineWidth = this.size;
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+  },
   StrokeBegin: function(x, y, left)
   {
     var cls = null;
@@ -962,10 +987,12 @@ var anbt =
         fill: "none",
       }
     );
+    this.lastcolor = color;
     this.path.pattern = this.pattern;
-    this.svgDisp.insertBefore(this.path, this.svgDisp.firstChild);
+    //this.svgDisp.insertBefore(this.path, this.svgDisp.firstChild);
     this.path.pathSegList.appendItem(this.path.createSVGPathSegMovetoAbs(x, y));
     this.path.pathSegList.appendItem(this.path.createSVGPathSegLinetoAbs(x, y + 0.001));
+    this.DrawDispLine(x, y, x, y + 0.001, true);
     this.points = [];
     this.points.push({x: x, y: y});
     this.blot = true;
@@ -982,6 +1009,7 @@ var anbt =
     }
     this.path.orig = p;
     this.Add(this.path);
+    this.ctxDisp && this.ctxDisp.clearRect(0, 0, 600, 500);
     this.isStroking = false;
   },
   StrokeAdd: function(x, y)
@@ -995,6 +1023,7 @@ var anbt =
       this.blot = false;
     }
     this.path.pathSegList.appendItem(this.path.createSVGPathSegLinetoAbs(x, y));
+    this.DrawDispLine(p.x, p.y, x, y);
     this.points.push({x: x, y: y});
   },
   // Experimental, for making polylines like in Photoshop

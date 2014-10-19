@@ -88,6 +88,10 @@ Forum:
 
 ## CHANGELOG
 
+1.14.2014.10
+- Show the date drawings made on, in panel view header and game view tooltip
+- New canvas: improve drawing performance
+
 1.13.2014.10
 - New canvas more resilient to server errors
 
