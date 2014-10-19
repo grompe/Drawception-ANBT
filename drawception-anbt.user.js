@@ -1812,18 +1812,34 @@ function toggleLight()
   return;
 }
 
+function panelUrlToDate(url)
+{
+  var m = url.match(/\/pub\/panels\/(\d+)\/(\d+)-(\d+)\//);
+  if (!m) return;
+  var monthNames = ["January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"];
+  var day = (100 + parseInt(m[3], 10)).toString().slice(-2);
+  return monthNames[parseInt(m[2], 10) - 1] + " " + day + ", " + m[1];
+}
+
 function betterView()
 {
   var drawings = $('img[src^="/pub/panels/"]');
 
   // Show approximate creation time from the first drawing panel
-  var m = drawings.attr("src").match(/\/pub\/panels\/(\d+)\/(\d+)-(\d+)\//);
-  var monthNames = ["January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"];
-  var day = (100 + parseInt(m[3], 10)).toString().slice(-2);
-  var startDate = monthNames[parseInt(m[2], 10) - 1] + " " + day + ", " + m[1];
+  var startDate = panelUrlToDate(drawings.attr("src"));
   var lead = $("#main .lead");
   lead.text(lead.text().replace("game completed", "game started on " + startDate + " and completed"));
+
+  // Show each drawing make date
+  drawings.each(function()
+  {
+    var d;
+    if (d = panelUrlToDate(this.src))
+    {
+      this.title = "Made on " + d;
+    }
+  });
 
   // Fix misaligned panels
   var tryNextPanel = function()
@@ -2008,6 +2024,12 @@ function betterPanel()
     }
   );
   $(".gamepanel").after(favButton);
+
+  var d, img = $(".gamepanel img");
+  if (img.length && (d = panelUrlToDate(img.attr("src"))))
+  {
+    $("#main .lead").append("<br>made on " + d);
+  }
 
   var panelId = getPanelId(location.pathname);
 
