@@ -387,7 +387,7 @@ function extractInfoFromHTML(html)
     timeleft: extract(/<span id="timeleft">\s+(\d+)\s+<\/span>/),
     caption: extract(/<p class="play-phrase">\s+([^<]+)\s+<\/p>/),
     image: extract(/<img src="(data:image\/png;base64,[^"]*)"/),
-    palette: extract(/theme item was applied to this game">([^<]+)<\/span>/),
+    palette: extract(/heme item was applied to this game">([^<]+)<\/span>/),
     bgbutton: extract(/<img src="\/img\/draw_bglayer.png"/),
     playerid: extract(/<a href="\/player\/(\d+)\//),
     playername: extract(/<span class="glyphicon glyphicon-user"><\/span> (.+)\n/),
