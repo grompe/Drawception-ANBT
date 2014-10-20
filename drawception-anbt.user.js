@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      1.14.2014.10
+// @version      1.15.2014.10
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.14.2014.10";
+var SCRIPT_VERSION = "1.15.2014.10";
 var NEWCANVAS_VERSION = 4; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
@@ -383,7 +383,7 @@ function extractInfoFromHTML(html)
     blitz: extract(/BLITZ MODE<br \/>/),
     nsfw: extract(/>This game Not Safe For Work \(18\+\)<\/span>/),
     friend: extract(/<legend>\s+Friend Game/),
-    drawfirst: extract(/DrawceptionPlay\.abortDrawFirst\(\)/), // FIXME
+    drawfirst: extract(/<input type="button" value="Abort" onclick="DrawceptionPlay\.abortDrawFirst\(\)/),
     timeleft: extract(/<span id="timeleft">\s+(\d+)\s+<\/span>/),
     caption: extract(/<p class="play-phrase">\s+([^<]+)\s+<\/p>/),
     image: extract(/<img src="(data:image\/png;base64,[^"]*)"/),
@@ -463,11 +463,13 @@ function handleSandboxParameters()
 
 function handlePlayParameters()
 {
-  ID("skip").disabled = false;
-  ID("report").disabled = false;
+  var info = window.gameinfo;
+
+  ID("skip").disabled = info.drawfirst;
+  ID("report").disabled = info.drawfirst;
   ID("exit").disabled = false;
   ID("start").disabled = false;
-  ID("bookmark").disabled = false;
+  ID("bookmark").disabled = info.drawfirst;
   ID("timeplus").disabled = false;
 
   ID("headerinfo").innerHTML = 'Playing with ' + vertitle;
@@ -475,7 +477,6 @@ function handlePlayParameters()
   ID("emptytitle").classList.remove("onlyplay");
 
   window.submitting = false;
-  var info = window.gameinfo;
 
   if (info.error)
   {
@@ -487,7 +488,7 @@ function handlePlayParameters()
     (info.nsfw ? "Not Safe For Work (18+) " : "safe for work ") +
     (info.blitz ? "BLITZ " : "") +
     "Game";
-  ID("drawthis").innerHTML = info.caption || "";
+  ID("drawthis").innerHTML = info.caption || info.drawfirst && "(Start your game!)" || "";
   ID("tocaption").src = "";
 
   var newcanvas = ID("newcanvasyo");
@@ -616,13 +617,28 @@ function bindCanvasEvents()
 
   ID("exit").addEventListener('click', function()
   {
+    if (window.gameinfo.drawfirst)
+    {
+      if (!confirm("Abort creating a draw first game?")) return;
+      ID("exit").disabled = true;
+      sendGet("/play/abort-start.json?game_token=" + window.gameinfo.gameid, function()
+      {
+        ID("exit").disabled = false;
+        exitToSandbox();
+        document.location.pathname = "/create/";
+      }, function()
+      {
+        ID("exit").disabled = false;
+        alert("Server error. :( Try again?");
+      });
+      return;
+    }
     if (!confirm("Really exit?")) return;
     ID("exit").disabled = true;
     sendGet("/play/exit.json?game_token=" + window.gameinfo.gameid, function()
     {
       ID("exit").disabled = false;
       exitToSandbox();
-      //document.location.pathname = "/";
     });
   });
 
