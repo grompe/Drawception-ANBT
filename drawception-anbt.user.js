@@ -2991,7 +2991,11 @@ function pageEnhancements()
   var newSettingsSeen = localStorage.getItem("anbt_newSettingsSeen");
   if (!newSettingsSeen)
   {
-    var freshSettingsHint = "Thanks for choosing ANBT! Script settings are on the settings page. Don't forget to try the new canvas!";
+    var freshSettingsHint = "Thanks for choosing ANBT! Script settings are on the settings page.";
+    if (!options.newCanvas)
+    {
+      freshSettingsHint += " Don't forget to try the new canvas!";
+    }
     $("#menusettings").attr("title", "");
     $("#menusettings").tooltip({container: "body", placement: "bottom", title: freshSettingsHint});
     $("#menusettings").tooltip("show");
