@@ -88,6 +88,12 @@ Forum:
 
 ## CHANGELOG
 
+1.16.2014.10
+- Adjust fresh settings hint
+- Dark style: fix body background that is visible on short pages/large displays
+- Track new posts at forums main page
+- Fix ajaxRetry for liking panels
+
 1.15.2014.10
 - New canvas: fix halloween theme for draw first
 - New canvas: proper aborting and interface for draw first
