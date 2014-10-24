@@ -3184,7 +3184,7 @@ localStorage.setItem("gpe_darkCSS",
   ".btn-menu{~#2e2e2e$}.btn-menu:hover{~#232323$}.btn-yellow{~#8a874e$}.btn-yellow:hover{~#747034$}" +
   "a.label{color:#fff$}a.text-muted{color:#999$}a.wrong-order{color:#F99$}div.comment-holder:target{~#454$}" +
   ".popover{~#777$}.popover-title{~#666$;border-bottom:1px solid #444$}.popover.top .arrow:after{border-top-color:#777$}.popover.right .arrow:after{border-right-color:#777$}.popover.bottom .arrow:after{border-bottom-color:#777$}.popover.left .arrow:after{border-left-color:#777$}" +
-  ".bg-lifesupport{~#444$}html,body{~#333$}" +
+  ".bg-lifesupport{~#444$}body,.snap-content{~#333$}" +
   ".gsc-control-cse{~#444$;border-color:#333$}.gsc-above-wrapper-area,.gsc-result{border:none$}.gs-snippet{color:#AAA$}.gs-visibleUrl{color:#8A8$}a.gs-title b,.gs-visibleUrl b{color:#EEE$}.gsc-adBlock{display:none$}" +
   "#jappix_mini a{color:#000$}" +
   "a:visited.thumbnail{border-color:#555$}" +
