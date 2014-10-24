@@ -2143,7 +2143,9 @@ function initAjaxRetry()
     options.success = function (data, textStatus, jqXHR)
     {
       if (options.url === "/viewgame/like/panel.json" && data && data.error === "Invalid request. You already liked this?")
-        data = { callJS: "updateLikeDisplay", data: { panelid: options.data.panelid, setstatus: options.data.action === "Like" ? "on" : "off"} };
+      {
+        data = { callJS: "updateLikeDisplay", data: { panelid: originalOptions.data.panelid, setstatus: originalOptions.data.action === "Like" ? "on" : "off"} };
+      }
 
       if (options.url === "/play/skip.json" && data && data.error === "Sorry, but we couldn\u0027t find your current game.")
       {
