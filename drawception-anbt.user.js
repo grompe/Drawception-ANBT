@@ -2475,7 +2475,7 @@ function betterForum()
     return formatTimestamp(d.getTime() - tzo + 5 * 60 * 60 * 1000);
   }
 
-  $("span.muted, span.text-muted").each(function()
+  $("span.muted, span.text-muted").each(function(index)
     {
       var year, month, day, minutes, hours;
       var m, t = $(this), tx = t.text();
@@ -2491,7 +2491,17 @@ function betterForum()
         year = d.getFullYear();
         if ((d.getMonth() < 6) && (month >= 6)) year--;
         hours += (m[5] == 'pm') ? 12 : 0;
-        t.text("(last post " + convertForumTime(year, month, day, hours, minutes) + ")");
+        var time = convertForumTime(year, month, day, hours, minutes);
+        t.text("(last post " + time + ")");
+        // Track new posts at subforum list
+        if (location.href.match(/forums\/$/))
+        {
+          if (time != localStorage.getItem("anbt_subforum" + index))
+          {
+            t.parent().prepend('<span class="label label-sm label-warning">NEW</span>');
+            localStorage.setItem("anbt_subforum" + index, time);
+          }
+        }
       }
       else if (m = tx.match(/^\s*\[ (\d+):(\d+) ([ap]m) ... (...) (\d+).., (\d{4}) \]\s*$/))
       {
