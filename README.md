@@ -88,6 +88,12 @@ Forum:
 
 ## CHANGELOG
 
+1.17.2014.10
+- Dark style: fix body background again
+- New canvas: fix time+ item showing after skip
+- Add links to footer: script, wiki, chat, irc
+- Add woah when site updates
+
 1.16.2014.10
 - Adjust fresh settings hint
 - Dark style: fix body background that is visible on short pages/large displays
