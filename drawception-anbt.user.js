@@ -471,6 +471,7 @@ function handlePlayParameters()
   ID("start").disabled = false;
   ID("bookmark").disabled = info.drawfirst;
   ID("timeplus").disabled = false;
+  ID("timeplus").classList.remove("show");
 
   ID("headerinfo").innerHTML = 'Playing with ' + vertitle;
   ID("drawthis").classList.add("onlyplay");
