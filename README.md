@@ -88,6 +88,12 @@ Forum:
 
 ## CHANGELOG
 
+1.19.2014.10
+- New canvas: add shortcuts for brush size: Ctrl+1,2,3,4, <.> and <,>.
+- New canvas: clicking "Set background" or <B> also cancels choosing a background
+- New canvas: hide cross option now works
+- Enter to caption is off by default
+
 1.18.2014.10
 - New canvas: fix creating a friend game that would incorrectly lead to play
 

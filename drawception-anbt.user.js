@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      1.18.2014.10
+// @version      1.19.2014.10
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,8 +14,8 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.18.2014.10";
-var NEWCANVAS_VERSION = 4; // Increase to update the cached canvas
+var SCRIPT_VERSION = "1.19.2014.10";
+var NEWCANVAS_VERSION = 5; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
 
@@ -25,7 +25,7 @@ var options =
   enableWacom: 0, // Whether to enable Wacom plugin and thus pressure sensitivity support
   fixTabletPluginGoingAWOL: 1, // Fix pressure sensitivity disappearing in case of stupid/old Wacom plugin
   hideCross: 0, // Whether to hide the cross when drawing
-  enterToCaption: 1, // Whether to submit caption by pressing Enter
+  enterToCaption: 0, // Whether to submit caption by pressing Enter
   pressureExponent: 0.5, // Smaller = softer tablet response, bigger = sharper
   brushSizes: [2, 5, 12, 35], // Brush sizes for choosing via keyboard
   loadChat: 1, // Whether to load the chat

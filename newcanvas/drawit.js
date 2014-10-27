@@ -295,14 +295,14 @@ var random_acts = ['crazy from', 'thanks', 'hits', 'lies around on', 'sees', 'gr
   "doesn't want", 'licks', 'shoots', 'falls off', 'falls in', 'crawls on', 'turns into',
   'stuck to', 'jumps on', 'hides', 'hides in', 'disassembles', 'rips', 'dissolves',
   'stretches', 'crushes', 'pushes', 'drowns in', 'pokes', 'runs away from', 'wants',
-  'scratches', 'throws', 'and'];
+  'scratches', 'throws', 'and', 'confused by', 'unimpressed by'];
 var random_descs = ['white', 'concrete', 'shiny', 'ill', 'big', 'ex', 'fast', 'happy',
   'inside-out', 'hot', 'burning', 'thick', 'wooden', 'long', 'good', 'tattered', 'iron',
   'liquid', 'frozen', 'green', 'evil', 'bent', 'rough', 'pretty', 'red', 'round',
   'shaggy', 'bald', 'slow', 'wet', 'wrinkly', 'meaty', 'impudent', 'real', 'distraught',
   'sharp', 'plastic', 'gift', 'squished', 'chubby', 'crumbling', 'horned', 'angry',
   'sitting', 'stranded', 'dry', 'hard', 'thin', 'killer', 'walking', 'cold', 'wheezing',
-  'grunting', 'chirping', 'wide', 'electric', 'nuclear'];
+  'grunting', 'chirping', 'wide', 'electric', 'nuclear', 'confused', 'unimpressed'];
 function randomPhrase()
 {
   function randomBase()
@@ -1764,6 +1764,18 @@ function bindEvents()
     }
   };
   var chooseBackground = false;
+  var updateChooseBackground = function(b)
+  {
+    chooseBackground = b;
+    if (b)
+    {
+      ID("colors").classList.add("setbackground");
+      ID("setbackground").classList.add("sel");
+    } else {
+      ID("colors").classList.remove("setbackground");
+      ID("setbackground").classList.remove("sel");
+    }
+  };
   var colorClick = function(e)
   {
     if (e.touches || e.button === 0 || e.button === 2)
@@ -1776,9 +1788,7 @@ function bindEvents()
         {
           anbt.SetBackground(color);
         }
-        chooseBackground = false;
-        ID("colors").classList.remove("setbackground");
-        ID("setbackground").classList.remove("sel");
+        updateChooseBackground(false);
       } else {
         var showcolor = color;
         if (this.id == "eraser")
@@ -1811,9 +1821,7 @@ function bindEvents()
   ID("setbackground").addEventListener('click', function(e)
   {
     e.preventDefault();
-    chooseBackground = true;
-    ID("colors").classList.add("setbackground");
-    ID("setbackground").classList.add("sel");
+    updateChooseBackground(!chooseBackground);
   });
   ID("undo").addEventListener('click', function(e)
   {
@@ -2206,9 +2214,7 @@ function bindEvents()
     else if (e.keyCode == "B".charCodeAt(0))
     {
       e.preventDefault();
-      chooseBackground = true;
-      ID("colors").classList.add("setbackground");
-      ID("setbackground").classList.add("sel");
+      updateChooseBackground(!chooseBackground);
     }
     else if (e.keyCode == "E".charCodeAt(0) && !e.ctrlKey)
     {
@@ -2232,9 +2238,7 @@ function bindEvents()
           {
             anbt.SetBackground(color);
           }
-          chooseBackground = false;
-          ID("colors").classList.remove("setbackground");
-          ID("setbackground").classList.remove("sel");
+          updateChooseBackground(false);
         } else {
           anbt.SetColor(0, color);
           updateColorIndicators();
@@ -2246,7 +2250,7 @@ function bindEvents()
       e.preventDefault();
       anbt.ClearWithColor(anbt.color[0]);
     }
-    else if ((e.keyCode == 189 || e.keyCode == 219) && !e.ctrlKey) // - or [
+    else if ((e.keyCode == 189 || e.keyCode == 219 || e.keyCode == 188) && !e.ctrlKey) // - or [ or ,
     {
       e.preventDefault();
       for (var i = 1; i < brushSizes.length; i++)
@@ -2258,7 +2262,7 @@ function bindEvents()
         }
       }
     }
-    else if ((e.keyCode == 187 || e.keyCode == 221) && !e.ctrlKey) // = or ]
+    else if ((e.keyCode == 187 || e.keyCode == 221 || e.keyCode == 190) && !e.ctrlKey) // = or ] or .
     {
       e.preventDefault();
       for (var i = 0; i < brushSizes.length - 1; i++)
@@ -2269,6 +2273,11 @@ function bindEvents()
           break;
         }
       }
+    }
+    else if (e.keyCode >= 49 && e.keyCode <= 52 && e.ctrlKey) // Ctrl+1,2,3,4
+    {
+      e.preventDefault();
+      ID("brush" + (e.keyCode - 49)).click();
     }
     else if (e.keyCode == 32 && !e.ctrlKey && !e.altKey && !e.shiftKey)
     {
