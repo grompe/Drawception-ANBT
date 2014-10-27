@@ -88,6 +88,9 @@ Forum:
 
 ## CHANGELOG
 
+1.18.2014.10
+- New canvas: fix creating a friend game that would incorrectly lead to play
+
 1.17.2014.10
 - Dark style: fix body background again
 - New canvas: fix time+ item showing after skip

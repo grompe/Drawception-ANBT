@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      1.17.2014.10
+// @version      1.18.2014.10
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.17.2014.10";
+var SCRIPT_VERSION = "1.18.2014.10";
 var NEWCANVAS_VERSION = 4; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
@@ -2931,8 +2931,12 @@ function pageEnhancements()
   {
     if (insandbox || inplay || __DEBUG__)
     {
-      location.href = "/forums/post-preview/#newcanvas_" + (insandbox ? "sandbox/" + insandbox[1] : "play/" + inplay[1]);
-      return;
+      // If created a friend game, the link won't present playable form
+      if (document.getElementById("gameForm"))
+      {
+        location.href = "/forums/post-preview/#newcanvas_" + (insandbox ? "sandbox/" + insandbox[1] : "play/" + inplay[1]);
+        return;
+      }
     }
   } else {
     if (insandbox || inplay || __DEBUG__)
