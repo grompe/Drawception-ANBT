@@ -84,7 +84,7 @@ function pack_uint32be(n)
 {
   return String.fromCharCode(n >> 24 & 0xff, n >> 16 & 0xff, n >> 8 & 0xff, n & 0xff);
 }
-function color2dword(color)
+function color2rgba(color)
 {
   var r = 0, g = 0, b = 0, a = 255;
   if (color.substr(0, 1) == "#")
@@ -119,7 +119,12 @@ function color2dword(color)
   } else {
     // ?!
   }
-  return String.fromCharCode(r, g, b, a);
+  return [r, g, b, a];
+}
+function color2dword(color)
+{
+  var c = color2rgba(color);
+  return String.fromCharCode(c[0], c[1], c[2], c[3]);
 }
 function valueToHex(val)
 {
@@ -332,6 +337,59 @@ function randomPhrase()
   var s = randomBase();
   return s.charAt(0).toUpperCase() + s.substr(1);
 }
+function rgb2lab(rgb)
+{
+  var r = rgb[0] / 255,
+      g = rgb[1] / 255,
+      b = rgb[2] / 255,
+      x, y, z, l, a, b;
+
+  r = rgb[0] > 10 ? Math.pow(((r + 0.055) / 1.055), 2.4) : (r / 12.92);
+  g = rgb[1] > 10 ? Math.pow(((g + 0.055) / 1.055), 2.4) : (g / 12.92);
+  b = rgb[2] > 10 ? Math.pow(((b + 0.055) / 1.055), 2.4) : (b / 12.92);
+
+  x = (r * 0.4124) + (g * 0.3576) + (b * 0.1805);
+  y = (r * 0.2126) + (g * 0.7152) + (b * 0.0722);
+  z = (r * 0.0193) + (g * 0.1192) + (b * 0.9505);
+
+  x /= 0.95047;
+  z /= 1.08883;
+
+  x = x > 0.008856 ? Math.pow(x, 1/3) : (7.787 * x) + (16 / 116);
+  y = y > 0.008856 ? Math.pow(y, 1/3) : (7.787 * y) + (16 / 116);
+  z = z > 0.008856 ? Math.pow(z, 1/3) : (7.787 * z) + (16 / 116);
+
+  l = (116 * y) - 16;
+  a = 500 * (x - y);
+  b = 200 * (y - z);
+
+  return [l, a, b];
+}
+function getColorDistance(rgb1, rgb2)
+{
+  var lab1 = rgb2lab(rgb1);
+  var lab2 = rgb2lab(rgb2);
+  var l = lab2[0] - lab1[0];
+  var a = lab2[1] - lab1[1];
+  var b = lab2[2] - lab1[2];
+  return Math.sqrt(l * l + a * a + b * b);
+}
+function getClosestColor(rgb, pal)
+{
+  // Allow any color in sandbox
+  if (ID("newcanvasyo").classList.contains("sandbox")) return rgb;
+  var c, d, idx = 0, min = 999;
+  for (var i = 0; i < pal.length; i++)
+  {
+    d = getColorDistance(rgb, color2rgba(pal[i]));
+    if (d < min)
+    {
+      min = d;
+      idx = i;
+    }
+  }
+  return color2rgba(pal[idx]);
+}
 
 var palettes = {
   "Normal":          ['#000', '#444', '#999', '#fff', '#603913', '#c69c6d',
@@ -396,6 +454,7 @@ var anbt =
   isPlaying: false,
   size: 14.4,
   smoothening: 1,
+  palette: palettes.Normal,
   patternCache: {},
   delay: 100,
   unsaved: false,
@@ -970,6 +1029,12 @@ var anbt =
   },
   StrokeBegin: function(x, y, left)
   {
+    if (left === undefined)
+    {
+      left = this.lastleft;
+    } else {
+      this.lastleft = left;
+    }
     var cls = null;
     var color = left ? this.color[0] : this.color[1];
     if (color == "eraser")
@@ -1313,7 +1378,13 @@ var anbt =
   Eyedropper: function(x, y)
   {
     var p = this.ctx.getImageData(x, y, 1, 1).data;
-    return (p[3] > 0) ? ("#" + valueToHex(p[0]) + valueToHex(p[1]) + valueToHex(p[2])) : this.background;
+    if (p[3] > 0)
+    {
+      p = getClosestColor(p, this.palette);
+      return ("#" + valueToHex(p[0]) + valueToHex(p[1]) + valueToHex(p[2]))
+    } else {
+      return this.background;
+    }
   },
   RequestSave: function(dataurl, extension)
   {
@@ -1734,6 +1805,12 @@ function bindEvents()
       var el = ID("tools").querySelector(".sel");
       if (el) el.classList.remove("sel");
       this.classList.add("sel");
+      if (anbt.isStroking)
+      {
+        anbt.StrokeEnd();
+        var p = anbt.points[anbt.points.length - 1];
+        anbt.StrokeBegin(p.x, p.y);
+      }
     };
   }
   var brushSizes = [2.4, 6, 14.4, 42];
@@ -1926,6 +2003,7 @@ function bindEvents()
       var name = this.childNodes[0].nodeValue;
       ID("palettename").childNodes[0].nodeValue = name;
       var colors = palettes[name];
+      anbt.palette = colors;
       var pal = ID("palette");
       var els = pal.querySelectorAll("b");
       // Remove all current colors except for the eraser
