@@ -1164,7 +1164,7 @@ function getColorDistance(rgb1, rgb2)
   var l = lab2[0] - lab1[0];
   var a = lab2[1] - lab1[1];
   var b = lab2[2] - lab1[2];
-  return Math.sqrt(l * l + a * a + b * b);
+  return Math.sqrt(l * l * 2 + a * a + b * b);
 }
 function getClosestColor(rgb, pal)
 {
