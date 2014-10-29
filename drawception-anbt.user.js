@@ -426,6 +426,7 @@ function exitToSandbox()
   timerStart = Date.now();
   ID("newcanvasyo").className = "sandbox";
   timerCallback = function(){};
+  updateTimer();
   document.title = "Sandbox - Drawception";
   ID("gamemode").innerHTML = "Sandbox";
   ID("headerinfo").innerHTML = 'Sandbox with ' + vertitle;
@@ -547,6 +548,7 @@ function handlePlayParameters()
   }
 
   timerStart = Date.now() + 1000 * info.timeleft;
+  updateTimer();
   window.timesup = false;
   window.timeplus = false;
 
@@ -588,10 +590,11 @@ function handlePlayParameters()
         newcanvas.classList.add("locked");
         anbt.Lock();
         timerStart += 15000; // 15 seconds to submit
+        updateTimer();
         window.timesup = true;
       }
     } else {
-      var m1 = Math.floor(s / 60), s1 = Math.round(s % 60);
+      var m1 = Math.floor(s / 60), s1 = Math.floor(s % 60);
       m1 = ("0" + m1).slice(-2);
       s1 = ("0" + s1).slice(-2);
       document.title = "[" + m1 + ":" + s1 + "] Playing Drawception";
@@ -785,6 +788,7 @@ function bindCanvasEvents()
         alert(o.error);
       } else if (o.callJS == "updatePlayTime") {
         timerStart += o.data.seconds * 1000;
+        updateTimer();
         ID("timeplus").classList.remove("show");
       }
       ID("timeplus").disabled = false;

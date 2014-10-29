@@ -2854,27 +2854,23 @@ function fixPluginGoingAWOL()
   };
 }
 
-function runTimer()
+function updateTimer()
 {
-  setInterval(function()
-  {
-    var s = (timerStart - Date.now()) / 1000;
-    if (timerCallback) timerCallback(s);
-    s = Math.abs(s);
-    var m = Math.floor(s / 60);
-    s = Math.floor((s + 0.5) % 60);
-    if (m < 10) m = '0' + m;
-    if (s < 10) s = '0' + s;
-    ID("timer").childNodes[0].nodeValue = m + ':' + s;
-  },
-  500);
+  var s = (timerStart - Date.now()) / 1000;
+  if (timerCallback) timerCallback(s);
+  s = Math.abs(s);
+  var m = Math.floor(s / 60);
+  s = Math.floor(s % 60);
+  if (m < 10) m = '0' + m;
+  if (s < 10) s = '0' + s;
+  ID("timer").childNodes[0].nodeValue = m + ':' + s;
 }
 
 if (!window.options) window.options = {};
 anbt.BindContainer(ID("svgContainer"));
 bindEvents();
 timerStart = Date.now();
-runTimer();
+setInterval(updateTimer, 500);
 window.anbtReady();
 
 </script>
