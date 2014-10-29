@@ -88,6 +88,13 @@ Forum:
 
 ## CHANGELOG
 
+1.20.2014.10
+- New canvas: more responsive timer, also fix timer rounding (displaying 9:00)
+- New canvas: fix sandbox not directing to new canvas (broken in 1.18.2014.10)
+- New canvas: update URL when playing/exiting
+- New canvas: let change brush size while drawing
+- New canvas: eyedropper now picks nearest palette color (only in play)
+
 1.19.2014.10
 - New canvas: add shortcuts for brush size: Ctrl+1,2,3,4, <.> and <,>.
 - New canvas: clicking "Set background" or \<B\> also cancels choosing a background
