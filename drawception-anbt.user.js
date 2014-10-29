@@ -408,6 +408,7 @@ function getParametersFromPlay()
     url += window.friendgameid + "/";
     window.friendgameid = false;
   }
+  history.replaceState({}, null, url);
   sendGet(url, function()
   {
     window.gameinfo = extractInfoFromHTML(this.responseText);
@@ -430,6 +431,7 @@ function exitToSandbox()
   document.title = "Sandbox - Drawception";
   ID("gamemode").innerHTML = "Sandbox";
   ID("headerinfo").innerHTML = 'Sandbox with ' + vertitle;
+  history.replaceState({}, null, "/sandbox/");
 }
 
 function handleCommonParameters()
@@ -2933,14 +2935,11 @@ function pageEnhancements()
   var inplay = loc.match(/drawception\.com\/play\/(.*)/);
   if (options.newCanvas)
   {
-    if (insandbox || inplay || __DEBUG__)
+    // If created a friend game, the link won't present playable form
+    if (insandbox || (inplay && document.getElementById("gameForm")) || __DEBUG__)
     {
-      // If created a friend game, the link won't present playable form
-      if (document.getElementById("gameForm"))
-      {
-        location.href = "/forums/post-preview/#newcanvas_" + (insandbox ? "sandbox/" + insandbox[1] : "play/" + inplay[1]);
-        return;
-      }
+      location.href = "/forums/post-preview/#newcanvas_" + (insandbox ? "sandbox/" + insandbox[1] : "play/" + inplay[1]);
+      return;
     }
   } else {
     if (insandbox || inplay || __DEBUG__)
