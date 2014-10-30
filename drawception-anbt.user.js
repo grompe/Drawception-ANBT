@@ -793,6 +793,8 @@ function bindCanvasEvents()
         timerStart += o.data.seconds * 1000;
         updateTimer();
         ID("timeplus").classList.remove("show");
+        // Let play warning sound twice
+        window.playedWarningSound = false;
       }
       ID("timeplus").disabled = false;
     }, function()
