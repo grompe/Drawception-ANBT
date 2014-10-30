@@ -504,6 +504,7 @@ function handlePlayParameters()
   newcanvas.classList.add(info.image ? "captioning" : "drawing");
 
   // Clear
+  anbt.Unlock();
   for (var i = anbt.svg.childNodes.length - 1; i > 0; i--)
   {
     var el = anbt.svg.childNodes[i];
@@ -511,7 +512,6 @@ function handlePlayParameters()
   }
   anbt.Seek(0);
   anbt.MoveSeekbar(1);
-  anbt.Unlock();
   anbt.unsaved = false;
 
   var palettemap = {
