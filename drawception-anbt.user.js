@@ -524,12 +524,13 @@ function handlePlayParameters()
     neon: ["Neon", "#00abff"],
     thanksgiving: ["Thanksgiving", "#f5e9ce"],
     holiday: ["Holiday", "#fff"],
-    valentine: ["Valentine's", "#ffccdf"],
+    valentines: ["Valentine's", "#ffccdf"],
     halloween: ["Halloween", "#444444"],
     "the blues": ["the blues", "#295c6f"]
   };
   var pal = info.palette || "normal";
   var paldata = palettemap[pal.toLowerCase()];
+  if (!paldata) alert("Error, please report! Unknown palette: '" + pal + "'");
   setPaletteByName(paldata[0]);
   anbt.SetBackground(paldata[1]);
   anbt.color = [palettes[paldata[0]][0], "eraser"];
