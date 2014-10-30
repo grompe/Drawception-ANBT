@@ -88,6 +88,11 @@ Forum:
 
 ## CHANGELOG
 
+1.21.2014.10
+- New canvas: better color distance function
+- New canvas: fix valentines palette
+- New canvas: fix drawing not being cleared on timeout+skip
+
 1.20.2014.10
 - New canvas: more responsive timer, also fix timer rounding (displaying 9:00)
 - New canvas: fix sandbox not directing to new canvas (broken in 1.18.2014.10)
