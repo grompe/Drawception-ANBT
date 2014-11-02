@@ -88,6 +88,10 @@ Forum:
 
 ## CHANGELOG
 
+1.22.2014.10
+- New canvas: when using time+ item, let warning sound play once again
+- Adjust site timestamps, Florida DST is over
+
 1.21.2014.10
 - New canvas: better color distance function
 - New canvas: fix valentines palette
