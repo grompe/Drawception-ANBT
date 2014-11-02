@@ -2478,13 +2478,13 @@ function betterPlayer()
 function betterForum()
 {
   // Convert times
-  // Forum time seems to be Florida, GMT-6, +1 DST since 09 Mar 2014
+  // Forum time is Florida, GMT-6, to be +1 DST since 08 Mar 2015, 2:00
   var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   function convertForumTime(year, month, day, hours, minutes)
   {
     var d = new Date(year, month, day, hours, minutes);
     var tzo = d.getTimezoneOffset() * 60 * 1000;
-    return formatTimestamp(d.getTime() - tzo + 5 * 60 * 60 * 1000);
+    return formatTimestamp(d.getTime() - tzo + 6 * 60 * 60 * 1000);
   }
 
   $("span.muted, span.text-muted").each(function(index)
