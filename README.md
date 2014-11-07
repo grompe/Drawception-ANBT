@@ -88,6 +88,9 @@ Forum:
 
 ## CHANGELOG
 
+1.27.2014.11
+- No longer show the welcome message on narrow screens
+
 1.26.2014.11
 - New canvas: try fix StrokeAdd without StrokeBegin error
 
