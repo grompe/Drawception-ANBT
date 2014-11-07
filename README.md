@@ -88,6 +88,9 @@ Forum:
 
 ## CHANGELOG
 
+1.28.2014.11
+- New canvas: get rid of header text on narrow screens
+
 1.27.2014.11
 - No longer show the welcome message on narrow screens
 
