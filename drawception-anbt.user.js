@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      1.23.2014.11
+// @version      1.24.2014.11
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.23.2014.11";
+var SCRIPT_VERSION = "1.24.2014.11";
 var NEWCANVAS_VERSION = 6; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
@@ -314,7 +314,7 @@ function setupNewCanvas(insandbox, url)
   var panelid = url.match(/sandbox\/#?([^\/]+)/);
 
   var sound = alarmSoundOgg;
-  var vertitle = "ANBT v" + SCRIPT_VERSION + ", New Canvas v" + NEWCANVAS_VERSION;
+  var vertitle = "ANBT v" + SCRIPT_VERSION;
 
   // Show normal address
   var normalurl;
@@ -457,7 +457,7 @@ function handleSandboxParameters()
     var playerid = gameinfo.drawingbylink.match(/\d+/);
     var playername = gameinfo.drawingbylink.match(/>([^<]+)</);
     var avatar = '<img src="/pub/avatars/' + playerid + '.jpg" width="25" height="25">';
-    ID("headerinfo").innerHTML = 'Playback of drawing by ' + avatar + " " + gameinfo.drawingbylink;
+    ID("headerinfo").innerHTML = 'Drawing by ' + avatar + " " + gameinfo.drawingbylink;
     if (playername) document.title = playername[1] + "'s drawing - Drawception";
     ID("drawthis").innerHTML = '"' + gameinfo.title.replace(/ \(drawing by .+\)$/, '"');
     ID("drawthis").classList.remove("onlyplay");

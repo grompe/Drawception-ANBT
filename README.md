@@ -88,6 +88,9 @@ Forum:
 
 ## CHANGELOG
 
+1.24.2014.11
+- New canvas: less text, more space for buttons in header
+
 1.23.2014.11
 - New canvas: remove intermediate empty page; fixes single use method
 
