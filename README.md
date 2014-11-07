@@ -88,6 +88,9 @@ Forum:
 
 ## CHANGELOG
 
+1.26.2014.11
+- New canvas: try fix StrokeAdd without StrokeBegin error
+
 1.25.2014.11
 - New canvas: small fixes for avatar and profile link
 

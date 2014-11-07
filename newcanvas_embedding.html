@@ -2287,9 +2287,12 @@ function bindEvents()
   var mouseMove = function(e)
   {
     e.preventDefault();
-    var x = e.pageX - rect.left - pageXOffset;
-    var y = e.pageY - rect.top - pageYOffset;
-    anbt.StrokeAdd(x, y);
+    if (anbt.isStroking)
+    {
+      var x = e.pageX - rect.left - pageXOffset;
+      var y = e.pageY - rect.top - pageYOffset;
+      anbt.StrokeAdd(x, y);
+    }
   };
   var mouseUp = function(e)
   {
@@ -2371,9 +2374,9 @@ function bindEvents()
     {
       simulateSingleTouchStart();
       e.preventDefault();
-      anbt.StrokeEnd();
       window.removeEventListener('touchend', touchEnd);
       window.removeEventListener('touchmove', touchMove);
+      anbt.StrokeEnd();
     }
   };
   var touchUndoRedo = function(e)
@@ -2413,18 +2416,15 @@ function bindEvents()
       // 2   o o    o o
       // 3   , o    o .
       //     Undo   Redo
-      if (touchSingle && e.touches.length === 2)
+      if (touchSingle && e.touches.length === 3)
       {
         lastTouch = e.touches[1];
         window.addEventListener('touchend', touchUndoRedo);
       }
-      if (anbt.isStroking)
-      {
-        anbt.StrokeEnd();
-      }
       touchSingle = false;
       window.removeEventListener('touchend', touchEnd);
       window.removeEventListener('touchmove', touchMove);
+      if (anbt.isStroking) anbt.StrokeEnd();
     }
   });
 
