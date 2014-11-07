@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      1.22.2014.10
+// @version      1.23.2014.11
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.22.2014.10";
+var SCRIPT_VERSION = "1.23.2014.11";
 var NEWCANVAS_VERSION = 6; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
@@ -279,14 +279,12 @@ if (typeof GM_addStyle == 'undefined')
 }
 
 /*
-
 canvas integration todo:
 - autoskipping captions/drawings
-- handle draw first exiting (when Drawception itself isn't buggy with that)
 */
 
 // Executed on completely empty page. That means no jQuery!
-function setupNewCanvas(insandbox)
+function setupNewCanvas(insandbox, url)
 {
   var canvasHTML = localStorage.getItem("anbt_canvasHTML");
   var canvasHTMLver = localStorage.getItem("anbt_canvasHTMLver");
@@ -299,7 +297,7 @@ function setupNewCanvas(insandbox)
     {
       localStorage.setItem("anbt_canvasHTML", this.responseText);
       localStorage.setItem("anbt_canvasHTMLver", NEWCANVAS_VERSION);
-      setupNewCanvas(insandbox);
+      setupNewCanvas(insandbox, url);
     };
     xhr.onerror = function()
     {
@@ -311,9 +309,9 @@ function setupNewCanvas(insandbox)
     return;
   }
   // Save friend game id if any
-  var friendgameid = document.location.href.match(/play\/(.+)\//);
+  var friendgameid = url.match(/play\/(.+)\//);
 
-  var panelid = document.location.href.match(/sandbox\/([^\/]+)/);
+  var panelid = url.match(/sandbox\/#?([^\/]+)/);
 
   var sound = alarmSoundOgg;
   var vertitle = "ANBT v" + SCRIPT_VERSION + ", New Canvas v" + NEWCANVAS_VERSION;
@@ -328,7 +326,10 @@ function setupNewCanvas(insandbox)
     normalurl = "/play/";
     if (friendgameid) normalurl += friendgameid[1] + "/";
   }
-  history.replaceState({}, "The Ever Consuming Void", normalurl);
+  try
+  {
+    history.pushState({}, document.title, normalurl);
+  } catch(e) {};
 
   document.write("");
   window.anbtReady = function()
@@ -408,7 +409,10 @@ function getParametersFromPlay()
     url += window.friendgameid + "/";
     window.friendgameid = false;
   }
-  history.replaceState({}, null, url);
+  try
+  {
+    history.replaceState({}, null, url);
+  } catch(e) {};
   sendGet(url, function()
   {
     window.gameinfo = extractInfoFromHTML(this.responseText);
@@ -431,7 +435,10 @@ function exitToSandbox()
   document.title = "Sandbox - Drawception";
   ID("gamemode").innerHTML = "Sandbox";
   ID("headerinfo").innerHTML = 'Sandbox with ' + vertitle;
-  history.replaceState({}, null, "/sandbox/");
+  try
+  {
+    history.replaceState({}, null, "/sandbox/");
+  } catch(e) {};
 }
 
 function handleCommonParameters()
@@ -1938,8 +1945,9 @@ function betterView()
         var replayButton = $('<a href="/sandbox/#' + id + '" class="panel-number anbt_replaypanel glyphicon glyphicon-repeat text-muted" title="Replay"></span>');
         replayButton.click(function(e)
         {
+          if (e.which === 2) return;
           e.preventDefault();
-          location.href = "/forums/post-preview/#newcanvas_sandbox/" + id;
+          setupNewCanvas(true, "/sandbox/#" + id);
         });
         panel.before(replayButton);
       });
@@ -2070,8 +2078,9 @@ function betterPanel()
         var replayLink = $('<a class="btn btn-primary" style="margin-top: 20px" href="/sandbox/#' + panelId + '"><span class="glyphicon glyphicon-repeat"></span> <b>Replay</b></a> ');
         replayLink.click(function(e)
         {
+          if (e.which === 2) return;
           e.preventDefault();
-          location.href = "/forums/post-preview/#newcanvas_sandbox/" + panelId;
+          setupNewCanvas(true, "/sandbox/#" + panelId);
         });
         $(".gamepanel").after(replayLink);
       });
@@ -2903,8 +2912,6 @@ function pageEnhancements()
 {
   var loc = document.location.href;
   loadScriptSettings();
-  if (loc.match(/drawception\.com\/forums\/post-preview\/#newcanvas_sandbox/)) return(setupNewCanvas(true));
-  if (loc.match(/drawception\.com\/forums\/post-preview\/#newcanvas_play/)) return(setupNewCanvas(false));
 
   if (pagodaBoxError()) return;
 
@@ -2941,8 +2948,7 @@ function pageEnhancements()
     // If created a friend game, the link won't present playable form
     if (insandbox || (inplay && document.getElementById("gameForm")) || __DEBUG__)
     {
-      location.href = "/forums/post-preview/#newcanvas_" + (insandbox ? "sandbox/" + insandbox[1] : "play/" + inplay[1]);
-      return;
+      return(setupNewCanvas(insandbox, loc));
     }
   } else {
     if (insandbox || inplay || __DEBUG__)
@@ -3117,28 +3123,18 @@ function pageEnhancements()
   if (options.newCanvas)
   {
     var directToNewSandbox, directToNewPlay;
-    if ($.browser.chrome)
     {
       directToNewSandbox = function(e)
       {
-        var panelid = this.href.match(/sandbox\/#(.+)/);
-        this.href = "/forums/post-preview/#newcanvas_sandbox" + (panelid ? "/" + panelid[1] : "");
+        if (e.which === 2) return;
+        e.preventDefault();
+        setupNewCanvas(true, this.href);
       };
       directToNewPlay = function(e)
       {
-        this.href = "/forums/post-preview/#newcanvas_play";
-      };
-    } else {
-      directToNewSandbox = function(e)
-      {
+        if (e.which === 2) return;
         e.preventDefault();
-        var panelid = this.href.match(/sandbox\/#(.+)/);
-        location.href = "/forums/post-preview/#newcanvas_sandbox" + (panelid ? "/" + panelid[1] : "");
-      };
-      directToNewPlay = function(e)
-      {
-        e.preventDefault();
-        location.href = "/forums/post-preview/#newcanvas_play";
+        setupNewCanvas(false, this.href);
       };
     }
     $('a[href^="/sandbox/"]').click(directToNewSandbox);
@@ -3200,7 +3196,7 @@ localStorage.setItem("gpe_darkCSS",
   ".btn-menu{~#2e2e2e$}.btn-menu:hover{~#232323$}.btn-yellow{~#8a874e$}.btn-yellow:hover{~#747034$}" +
   "a.label{color:#fff$}a.text-muted{color:#999$}a.wrong-order{color:#F99$}div.comment-holder:target{~#454$}" +
   ".popover{~#777$}.popover-title{~#666$;border-bottom:1px solid #444$}.popover.top .arrow:after{border-top-color:#777$}.popover.right .arrow:after{border-right-color:#777$}.popover.bottom .arrow:after{border-bottom-color:#777$}.popover.left .arrow:after{border-left-color:#777$}" +
-  ".bg-lifesupport{~#444$}body,.snap-content{~#333$}" +
+  ".bg-lifesupport{~#444$}body{~#555$}.snap-content{~#333$}" +
   ".gsc-control-cse{~#444$;border-color:#333$}.gsc-above-wrapper-area,.gsc-result{border:none$}.gs-snippet{color:#AAA$}.gs-visibleUrl{color:#8A8$}a.gs-title b,.gs-visibleUrl b{color:#EEE$}.gsc-adBlock{display:none$}" +
   "#jappix_mini a{color:#000$}" +
   "a:visited.thumbnail{border-color:#555$}" +

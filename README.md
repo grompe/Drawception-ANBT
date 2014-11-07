@@ -88,6 +88,9 @@ Forum:
 
 ## CHANGELOG
 
+1.23.2014.11
+- New canvas: remove intermediate empty page; fixes single use method
+
 1.22.2014.10
 - New canvas: when using time+ item, let warning sound play once again
 - Adjust site timestamps, Florida DST is over
