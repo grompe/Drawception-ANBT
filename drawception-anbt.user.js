@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      1.24.2014.11
+// @version      1.25.2014.11
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,8 +14,8 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.24.2014.11";
-var NEWCANVAS_VERSION = 6; // Increase to update the cached canvas
+var SCRIPT_VERSION = "1.25.2014.11";
+var NEWCANVAS_VERSION = 7; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
 
@@ -392,6 +392,8 @@ function extractInfoFromHTML(html)
     bgbutton: extract(/<img src="\/img\/draw_bglayer.png"/),
     playerid: extract(/<a href="\/player\/(\d+)\//),
     playername: extract(/<span class="glyphicon glyphicon-user"><\/span> (.+)\n/),
+    playerurl: extract(/<a href="(\/player\/\d+\/[^\/]+\/)"/),
+    avatar: extract(/<img src="(\/pub\/avatars\/[^"]+)"/),
     coins: extract(/<span id="user-coins-value">(\d+)<\/span>/),
     pubgames: extract(/alt="pubgames" \/> (\d+\/\d+)/),
     friendgames: extract(/alt="friendgames" \/> (\d+)/),
@@ -443,7 +445,11 @@ function exitToSandbox()
 
 function handleCommonParameters()
 {
-  ID("infoavatar").src="/pub/avatars/" + gameinfo.playerid + ".jpg";
+  if (gameinfo.avatar)
+  {
+    ID("infoavatar").src = gameinfo.avatar;
+  }
+  ID("infoprofile").href = gameinfo.playerurl;
   ID("infocoins").innerHTML = gameinfo.coins;
   ID("infogames").innerHTML = gameinfo.pubgames;
   ID("infofriendgames").innerHTML = gameinfo.friendgames;

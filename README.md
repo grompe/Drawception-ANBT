@@ -88,6 +88,9 @@ Forum:
 
 ## CHANGELOG
 
+1.25.2014.11
+- New canvas: small fixes for avatar and profile link
+
 1.24.2014.11
 - New canvas: less text, more space for buttons in header
 
