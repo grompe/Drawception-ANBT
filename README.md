@@ -88,6 +88,9 @@ Forum:
 
 ## CHANGELOG
 
+1.30.2014.11
+- New canvas: make interface unselectable
+
 1.29.2014.11
 - Fix exploit with friend games involving old canvas and backup option
 
