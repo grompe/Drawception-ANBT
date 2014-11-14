@@ -11,6 +11,12 @@ body {
   font-family: 'Nunito', sans-serif;
   background: #555;
 }
+.noselect {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
 #newcanvasyo {
   background: #555;
 }
@@ -632,7 +638,7 @@ button:disabled {
     <div id="headercont">
       <div class="headerleft">
         <a href="/" title="Home"><img src="/img/logo-d.png"></a>
-        <span id="headerinfo" class="hideonsmall">New Canvas v9</span>
+        <span id="headerinfo" class="hideonsmall">New Canvas v10</span>
       </div>
       <div class="headerright">
         <a id="start" title="Play Drawception!" class="headerbutton active onlysandbox">Play</a>
@@ -648,7 +654,7 @@ button:disabled {
   </div>
   <div id="drawthis" class="onlyplay">Fetching your Drawception game...</div>
   <div id="emptytitle" class="onlysandbox"></div>
-  <div id="bl">
+  <div id="bl" class="noselect">
     <div id="toolpane">
       <div id="timer" class="panel">00:00<button id="timeplus" class="onlyunlocked onlyplay onlydraw" title="Use Time+ item - add extra 60 seconds"></button></div>
       <div id="colors" class="panel onlydraw">

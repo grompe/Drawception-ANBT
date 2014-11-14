@@ -16,6 +16,12 @@ body {
   font-family: 'Nunito', sans-serif;
   background: #555;
 }
+.noselect {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
 #newcanvasyo {
   background: #555;
 }

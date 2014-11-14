@@ -372,7 +372,7 @@ function getColorDistance(rgb1, rgb2)
   var l = lab2[0] - lab1[0];
   var a = lab2[1] - lab1[1];
   var b = lab2[2] - lab1[2];
-  return Math.sqrt(l * l + a * a + b * b);
+  return Math.sqrt(l * l * 2 + a * a + b * b);
 }
 function getClosestColor(rgb, pal)
 {
@@ -389,6 +389,39 @@ function getClosestColor(rgb, pal)
     }
   }
   return color2rgba(pal[idx]);
+}
+function getColorDistanceLab(lab1, lab2)
+{
+  var l = lab2[0] - lab1[0];
+  var a = lab2[1] - lab1[1];
+  var b = lab2[2] - lab1[2];
+  return Math.sqrt(l * l * 2 + a * a + b * b);
+}
+function getClosestColorLab(lab, pal)
+{
+  var c, d, idx = 0, min = 999;
+  for (var i = 0; i < pal.length; i++)
+  {
+    d = getColorDistanceLab(lab, rgb2lab(color2rgba(pal[i])));
+    if (d < min)
+    {
+      min = d;
+      idx = i;
+    }
+  }
+  return color2rgba(pal[idx]);
+}
+function getColorAverage(c1, c2, bias)
+{
+  // Bias:
+  // 0 = c1
+  // 0.5 = average
+  // 1 = c2
+  return [
+    Math.round(c1[0] * bias + c2[0] * (1 - bias)),
+    Math.round(c1[1] * bias + c2[1] * (1 - bias)),
+    Math.round(c1[2] * bias + c2[2] * (1 - bias)),
+  ];
 }
 
 var palettes = {
@@ -1721,7 +1754,7 @@ function bindEvents()
       // 2   o o    o o
       // 3   , o    o .
       //     Undo   Redo
-      if (touchSingle && e.touches.length === 2)
+      if (touchSingle && e.touches.length === 3)
       {
         lastTouch = e.touches[1];
         window.addEventListener('touchend', touchUndoRedo);
@@ -2228,6 +2261,68 @@ function bindEvents()
   ID("usagetips").addEventListener('mousedown', usageTips);
   ID("usagetips").addEventListener('touchend', usageTips);
 
+  var drawTransitions = function(e)
+  {
+    if (anbt.unsaved && !confirm("You haven't saved the drawing. Continue?")) return;
+    e.preventDefault();
+    anbt.SetBackground(anbt.palette[0]);
+    anbt.ctx.clearRect(0, 0, 600, 500);
+    var numcolors = anbt.palette.length;
+    var w = 36;
+    var h = 30;
+    var offsetx = 300 - numcolors * 18 + 30;
+    var offsety = 250 - numcolors * 15 - 24;
+    var color1, color2, c;
+    for (var y = 1; y <= numcolors; y++)
+    {
+      for (var x = -1; x < numcolors - 1; x++)
+      {
+        if (x == -1 || x == numcolors)
+        {
+          if (y == -1 || y == numcolors) continue;
+          if (y == 0)
+          {
+            anbt.ctx.fillStyle = anbt.palette[numcolors - 1]
+            anbt.ctx.fillRect(x * w + offsetx - 1, y * h + offsety - 1, w + 1, h + 1);
+          }
+          anbt.ctx.fillStyle = anbt.palette[y];
+          anbt.ctx.fillRect(x * w + offsetx, y * h + offsety, w - 1, h - 1);
+        } else if (y == -1 || y == numcolors)
+        {
+          if (x == 0)
+          {
+            anbt.ctx.fillStyle = anbt.palette[numcolors - 1]
+            anbt.ctx.fillRect(x * w + offsetx - 1, y * h + offsety - 1, w + 1, h + 1);
+          }
+          anbt.ctx.fillStyle = anbt.palette[x];
+          anbt.ctx.fillRect(x * w + offsetx, y * h + offsety, w - 1, h - 1);
+        } else {
+          if (x == y)
+          {
+            anbt.ctx.fillStyle = anbt.palette[x];
+            anbt.ctx.fillRect(x * w + offsetx, y * h + offsety, w - 1, h - 1);
+          }
+          if (x >= y) continue;
+          color1 = rgb2lab(color2rgba(anbt.palette[x]));
+          color2 = rgb2lab(color2rgba(anbt.palette[y]));
+          for (var xx = 34; xx >= 0; xx--)
+          {
+            c = getColorAverage(color1, color2, xx / 34);
+            c = getClosestColorLab(c, anbt.palette);
+            c = "#" + valueToHex(c[0]) + valueToHex(c[1]) + valueToHex(c[2]);
+            anbt.ctx.fillStyle = c;
+            anbt.ctx.fillRect(x * w + offsetx + xx, y * h + offsety, 1, h - 1);
+            //anbt.ctx.beginPath();
+            //anbt.ctx.arc(x * w + w/4 + xx/4 + offsetx, y * h + h/4 + xx/4 + offsety, xx / 2, 0, Math.PI * 2, true);
+            //anbt.ctx.fill();
+          }
+        }
+      }
+    }
+  }
+  ID("drawtransitions").addEventListener('mousedown', drawTransitions);
+  ID("drawtransitions").addEventListener('touchend', drawTransitions);
+  
   // ---
 
   ID("popupclose").addEventListener('click', function(e)
