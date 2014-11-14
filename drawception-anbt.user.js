@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      1.28.2014.11
+// @version      1.29.2014.11
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.28.2014.11";
+var SCRIPT_VERSION = "1.29.2014.11";
 var NEWCANVAS_VERSION = 9; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
@@ -1051,6 +1051,17 @@ function enhanceCanvas(insandbox)
         window.onbeforeunload = function(){};
         return old_saveContestDrawing(a, b, c);
       };
+
+      // Remove backup when exiting (even if confirmation is cancelled)
+      if (options.backup)
+      {
+        DrawceptionPlay.exitGame_old = DrawceptionPlay.exitGame;
+        DrawceptionPlay.exitGame = function()
+        {
+          localStorage.removeItem("anbt_drawingbackup");
+          DrawceptionPlay.exitGame_old();
+        };
+      }
 
       // Workaround for a bug that skips drawing when undoing after timer
       // expired: http://drawception.com/forums/suggestions/18533/-/
