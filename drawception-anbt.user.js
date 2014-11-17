@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      1.30.2014.11
+// @version      1.31.2014.11
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,8 +14,8 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.30.2014.11";
-var NEWCANVAS_VERSION = 10; // Increase to update the cached canvas
+var SCRIPT_VERSION = "1.31.2014.11";
+var NEWCANVAS_VERSION = 11; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
 
@@ -42,6 +42,7 @@ var options =
   localeTimestamp: 0,
   autoplay: 1, // Whether to automatically start playback of a recorded drawing
   submitConfirm: 1,
+  smoothening: 1,
 };
 
 /*
@@ -2708,6 +2709,7 @@ function addScriptSettings()
     [
       ["newCanvas", "boolean", 'New drawing canvas (also allows <a href="http://grompe.org.ru/replayable-drawception/">watching playback</a>)'],
       ["submitConfirm", "boolean", "Confirm submitting if more than a minute is left (New canvas only)"],
+      ["smoothening", "boolean", "Smoothening of strokes (New canvas only)"],
       ["asyncSkip", "boolean", "Fast Async Skip (experimental, applies to old canvas only)"],
       ["hideCross", "boolean", "Hide the cross when drawing"],
       ["enterToCaption", "boolean", "Submit captions by pressing Enter"],

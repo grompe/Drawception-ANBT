@@ -88,6 +88,10 @@ Forum:
 
 ## CHANGELOG
 
+1.31.2014.11
+- New canvas: allow setting background after timer expires to match original canvas behavior
+- New canvas: option to disable smoothening of strokes
+
 1.30.2014.11
 - New canvas: make interface unselectable
 

@@ -1037,7 +1037,7 @@ function simplifyDouglasPeucker(points, sqTolerance)
   }
   return newPoints;
 }
-function buildSmoothPath(points, path)
+var buildSmoothPath = function(points, path)
 {
   var dist1, dist2, angle1, angle2, prevtangent, tangent, t1, t2, x, y, p, c, n, l = points.length;
   var good;
@@ -2951,6 +2951,19 @@ function updateTimer()
 }
 
 if (!window.options) window.options = {};
+if (!options.smoothening)
+{
+  buildSmoothPath = function(points, path)
+  {
+    if (points.length < 2) return;
+    path.pathSegList.initialize(path.createSVGPathSegMovetoAbs(points[0].x, points[0].y));
+    for (var i = 1; i < points.length; i++)
+    {
+      var c = points[i];
+      path.pathSegList.appendItem(path.createSVGPathSegLinetoAbs(c.x, c.y));
+    }
+  }
+}
 anbt.BindContainer(ID("svgContainer"));
 bindEvents();
 timerStart = Date.now();
