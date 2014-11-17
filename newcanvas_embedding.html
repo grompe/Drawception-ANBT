@@ -638,7 +638,7 @@ button:disabled {
     <div id="headercont">
       <div class="headerleft">
         <a href="/" title="Home"><img src="/img/logo-d.png"></a>
-        <span id="headerinfo" class="hideonsmall">New Canvas v10</span>
+        <span id="headerinfo" class="hideonsmall">New Canvas v11</span>
       </div>
       <div class="headerright">
         <a id="start" title="Play Drawception!" class="headerbutton active onlysandbox">Play</a>
@@ -1733,7 +1733,7 @@ var anbt =
   },
   SetBackground: function(color)
   {
-    if (this.locked) return;
+    //if (this.locked) return;
     var transparent = color == "eraser";
     this.transparent = transparent;
     this.canvas.style.background = transparent ? "none" : color;
