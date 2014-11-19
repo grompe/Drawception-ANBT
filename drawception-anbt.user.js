@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      1.31.2014.11
+// @version      1.32.2014.11
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,8 +14,8 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.31.2014.11";
-var NEWCANVAS_VERSION = 11; // Increase to update the cached canvas
+var SCRIPT_VERSION = "1.32.2014.11";
+var NEWCANVAS_VERSION = 12; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
 
@@ -285,7 +285,7 @@ canvas integration todo:
 */
 
 // Executed on completely empty page. That means no jQuery!
-function setupNewCanvas(insandbox, url)
+function setupNewCanvas(insandbox, url, origpage)
 {
   var canvasHTML = localStorage.getItem("anbt_canvasHTML");
   var canvasHTMLver = localStorage.getItem("anbt_canvasHTMLver");
@@ -329,10 +329,10 @@ function setupNewCanvas(insandbox, url)
   }
   try
   {
-    history.pushState({}, document.title, normalurl);
+    if (location.pathname + location.hash != normalurl) history.pushState({}, document.title, normalurl);
   } catch(e) {};
 
-  document.write("");
+  document.open();
   window.anbtReady = function()
   {
     if (friendgameid) window.friendgameid = friendgameid[1];
@@ -341,12 +341,14 @@ function setupNewCanvas(insandbox, url)
     window.options = options;
     window.alarmSoundOgg = sound;
     window.vertitle = vertitle;
+    if (origpage) window.origpage = origpage;
 
     var script = document.createElement("script");
     script.textContent = "(" + needToGoDeeper.toString() + ")();";
     document.body.appendChild(script);
   };
   document.write(canvasHTML);
+  document.close();
 }
 
 // To be inserted on new canvas page. No jQuery!
@@ -382,11 +384,12 @@ function extractInfoFromHTML(html)
   return {
     error: extract(/<div class="error">\s+([^<]+)\s+<\/div>/),
     gameid: extract(/<input type="hidden" name="which_game" value="([^"]+)"/),
-    blitz: extract(/BLITZ MODE<br \/>/),
+    blitz: extract(/BLITZ MODE<br ?\/?>/),
     nsfw: extract(/>This game Not Safe For Work \(18\+\)<\/span>/),
     friend: extract(/<legend>\s+Friend Game/),
     drawfirst: extract(/<input type="button" value="Abort" onclick="DrawceptionPlay\.abortDrawFirst\(\)/),
     timeleft: extract(/<span id="timeleft">\s+(\d+)\s+<\/span>/),
+    timeleft2: extract(/<span id="timeleft" class="hasCountdown">[^:]+>(\d+:\d+)/),
     caption: extract(/<p class="play-phrase">\s+([^<]+)\s+<\/p>/),
     image: extract(/<img src="(data:image\/png;base64,[^"]*)"/),
     palette: extract(/heme item was applied to this game">([^<]+)<\/span>/),
@@ -396,11 +399,11 @@ function extractInfoFromHTML(html)
     playerurl: extract(/<a href="(\/player\/\d+\/[^\/]+\/)"/),
     avatar: extract(/<img src="(\/pub\/avatars\/[^"]+)"/),
     coins: extract(/<span id="user-coins-value">(\d+)<\/span>/),
-    pubgames: extract(/alt="pubgames" \/> (\d+\/\d+)/),
-    friendgames: extract(/alt="friendgames" \/> (\d+)/),
+    pubgames: extract(/alt="pubgames" ?\/?> (\d+\/\d+)/),
+    friendgames: extract(/alt="friendgames" ?\/?> (\d+)/),
     notifications: extract(/<span id="user-notify-count">(\d+)<\/span>/),
     drawingbylink: extract(/drawing by (<a href="\/player\/\d+\/\S+\/">[^<]+<\/a>)/),
-    title: extract(/<title>([^<]+)<\/title>/),
+    h1: extract(/<h1>([^<]+)<\/h1>/),
   };
 }
 
@@ -414,8 +417,15 @@ function getParametersFromPlay()
   }
   try
   {
-    history.replaceState({}, null, url);
+    if (location.pathname != url) history.replaceState({}, null, url);
   } catch(e) {};
+  if (window.origpage)
+  {
+    window.gameinfo = extractInfoFromHTML(window.origpage);
+    handlePlayParameters();
+    window.origpage = null;
+    return;
+  }
   sendGet(url, function()
   {
     window.gameinfo = extractInfoFromHTML(this.responseText);
@@ -442,6 +452,7 @@ function exitToSandbox()
   {
     history.replaceState({}, null, "/sandbox/");
   } catch(e) {};
+  anbt.Unlock();
 }
 
 function handleCommonParameters()
@@ -466,7 +477,7 @@ function handleSandboxParameters()
     var avatar = '<img src="/pub/avatars/' + playerid + '.jpg" width="25" height="25">';
     ID("headerinfo").innerHTML = 'Drawing by ' + avatar + " " + gameinfo.drawingbylink;
     if (playername) document.title = playername[1] + "'s drawing - Drawception";
-    ID("drawthis").innerHTML = '"' + gameinfo.title.replace(/ \(drawing by .+\)$/, '"');
+    ID("drawthis").innerHTML = '"' + gameinfo.h1 + '"';
     ID("drawthis").classList.remove("onlyplay");
     ID("emptytitle").classList.add("onlyplay");
     if (options.autoplay) anbt.Play();
@@ -564,6 +575,12 @@ function handlePlayParameters()
     ID("caption").focus();
   }
 
+  if (!info.timeleft && info.timeleft2)
+  {
+    var m = info.timeleft2.split(":");
+    info.timeleft = m[0] * 60 + m[1] * 1;
+  }
+
   timerStart = Date.now() + 1000 * info.timeleft;
   updateTimer();
   window.timesup = false;
@@ -595,7 +612,7 @@ function handlePlayParameters()
         // If pressed submit before timer expired, let it process or retry in case of error
         if (!window.submitting)
         {
-          if (!info.image)
+          if (info.image)
           {
             getParametersFromPlay();
           } else {
@@ -834,11 +851,18 @@ function deeper_main()
         handleSandboxParameters();
       }, function() {});
     } else {
-      sendGet("/sandbox/", function()
+      if (window.origpage)
       {
-        window.gameinfo = extractInfoFromHTML(this.responseText);
+        window.gameinfo = extractInfoFromHTML(window.origpage);
         handleSandboxParameters();
-      }, function() {});
+        window.origpage = null;
+      } else {
+        sendGet("/sandbox/", function()
+        {
+          window.gameinfo = extractInfoFromHTML(this.responseText);
+          handleSandboxParameters();
+        }, function() {});
+      }
       if (options.backup)
       {
         var pngdata = localStorage.getItem("anbt_drawingbackup_newcanvas");
@@ -852,6 +876,20 @@ function deeper_main()
   } else {
     ID("newcanvasyo").className = "play";
     getParametersFromPlay();
+  }
+
+  if (!options.smoothening)
+  {
+    buildSmoothPath = function(points, path)
+    {
+      if (points.length < 2) return;
+      path.pathSegList.initialize(path.createSVGPathSegMovetoAbs(points[0].x, points[0].y));
+      for (var i = 1; i < points.length; i++)
+      {
+        var c = points[i];
+        path.pathSegList.appendItem(path.createSVGPathSegLinetoAbs(c.x, c.y));
+      }
+    }
   }
 
   if (options.loadChat)
@@ -2935,6 +2973,7 @@ function pageEnhancements()
   if (pagodaBoxError()) return;
 
   if (typeof jQuery == "undefined") return; // Firefox Greasemonkey seems to call pageEnhancements() after document.write...
+  if (document.getElementById("newcanvasyo")) return; // Chrome, I'm looking at you too...
 
   __DEBUG__ = document.getElementById("_debug_");
   prestoOpera = jQuery.browser.opera && (parseInt(jQuery.browser.version, 10) <= 12);
@@ -2967,7 +3006,11 @@ function pageEnhancements()
     // If created a friend game, the link won't present playable form
     if (insandbox || (inplay && document.getElementById("gameForm")) || __DEBUG__)
     {
-      return(setupNewCanvas(insandbox, loc));
+      setTimeout(function()
+      {
+        setupNewCanvas(insandbox, loc, document.body.innerHTML);
+      }, 1);
+      return;
     }
   } else {
     if (insandbox || inplay || __DEBUG__)

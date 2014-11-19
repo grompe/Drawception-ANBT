@@ -88,6 +88,13 @@ Forum:
 
 ## CHANGELOG
 
+1.32.2014.11
+- New canvas: fix loading from sandbox and play pages
+- New canvas: faster loading from sandbox and play pages
+- New canvas: fix: now timeout while drawing should properly exit to sandbox
+- New canvas: try fix navigation history when embedding the new canvas
+- New canvas: fix smoothening being always disabled in Chrome
+
 1.31.2014.11
 - New canvas: allow setting background after timer expires to match original canvas behavior
 - New canvas: option to disable smoothening of strokes
