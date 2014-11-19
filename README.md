@@ -88,6 +88,9 @@ Forum:
 
 ## CHANGELOG
 
+1.33.2014.11
+- New canvas: quick fix for Firefox not extracting timer properly from play page
+
 1.32.2014.11
 - New canvas: fix loading from sandbox and play pages
 - New canvas: faster loading from sandbox and play pages
