@@ -12,7 +12,6 @@
 }
 body {
   margin: 0;
-  background: #ccc;
   font-family: 'Nunito', sans-serif;
   background: #555;
 }
@@ -277,8 +276,9 @@ button:disabled {
   background-color: #aaa;
 }
 #openmenu:after {
-  content: "\25BC";
+  content: "\2630";
   color: #fff;
+  font-size: 16pt;
   opacity: 0.6;
 }
 #openmenu {
