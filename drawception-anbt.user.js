@@ -355,22 +355,26 @@ function setupNewCanvas(insandbox, url, origpage)
 function needToGoDeeper()
 {
 
-function sendGet(url, onloadfunc, onerrorfunc)
+function sendGet(url, onloadfunc, onerrorfunc, ontimeoutfunc)
 {
   var xhr = new XMLHttpRequest();
   xhr.open('GET', url);
+  xhr.timeout = 15000;
   xhr.onload = onloadfunc;
   xhr.onerror = onerrorfunc || onloadfunc;
+  xhr.ontimeout = ontimeoutfunc || onerrorfunc || onloadfunc;
   xhr.send();
 }
 
-function sendPost(url, params, onloadfunc, onerrorfunc)
+function sendPost(url, params, onloadfunc, onerrorfunc, ontimeoutfunc)
 {
   var xhr = new XMLHttpRequest();
   xhr.open('POST', url);
+  xhr.timeout = 15000;
   xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
   xhr.onload = onloadfunc;
   xhr.onerror = onerrorfunc || onloadfunc;
+  xhr.ontimeout = ontimeoutfunc || onerrorfunc || onloadfunc;
   xhr.send(params);
 }
 
@@ -668,6 +672,10 @@ function bindCanvasEvents()
       {
         ID("exit").disabled = false;
         alert("Server error. :( Try again?");
+      }, function()
+      {
+        ID("exit").disabled = false;
+        alert("Server didn't respond in time. :( Try again?");
       });
       return;
     }
@@ -756,6 +764,10 @@ function bindCanvasEvents()
     {
       ID("submit").disabled = false;
       alert("Server error. :( Try again?");
+    }, function()
+    {
+      ID("submit").disabled = false;
+      alert("Server didn't respond in time. :( Try again?");
     });
   });
 
@@ -796,6 +808,10 @@ function bindCanvasEvents()
     {
       ID("submitcaption").disabled = false;
       alert("Server error. :( Try again?");
+    }, function()
+    {
+      ID("submitcaption").disabled = false;
+      alert("Server didn't respond in time. :( Try again?");
     });
   });
 
@@ -832,6 +848,10 @@ function bindCanvasEvents()
     {
       ID("timeplus").disabled = false;
       alert("Server error. :( Try again?");
+    }, function()
+    {
+      ID("timeplus").disabled = false;
+      alert("Server didn't respond in time. :( Try again?");
     });
   });
 }
