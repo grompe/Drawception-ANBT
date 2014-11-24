@@ -88,6 +88,10 @@ Forum:
 
 ## CHANGELOG
 
+1.34.2014.11
+- New canvas: add 15 seconds timeout to server requests, after which you can retry
+- New canvas: try fix 'false' displaying in place of public and friend games
+
 1.33.2014.11
 - New canvas: quick fix for Firefox not extracting timer properly from play page
 
