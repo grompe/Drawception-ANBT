@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      1.34.2014.11
+// @version      1.35.2014.11
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.34.2014.11";
+var SCRIPT_VERSION = "1.35.2014.11";
 var NEWCANVAS_VERSION = 12; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
@@ -43,6 +43,7 @@ var options =
   autoplay: 1, // Whether to automatically start playback of a recorded drawing
   submitConfirm: 1,
   smoothening: 1,
+  killDrawers: 0,
 };
 
 /*
@@ -2791,6 +2792,7 @@ function addScriptSettings()
       ["proxyImgur", "boolean", "Use Google proxy to load links from imgur, in case your ISP blocks them"],
       ["ajaxRetry", "boolean", "Retry failed AJAX requests"],
       ["autoplay", "boolean", "Automatically start replay when watching playback"],
+      ["killDrawers", "boolean", "Kill drawers and display notifications in a dialog"],
     ]
   );
   theForm.append('<div class="control-group"><div class="controls"><input name="submit" type="submit" class="btn btn-primary" value="Apply"> <b id="anbtSettingsOK" class="label label-theme_holiday" style="display:none">Saved!</b></div></div>');
@@ -3128,11 +3130,11 @@ function pageEnhancements()
   );
 
   // Fix usability in Opera and old Firefox browsers
-  if (prestoOpera || firefox4OrOlder)
+  if (prestoOpera || firefox4OrOlder || options.killDrawers)
   {
     $(".snap-drawers").remove();
     GM_addStyle(
-      ".snap-content {position: static !important}" +
+      ".snap-content {position: static !important; transform: none !important}" +
       "a.list-group-item:focus {background-color: #555 !important}" // CSS bug on the site
     );
     // Remake the notification list into a modal dialog

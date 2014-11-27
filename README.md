@@ -88,6 +88,9 @@ Forum:
 
 ## CHANGELOG
 
+1.35.2014.11
+- Option to kill drawers in modern browsers
+
 1.34.2014.11
 - New canvas: add 15 seconds timeout to server requests, after which you can retry
 - New canvas: try fix 'false' displaying in place of public and friend games
