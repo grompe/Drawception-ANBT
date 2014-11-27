@@ -88,6 +88,9 @@ Forum:
 
 ## CHANGELOG
 
+1.36.2014.11
+- Old canvas: fix brush cursor broken with kill drawers option
+
 1.35.2014.11
 - Option to kill drawers in modern browsers
 
