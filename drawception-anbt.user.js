@@ -2686,7 +2686,9 @@ function betterForum()
     $('img[src*="imgur.com/"]').each(function()
       {
         var t = $(this);
-        t.attr("src", "http://www.gmodules.com/ig/proxy?url=" + encodeURIComponent(t.attr("src")));
+        // Google Proxy has died.
+        //t.attr("src", "http://www.gmodules.com/ig/proxy?url=" + encodeURIComponent(t.attr("src")));
+        t.attr("src", t.attr("src").replace('imgur.com', 'filmot.com'));
       }
     );
   }
@@ -2789,7 +2791,7 @@ function addScriptSettings()
       ["localeTimestamp", "boolean", "Format timestamps as your system locale (" + (new Date()).toLocaleString() +")"],
       ["removeFlagging", "boolean", "Remove flagging buttons"],
       ["ownPanelLikesSecret", "boolean", "Hide your own panels' number of Likes (in game only)"],
-      ["proxyImgur", "boolean", "Use Google proxy to load links from imgur, in case your ISP blocks them"],
+      ["proxyImgur", "boolean", "Replace imgur.com links to filmot.com to load, in case your ISP blocks them"],
       ["ajaxRetry", "boolean", "Retry failed AJAX requests"],
       ["autoplay", "boolean", "Automatically start replay when watching playback"],
       ["killDrawers", "boolean", "Kill drawers and display notifications in a dialog"],
