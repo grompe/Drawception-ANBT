@@ -388,11 +388,11 @@ function extractInfoFromHTML(html)
   };
   return {
     error: extract(/<div class="error">\s+([^<]+)\s+<\/div>/),
-    gameid: extract(/<input type="hidden" name="which_game" value="([^"]+)"/),
+    gameid: extract(/name="which_game" value="([^"]+)"/),
     blitz: extract(/BLITZ MODE<br ?\/?>/),
     nsfw: extract(/>This game Not Safe For Work \(18\+\)<\/span>/),
     friend: extract(/<legend>\s+Friend Game/),
-    drawfirst: extract(/<input type="button" value="Abort" onclick="DrawceptionPlay\.abortDrawFirst\(\)/),
+    drawfirst: extract(/value="Abort" onclick="DrawceptionPlay\.abortDrawFirst\(\)/),
     timeleft: extract(/<span id="timeleft">\s+(\d+)\s+<\/span>/),
     timeleft2: extract(/<span id="timeleft" class="hasCountdown">[^:]+>(\d+:\d+)/) || extract(/<span class="hasCountdown" id="timeleft">[^:]+>(\d+:\d+)/),
     caption: extract(/<p class="play-phrase">\s+([^<]+)\s+<\/p>/),
