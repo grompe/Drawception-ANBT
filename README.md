@@ -88,6 +88,11 @@ Forum:
 
 ## CHANGELOG
 
+1.37.2014.11
+- Replace Google proxy (stopped working) with filmot.com for imgur links
+- New canvas: fix draw first mode (broken in 1.32.2014.11)
+- New canvas: add clarifying text to 'broken image' image
+
 1.36.2014.11
 - Old canvas: fix brush cursor broken with kill drawers option
 
