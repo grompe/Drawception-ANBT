@@ -573,7 +573,7 @@ function handlePlayParameters()
     if (info.image.length <= 30)
     {
       // Broken drawing =(
-      ID("tocaption").src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAD6AQMAAAAho+iwAAAABlBMVEWAQEAAAAB4MK1jAAAAfElEQVR4Xu3VgQaAQBBF0ZjfWvbXh/2tYWLjIQHBS/dkhS7s1uh4AgAAACDKNxuRsyXNspWHDKssKvwyscr8z83/e/OfhVh72WQS+7GWQeZ9bszC+//C7O6yyjQLkftumckfMzIymS3plPnTRsoyi7yuW0D2tXcKAAAA4AQpWEKQW53dgwAAAABJRU5ErkJggg==";
+      ID("tocaption").src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAD6AQMAAAAho+iwAAAABlBMVEWAQED///94jotxAAABiklEQVR4Xu3W0UrCUBjA8eOO5CLK7VxLzDWFrjK6Eaha8FHuppfwBRJvdjlMIK/K3qA3OZBBd/UIm9UL2O2inMJBptNuog/6/h4Q2Y8J387Y2KIoiqIoiqIoiuIxXnbI5cmXSiJjD3LmFyrGY46PqVAx/HPDv9/w3wsJTTgapuDkcEIQMFxzo937S8+F5OkWI2IKymQl3yiZ6j8zYsRY6vUYDcOfGkuMknE5/aQAMczX9O+iKIrKJWuSxliQqT61hOmMucsYK6uzLWfDenF34EXhOX+s377KLCZcs1bxhNXQqnAvrExWM8vvY3amORCNsplu2nZPWKdj1tecTHZZLA97ZnjBB/XrkWIZWT+bsmTowp+7FHSnyMi7CpuMrWcwNsMMxnJzrCUbwwq/2/MLJb8lP4L2zVHJ35Bp1rE8Uc2bALoNHQvcoNG3Yf5Pm6EnHG50Ye0YmiG4V08LmWD7wmF9gJwFgoHbnZzNSDE/Co3orSB2YGsbovAgaD9vlkB/WbkbdQVWMNxR1Ddnf4eSZpHZYAAAAABJRU5ErkJggg==";
     } else {
       ID("tocaption").src = info.image;
     }
