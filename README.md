@@ -88,6 +88,9 @@ Forum:
 
 ## CHANGELOG
 
+1.39.2014.12
+- Change links to game comments to be on timestamp, fixes double new tag
+
 1.38.2014.12
 - New canvas: don't change sandbox URL after uploading to imgur
 - Allow direct links to game comments
