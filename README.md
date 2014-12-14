@@ -88,6 +88,10 @@ Forum:
 
 ## CHANGELOG
 
+1.38.2014.12
+- New canvas: don't change sandbox URL after uploading to imgur
+- Allow direct links to game comments
+
 1.37.2014.11
 - Replace Google proxy (stopped working) with filmot.com for imgur links
 - New canvas: fix draw first mode (broken in 1.32.2014.11)

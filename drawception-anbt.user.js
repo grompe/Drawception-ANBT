@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      1.37.2014.11
+// @version      1.38.2014.12
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,8 +14,8 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.37.2014.11";
-var NEWCANVAS_VERSION = 12; // Increase to update the cached canvas
+var SCRIPT_VERSION = "1.38.2014.12";
+var NEWCANVAS_VERSION = 13; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
 
@@ -2066,8 +2066,11 @@ function betterView()
   holders.each(function()
   {
     var t = $(this);
-    var ago = t.find(".text-muted").text();
+    var dateel = t.find(".text-muted").first();
+    var ago = dateel.text();
     var commentid = parseInt(t.attr("id").slice(1), 10);
+    // Also allow linking to specific comment
+    dateel.after(' <a class="text-muted" href="#' + t.attr("id") + '">#' + commentid + '</a>');
     // Track comments from up to week ago
     if (ago.match(/just now|min|hour| [1-7] day/))
     {

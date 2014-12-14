@@ -638,7 +638,7 @@ button:disabled {
     <div id="headercont">
       <div class="headerleft">
         <a href="/" title="Home"><img src="/img/logo-d.png"></a>
-        <span id="headerinfo" class="hideonsmall">New Canvas v12</span>
+        <span id="headerinfo" class="hideonsmall">New Canvas v13</span>
       </div>
       <div class="headerright">
         <a id="start" title="Play Drawception!" class="headerbutton active onlysandbox">Play</a>
@@ -2478,7 +2478,7 @@ function bindEvents()
       if (r && r.success)
       {
         anbt.unsaved = false;
-        history.replaceState(null, null, "#" + r.data.id);
+        //history.replaceState(null, null, "#" + r.data.id);
         ID("imgururl").href = "http://imgur.com/" + r.data.id;
         ID("imgururl").childNodes[0].nodeValue = "Uploaded image";
         ID("imgurdelete").href = "http://imgur.com/delete/" + r.data.deletehash;
