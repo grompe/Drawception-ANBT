@@ -638,7 +638,7 @@ button:disabled {
     <div id="headercont">
       <div class="headerleft">
         <a href="/" title="Home"><img src="/img/logo-d.png"></a>
-        <span id="headerinfo" class="hideonsmall">New Canvas v13</span>
+        <span id="headerinfo" class="hideonsmall">New Canvas v14</span>
       </div>
       <div class="headerright">
         <a id="start" title="Play Drawception!" class="headerbutton active onlysandbox">Play</a>
@@ -2920,7 +2920,12 @@ function bindEvents()
   };
   window.onbeforeunload = function(e)
   {
-    if (anbt.unsaved) return "You haven't saved the drawing. Abandon?";
+    if (anbt.unsaved)
+    {
+      var msg = "You haven't saved the drawing. Abandon?";
+      e.returnValue = msg;
+      return msg;
+    }
   };
 }
 

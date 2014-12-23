@@ -2463,7 +2463,12 @@ function bindEvents()
   };
   window.onbeforeunload = function(e)
   {
-    if (anbt.unsaved) return "You haven't saved the drawing. Abandon?";
+    if (anbt.unsaved)
+    {
+      var msg = "You haven't saved the drawing. Abandon?";
+      e.returnValue = msg;
+      return msg;
+    }
   };
   (function fixPluginGoingAWOL()
   {

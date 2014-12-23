@@ -88,6 +88,9 @@ Forum:
 
 ## CHANGELOG
 
+1.40.2014.12
+- Fix warning about unsaved drawing in newest Chrome not appearing
+
 1.39.2014.12
 - Change links to game comments to be on timestamp, fixes double new tag
 
