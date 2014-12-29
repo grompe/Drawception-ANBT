@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      1.40.2014.12
+// @version      1.41.2014.12
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.40.2014.12";
+var SCRIPT_VERSION = "1.41.2014.12";
 var NEWCANVAS_VERSION = 14; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
@@ -1890,7 +1890,7 @@ function likePanelById(id)
 window.likeAll = likeAll;
 function likeAll()
 {
-  $("img[src='/img/thumb_up_off.png']").parent().each(
+  $(".likebutton.btn-default").each(
     function(k, v)
     {
       if ($(v).parent().parent().find("a:last-child").text().trim() != username) v.click();
@@ -3195,10 +3195,10 @@ function pageEnhancements()
   var jsVersion, cssVersion, versionDisplay;
   try
   {
-    jsVersion = $('script[src*="script-ck.js"]').attr("src").match(/\?v=([^&]+)/)[1];
-    cssVersion = $('head link[href*="main.css"]').attr("href").match(/\?v=([^&]+)/)[1];
+    jsVersion = $('script[src*="main-ck.js"]').attr("src").match(/\?v=([^&]+)/)[1];
+    cssVersion = $('head link[href*="core.css"]').attr("href").match(/\?v=([^&]+)/)[1];
     versionDisplay = "ANBT v" + SCRIPT_VERSION + " | js v" + jsVersion + ", css v" + cssVersion;
-    if (jsVersion != "4.27" || cssVersion != "3.21") versionDisplay += " | woah, site got updated!";
+    if (jsVersion != "4.28" || cssVersion != "3.23") versionDisplay += " | woah, site got updated!";
   } catch(e)
   {
     versionDisplay = "ANBT v" + SCRIPT_VERSION + " | js/css unknown";
