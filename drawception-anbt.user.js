@@ -1938,7 +1938,7 @@ function betterView()
 
   // Show approximate creation time from the first drawing panel
   var startDate = panelUrlToDate(drawings.attr("src"));
-  var lead = $("#main .lead");
+  var lead = $("#main .lead").first();
   lead.text(lead.text().replace("game completed", "game started on " + startDate + " and completed"));
 
   // Show each drawing make date
@@ -2142,7 +2142,7 @@ function betterPanel()
   var d, img = $(".gamepanel img");
   if (img.length && (d = panelUrlToDate(img.attr("src"))))
   {
-    $("#main .lead").append("<br>made on " + d);
+    $("#main .lead").first().append("<br>made on " + d);
   }
 
   var panelId = getPanelId(location.pathname);

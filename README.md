@@ -90,7 +90,7 @@ Forum:
 
 1.41.2014.12
 - Fix "Like All" button broken with the site update
-- Fix site JS/CSS version dection broken with the site update
+- Fix site JS/CSS version detection broken with the site update
 
 1.40.2014.12
 - Fix warning about unsaved drawing in newest Chrome not appearing
