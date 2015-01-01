@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      1.41.2014.12
+// @version      1.42.2015.1
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.41.2014.12";
+var SCRIPT_VERSION = "1.42.2015.1";
 var NEWCANVAS_VERSION = 14; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
@@ -44,6 +44,7 @@ var options =
   submitConfirm: 1,
   smoothening: 1,
   killDrawers: 0,
+  autoBypassNSFW: 0,
 };
 
 /*
@@ -1934,6 +1935,15 @@ function panelUrlToDate(url)
 
 function betterView()
 {
+  if (document.title == "Not Safe For Work (18+) Gate")
+  {
+    if (options.autoBypassNSFW)
+    {
+      DrawceptionPlay.bypassNsfwGate();
+    }
+    return;
+  }
+
   var drawings = $('img[src^="/pub/panels/"]');
 
   // Show approximate creation time from the first drawing panel
@@ -2798,6 +2808,7 @@ function addScriptSettings()
       ["ajaxRetry", "boolean", "Retry failed AJAX requests"],
       ["autoplay", "boolean", "Automatically start replay when watching playback"],
       ["killDrawers", "boolean", "Kill drawers and display notifications in a dialog"],
+      ["autoBypassNSFW", "boolean", "Automatically bypass NSFW game warning"],
     ]
   );
   theForm.append('<div class="control-group"><div class="controls"><input name="submit" type="submit" class="btn btn-primary" value="Apply"> <b id="anbtSettingsOK" class="label label-theme_holiday" style="display:none">Saved!</b></div></div>');

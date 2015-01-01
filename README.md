@@ -88,6 +88,10 @@ Forum:
 
 ## CHANGELOG
 
+1.42.2015.1
+- Fix double "made on" display on own drawing panel detail page
+- Add an option to automatically skip NSFW game warning; that also fixes script error on that warning page
+
 1.41.2014.12
 - Fix "Like All" button broken with the site update
 - Fix site JS/CSS version detection broken with the site update
