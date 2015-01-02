@@ -3092,10 +3092,10 @@ function pageEnhancements()
     "#anbtver {font-size: 10px; position:absolute; opacity:0.3; right:10px; top:50px}" +
     ".anbt_paneldel {position:absolute; padding:1px 6px; color:#FFF; background:#d9534f; text-decoration: none !important; right: 18px; border-radius: 5px}" +
     ".anbt_paneldel:hover {background:#d2322d}" +
-    ".anbt_favpanel {top: 40px; font-weight: normal; padding: 4px 2px}" +
+    ".anbt_favpanel {top: 40px; font-weight: normal; padding: 6px 2px}" +
     ".anbt_favpanel:hover {color: #d9534f; cursor:pointer}" +
     ".anbt_favedpanel {color: #d9534f; border-color: #d9534f}" +
-    ".anbt_replaypanel {top: 80px; font-weight: normal; padding: 4px 2px}" +
+    ".anbt_replaypanel {top: 80px; font-weight: normal; padding: 6px 2px}" +
     ".anbt_replaypanel:hover {color: #8af; text-decoration: none}" +
     ".gamepanel, .thumbpanel, .comment-body {word-wrap: break-word}" +
     ".comment-body img {max-width: 100%}" +
