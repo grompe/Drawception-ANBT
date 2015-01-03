@@ -496,6 +496,7 @@ var anbt =
   color: ['#000000', "eraser"],
   fastUndoLevels: 10,
   rewindCache: [],
+  snap: false,
   BindContainer: function(el)
   {
     this.container = el;
@@ -841,10 +842,14 @@ var anbt =
       context.lineJoin = "round";
       context.lineCap = "round";
       context.scale(width / 600, height / 500);
-      for (var i = 0; i < this.svg.childNodes.length; i++)
+      // Skip background rect
+      for (var i = 1; i < this.svg.childNodes.length; i++)
       {
         this.DrawSVGElement(this.svg.childNodes[i], context);
       }
+      context.globalCompositeOperation = "destination-over";
+      context.fillStyle = this.background;
+      context.fillRect(0, 0, width, height);
     }
     this.pngBase64 = canvas.toDataURL("image/png");
 
@@ -1068,6 +1073,11 @@ var anbt =
     } else {
       this.lastleft = left;
     }
+    if (this.snap)
+    {
+      x = Math.round(x / this.snap) * this.snap;
+      y = Math.round(y / this.snap) * this.snap;
+    }
     var cls = null;
     var color = left ? this.color[0] : this.color[1];
     if (color == "eraser")
@@ -1113,6 +1123,11 @@ var anbt =
   StrokeAdd: function(x, y)
   {
     if (!this.isStroking) throw new Error("StrokeAdd without StrokeBegin!");
+    if (this.snap)
+    {
+      x = Math.round(x / this.snap) * this.snap;
+      y = Math.round(y / this.snap) * this.snap;
+    }
     var p = this.points[this.points.length - 1];
     if (p.x == x && p.y == y) return;
     if (this.blot)
@@ -1129,6 +1144,11 @@ var anbt =
   StrokeBeginModifyLast: function(x, y, left)
   {
     if (this.position == 0 || !this.points) return StrokeBegin(x, y, left);
+    if (this.snap)
+    {
+      x = Math.round(x / this.snap) * this.snap;
+      y = Math.round(y / this.snap) * this.snap;
+    }
     this.path = this.svg.childNodes[this.position];
     this.points = this.path.orig;
     this.Seek(this.position - 1);
@@ -1362,7 +1382,7 @@ var anbt =
     {
       this.brushCursor = svgElement("circle",
         {
-          "stroke-width": "1",
+          "stroke-width": "0.5",
           stroke: "#000",
           fill: "none",
         }
@@ -1370,7 +1390,7 @@ var anbt =
       this.svgDisp.appendChild(this.brushCursor);
       this.brushCursor2 = svgElement("circle",
         {
-          "stroke-width": "1",
+          "stroke-width": "0.5",
           stroke: "#fff",
           fill: "none",
         }
@@ -1389,6 +1409,11 @@ var anbt =
     // Assume just size change if called with no parameters
     if (typeof x != "undefined")
     {
+      if (this.snap)
+      {
+        x = Math.round(x / this.snap) * this.snap;
+        y = Math.round(y / this.snap) * this.snap;
+      }
       this.brushCursor.setAttribute("cx", x);
       this.brushCursor.setAttribute("cy", y);
       this.brushCursor2.setAttribute("cx", x);
@@ -2323,6 +2348,52 @@ function bindEvents()
   ID("drawtransitions").addEventListener('mousedown', drawTransitions);
   ID("drawtransitions").addEventListener('touchend', drawTransitions);
   
+  var setBackgroundImage = function(e)
+  {
+    if (anbt.unsaved && !confirm("You haven't saved the drawing. Continue?")) return;
+    e.preventDefault();
+    anbt.SetBackground("eraser");
+    ID("svgContainer").style.backgroundImage = 'url(' + prompt('Enter image URL to use as a background:') + ')';
+    ID("svgContainer").style.backgroundSize = '100%';
+  };
+  ID("setbackgroundimage").addEventListener('mousedown', setBackgroundImage);
+  ID("setbackgroundimage").addEventListener('touchend', setBackgroundImage);
+  
+  var toggleSmooth = function(e)
+  {
+    if (window.toggleSmooth)
+    {
+      buildSmoothPath = old_buildSmoothPath;
+    } else {
+      window.old_buildSmoothPath = buildSmoothPath;
+      buildSmoothPath = function(points, path)
+      {
+        if (points.length < 2) return;
+        path.pathSegList.initialize(path.createSVGPathSegMovetoAbs(points[0].x, points[0].y));
+        for (var i = 1; i < points.length; i++)
+        {
+          var c = points[i];
+          path.pathSegList.appendItem(path.createSVGPathSegLinetoAbs(c.x, c.y));
+        }
+      };
+    }
+    window.toggleSmooth = !window.toggleSmooth;
+    ID("togglesmooth").childNodes[0].nodeValue =
+      (window.toggleSmooth ? "Enable" : "Disable") + " stroke smoothening";
+  };
+  ID("togglesmooth").addEventListener('mousedown', toggleSmooth);
+  ID("togglesmooth").addEventListener('touchend', toggleSmooth);
+
+  var setSnap = function(e)
+  {
+    var m = prompt("Grid size in pixels (6 makes brush 2 and brush 4 exact; 0 to disable):", "0");
+    if (!m) return;
+    m = m.match(/(\d+)/g);
+    anbt.snap = m ? m : false;
+  };
+  ID("setsnap").addEventListener('mousedown', setSnap);
+  ID("setsnap").addEventListener('touchend', setSnap);
+
   // ---
 
   ID("popupclose").addEventListener('click', function(e)

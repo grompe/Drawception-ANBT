@@ -88,6 +88,11 @@ Forum:
 
 ## CHANGELOG
 
+1.43.2015.1
+- Dark style: better-looking pressed Like button
+- Fix favorite and replay buttons being off-center on the game page
+- New canvas: chamge Submit button color to green
+
 1.42.2015.1
 - Fix double "made on" display on own drawing panel detail page
 - Add an option to automatically skip NSFW game warning; that also fixes script error on that warning page
