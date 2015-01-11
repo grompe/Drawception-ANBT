@@ -88,6 +88,11 @@ Forum:
 
 ## CHANGELOG
 
+1.44.2015.1
+- New canvas: fix HTML entities appearing in bookmarked games
+- New canvas: indicator that shows color under the cursor in the palette
+- Add an option to disable 0-9 key color shortcuts
+
 1.43.2015.1
 - Dark style: better-looking pressed Like button
 - Fix favorite and replay buttons being off-center on the game page

@@ -46,6 +46,7 @@ var options =
   killDrawers: 0,
   autoBypassNSFW: 0,
   colorNumberShortcuts: 1,
+  colorUnderCursorHint: 1,
 };
 
 /*
@@ -2800,6 +2801,7 @@ function addScriptSettings()
       ["timeoutSoundBlitz", "boolean", "Warning sound when only 5 seconds left (blitz)"],
       ["rememberPosition", "boolean", "Show your panel position and track changes in unfinished games list"],
       ['colorNumberShortcuts', 'boolean', "Use 0-9 keys to select the color"],
+      ['colorUnderCursorHint', 'boolean', "Show the color under the cursor in the palette (New canvas only)"],
     ]
   );
   addGroup('Chat (Standalone address: <a href="http://chat.grompe.org.ru/#drawception">http://chat.grompe.org.ru/#drawception</a>)',

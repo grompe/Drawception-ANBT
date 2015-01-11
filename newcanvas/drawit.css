@@ -176,6 +176,19 @@ a.prominent:hover {
   line-height: 42px;
   cursor: pointer;
 }
+#colors b.hint:after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  margin: 32px 2px;
+  width: 5px;
+  height: 5px;
+  background-color: white;
+  border: 1px solid #000;
+}
+#colors b.hint:before {
+  opacity: 0.6;
+}
 #colors b:before {
   font-size: 10pt;
   opacity: 0.3;

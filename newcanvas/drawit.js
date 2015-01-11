@@ -425,34 +425,34 @@ function getColorAverage(c1, c2, bias)
 }
 
 var palettes = {
-  "Normal":          ['#000', '#444', '#999', '#fff', '#603913', '#c69c6d',
-                      '#FFDAB9', '#F00', '#FFD700', '#F60', '#16ff00', '#0fad00',
-                      '#0FF', '#0247fe', '#ec008c', '#8601af', '#fffdc9'],
+  "Normal":          ['#000000', '#444444', '#999999', '#ffffff', '#603913', '#c69c6d',
+                      '#ffdab9', '#ff0000', '#ffd700', '#ff6600', '#16ff00', '#0fad00',
+                      '#00ffff', '#0247fe', '#ec008c', '#8601af', '#fffdc9'],
   "Sepia":           ['#402305', '#503315', '#604325', '#705335', '#806345', '#907355',
                       '#a08365', '#b09375', '#bfa284', '#cfb294', '#dfc2a4', '#ffe2c4'],
-  "Grayscale":       ['#000', '#111', '#222', '#333', '#444', '#555', '#666',
-                      '#777', '#888', '#999', '#c0c0c0', '#fff', '#eee' ],
-  "Black and white": ['#fff', '#000'],
-  "CGA":             ['#555', '#000', '#00A', '#55F', '#0A0', '#5F5', '#0AA', '#5FF',
-                      '#A00', '#F55', '#A0A', '#F5F', '#A50', '#FF5', '#AAA', '#FFF'],
+  "Grayscale":       ['#000000', '#111111', '#222222', '#333333', '#444444', '#555555', '#666666',
+                      '#777777', '#888888', '#999999', '#c0c0c0', '#ffffff', '#eeeeee' ],
+  "Black and white": ['#ffffff', '#000000'],
+  "CGA":             ['#555555', '#000000', '#0000aa', '#5555ff', '#00aa00', '#55ff55', '#00aaaa', '#55ffff',
+                      '#aa0000', '#ff5555', '#aa00aa', '#ff55ff', '#aa5500', '#ffff55', '#aaaaaa', '#ffffff'],
   "Gameboy":         ['#8bac0f', '#9bbc0f', '#306230', '#0f380f'],
-  "Neon":            ['#fff', '#000', '#adfd09', '#feac09', '#fe0bab', '#ad0bfb', '#00abff'],
+  "Neon":            ['#ffffff', '#000000', '#adfd09', '#feac09', '#fe0bab', '#ad0bfb', '#00abff'],
   "Thanksgiving":    ['#673718', '#3c2d27', '#c23322', '#850005', '#c67200', '#77785b',
                       '#5e6524', '#cfb178', '#f5e9ce'],
   "Holiday":         ['#3d9949', '#7bbd82', '#7d1a0c', '#bf2a23',
-                      '#fdd017', '#00b7f1', '#bababa', '#fff'],
-  "Valentine's":     ['#8b2158', '#a81f61', '#bb1364', '#ce0e62', '#e40f64', '#f00',
-                      '#f5afc8', '#ffccdf', '#e7e7e7', '#fff'],
-  "Halloween":       ['#444', '#000', '#999', '#FFF', '#603913', '#c69c6d',
-                      '#7A0E0E', '#B40528', '#FD2119', '#FA5B11', '#FAA611', '#FFD700',
-                      '#602749', '#724B97', '#BEF202', '#519548', '#B2BB1E'],
+                      '#fdd017', '#00b7f1', '#bababa', '#ffffff'],
+  "Valentine's":     ['#8b2158', '#a81f61', '#bb1364', '#ce0e62', '#e40f64', '#ff0000',
+                      '#f5afc8', '#ffccdf', '#e7e7e7', '#ffffff'],
+  "Halloween":       ['#444444', '#000000', '#999999', '#ffffff', '#603913', '#c69c6d',
+                      '#7a0e0e', '#b40528', '#fd2119', '#fa5b11', '#faa611', '#ffd700',
+                      '#602749', '#724b97', '#bef202', '#519548', '#b2bb1e'],
   "the blues":       ['#b6cbe4', '#618abc', '#d0d5ce', '#82a2a1', '#92b8c1', '#607884',
                       '#c19292', '#8c2c2c', '#295c6f'],
   "DawnBringer 16":  ['#140c1c', '#442434', '#30346d', '#4e4a4e', '#854c30', '#346524',
                       '#d04648', '#757161', '#597dce', '#d27d2c', '#8595a1', '#6daa2c',
                       '#d2aa99', '#6dc2ca', '#dad45e', '#deeed6'],
   "March":           ['#9ed396', '#57b947', '#4d7736', '#365431', '#231302',
-                      '#3e2409', '#a66621', '#a67e21', '#ebbb49', '#ffc0cb', '#fff']
+                      '#3e2409', '#a66621', '#a67e21', '#ebbb49', '#ffc0cb', '#ffffff']
 };
 
 var anbt =
@@ -1699,6 +1699,19 @@ function bindEvents()
     var x = e.pageX - rect.left - pageXOffset;
     var y = e.pageY - rect.top - pageYOffset;
     anbt.MoveCursor(x, y);
+    // Highlight color we're pointing at
+    if (!anbt.isStroking)
+    {
+      var el = ID("colors").querySelector("b.hint");
+      if (el) el.classList.remove("hint");
+      var color = anbt.Eyedropper(x, y);
+      var coloridx = anbt.palette.indexOf(color);
+      if (coloridx >= 0)
+      {
+        var els = ID("colors").querySelectorAll("b");
+        els[coloridx].classList.add("hint");
+      }
+    }
   });
   window.addEventListener('contextmenu', function(e)
   {
