@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      1.43.2015.1
+// @version      1.44.2015.1
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,8 +14,8 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.43.2015.1";
-var NEWCANVAS_VERSION = 15; // Increase to update the cached canvas
+var SCRIPT_VERSION = "1.44.2015.1";
+var NEWCANVAS_VERSION = 16; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
 
@@ -45,6 +45,7 @@ var options =
   smoothening: 1,
   killDrawers: 0,
   autoBypassNSFW: 0,
+  colorNumberShortcuts: 1,
 };
 
 /*
@@ -1332,7 +1333,7 @@ function enhanceCanvas(insandbox)
             $(".eraserPicker").click();
             drawApp.setPrimaryColor(null);
           }
-          else if (!e.ctrlKey && (e.keyCode >= 48 && e.keyCode <= 57))
+          else if (!e.ctrlKey && (e.keyCode >= 48 && e.keyCode <= 57) && options.colorNumberShortcuts)
           {
             e.preventDefault();
             var i = (e.keyCode == 48) ? 9 : e.keyCode - 49;
@@ -2798,6 +2799,7 @@ function addScriptSettings()
       ["timeoutSound", "boolean", "Warning sound when only a minute is left (normal games)"],
       ["timeoutSoundBlitz", "boolean", "Warning sound when only 5 seconds left (blitz)"],
       ["rememberPosition", "boolean", "Show your panel position and track changes in unfinished games list"],
+      ['colorNumberShortcuts', 'boolean', "Use 0-9 keys to select the color"],
     ]
   );
   addGroup('Chat (Standalone address: <a href="http://chat.grompe.org.ru/#drawception">http://chat.grompe.org.ru/#drawception</a>)',

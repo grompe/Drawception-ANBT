@@ -642,7 +642,7 @@ button:disabled {
     <div id="headercont">
       <div class="headerleft">
         <a href="/" title="Home"><img src="/img/logo-d.png"></a>
-        <span id="headerinfo" class="hideonsmall">New Canvas v15</span>
+        <span id="headerinfo" class="hideonsmall">New Canvas v16</span>
       </div>
       <div class="headerright">
         <a id="start" title="Play Drawception!" class="headerbutton active onlysandbox">Play</a>
@@ -2861,7 +2861,7 @@ function bindEvents()
       anbt.SetColor(0, "eraser");
       updateColorIndicators();
     }
-    else if (e.keyCode >= 48 && e.keyCode <= 57 && !e.ctrlKey)
+    else if (e.keyCode >= 48 && e.keyCode <= 57 && !e.ctrlKey && options.colorNumberShortcuts)
     {
       e.preventDefault();
       var i = (e.keyCode == 48) ? 9 : e.keyCode - 49;
