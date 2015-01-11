@@ -652,6 +652,13 @@ function include(script, callback)
   document.body.appendChild(tag);
 }
 
+function decodeHTML(html)
+{
+  var txt = document.createElement("textarea");
+  txt.innerHTML = html;
+  return txt.value;
+}
+
 function bindCanvasEvents()
 {
   var unsavedStopAction = function()
@@ -723,7 +730,7 @@ function bindCanvasEvents()
     ID("bookmark").disabled = true;
     var games = localStorage.getItem("gpe_gameBookmarks");
     games = games ? JSON.parse(games) : {};
-    games[window.gameinfo.gameid] = {time: Date.now(), caption: window.gameinfo.caption};
+    games[window.gameinfo.gameid] = {time: Date.now(), caption: decodeHTML(window.gameinfo.caption)};
     localStorage.setItem("gpe_gameBookmarks", JSON.stringify(games));
   });
 
