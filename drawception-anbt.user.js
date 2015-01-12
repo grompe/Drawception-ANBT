@@ -2637,7 +2637,7 @@ function betterForum()
   );
 
   // Linkify the links
-  $('.comment-body p').each(function()
+  $('.comment-body *').each(function()
     {
       var t = $(this);
       if (t.text().indexOf("://") == -1) return;
