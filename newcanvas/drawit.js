@@ -126,9 +126,18 @@ function color2dword(color)
   var c = color2rgba(color);
   return String.fromCharCode(c[0], c[1], c[2], c[3]);
 }
-function valueToHex(val)
+function value2hex(val)
 {
   return (Math.floor(val/16)%16).toString(16)+(Math.floor(val)%16).toString(16);
+}
+function rgb2hex(r, g, b)
+{
+  return "#" + value2hex(r) + value2hex(g) + value2hex(b);
+}
+function color2hex(color)
+{
+  var c = color2rgba(color);
+  return rgb2hex(c[0], c[1], c[2]);
 }
 function randomItem(l)
 {
@@ -377,7 +386,7 @@ function getColorDistance(rgb1, rgb2)
 function getClosestColor(rgb, pal)
 {
   // Allow any color in sandbox
-  if (ID("newcanvasyo").classList.contains("sandbox")) return rgb;
+  if (ID("newcanvasyo").classList.contains("sandbox")) return rgb2hex(rgb[0], rgb[1], rgb[2]);
   var c, d, idx = 0, min = 999;
   for (var i = 0; i < pal.length; i++)
   {
@@ -388,7 +397,8 @@ function getClosestColor(rgb, pal)
       idx = i;
     }
   }
-  return color2rgba(pal[idx]);
+  c = color2rgba(pal[idx]);
+  return rgb2hex(c[0], c[1], c[2]);
 }
 function getColorDistanceLab(lab1, lab2)
 {
@@ -409,7 +419,8 @@ function getClosestColorLab(lab, pal)
       idx = i;
     }
   }
-  return color2rgba(pal[idx]);
+  c = color2rgba(pal[idx]);
+  return rgb2hex(c[0], c[1], c[2]);
 }
 function getColorAverage(c1, c2, bias)
 {
@@ -976,7 +987,8 @@ var anbt =
     var transparent = color == "eraser";
     this.transparent = transparent;
     this.canvas.style.background = transparent ? "none" : color;
-    color = transparent ? "#fff" : color;
+    // Normalize the color representation
+    color = transparent ? "#ffffff" : color2hex(color);
     this.background = color;
     var erased = this.svg.querySelectorAll(".eraser");
     for (var i = 0; i < erased.length; i++)
@@ -1438,8 +1450,7 @@ var anbt =
     var p = this.ctx.getImageData(x, y, 1, 1).data;
     if (p[3] > 0)
     {
-      p = getClosestColor(p, this.palette);
-      return ("#" + valueToHex(p[0]) + valueToHex(p[1]) + valueToHex(p[2]))
+      return getClosestColor(p, this.palette);
     } else {
       return this.background;
     }
@@ -1693,6 +1704,7 @@ function bindEvents()
       }
     }
   });
+  var lastSeenColorToHighlight = anbt.background;
   ID("svgContainer").addEventListener('mousemove', function(e)
   {
     rect = this.getBoundingClientRect();
@@ -1702,15 +1714,19 @@ function bindEvents()
     // Highlight color we're pointing at
     if (!anbt.isStroking)
     {
-      var el = ID("colors").querySelector("b.hint");
-      if (el) el.classList.remove("hint");
       var color = anbt.Eyedropper(x, y);
-      var coloridx = anbt.palette.indexOf(color);
-      if (coloridx >= 0)
+      if (lastSeenColorToHighlight != color)
       {
-        var els = ID("colors").querySelectorAll("b");
-        els[coloridx].classList.add("hint");
+        var el = ID("colors").querySelector("b.hint");
+        if (el) el.classList.remove("hint");
+        var coloridx = anbt.palette.indexOf(color);
+        if (coloridx >= 0)
+        {
+          var els = ID("colors").querySelectorAll("b");
+          els[coloridx].classList.add("hint");
+        }
       }
+      lastSeenColorToHighlight = color;
     }
   });
   window.addEventListener('contextmenu', function(e)
@@ -2347,7 +2363,6 @@ function bindEvents()
           {
             c = getColorAverage(color1, color2, xx / 34);
             c = getClosestColorLab(c, anbt.palette);
-            c = "#" + valueToHex(c[0]) + valueToHex(c[1]) + valueToHex(c[2]);
             anbt.ctx.fillStyle = c;
             anbt.ctx.fillRect(x * w + offsetx + xx, y * h + offsety, 1, h - 1);
             //anbt.ctx.beginPath();

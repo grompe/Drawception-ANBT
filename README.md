@@ -88,6 +88,10 @@ Forum:
 
 ## CHANGELOG
 
+1.45.2015.1
+- Fix lists in forum messages not being linkified
+- New canvas: fix color under the cursor indicator and improve performance
+
 1.44.2015.1
 - New canvas: fix HTML entities appearing in bookmarked games
 - New canvas: indicator that shows color under the cursor in the palette
