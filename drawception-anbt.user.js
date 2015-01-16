@@ -3220,7 +3220,7 @@ function pageEnhancements()
     jsVersion = $('script[src*="main-ck.js"]').attr("src").match(/\?v=([^&]+)/)[1];
     cssVersion = $('head link[href*="core.css"]').attr("href").match(/\?v=([^&]+)/)[1];
     versionDisplay = "ANBT v" + SCRIPT_VERSION + " | js v" + jsVersion + ", css v" + cssVersion;
-    if (jsVersion != "4.28" || cssVersion != "3.23") versionDisplay += " | woah, site got updated!";
+    if (jsVersion != "4.28" || cssVersion != "3.24") versionDisplay += " | woah, site got updated!";
   } catch(e)
   {
     versionDisplay = "ANBT v" + SCRIPT_VERSION + " | js/css unknown";
