@@ -732,7 +732,8 @@ function bindCanvasEvents()
     ID("bookmark").disabled = true;
     var games = localStorage.getItem("gpe_gameBookmarks");
     games = games ? JSON.parse(games) : {};
-    games[window.gameinfo.gameid] = {time: Date.now(), caption: decodeHTML(window.gameinfo.caption)};
+    var caption = window.gameinfo.caption;
+    games[window.gameinfo.gameid] = {time: Date.now(), caption: caption ? decodeHTML(caption) : ""};
     localStorage.setItem("gpe_gameBookmarks", JSON.stringify(games));
   });
 
