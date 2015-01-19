@@ -1125,11 +1125,11 @@ function enhanceCanvas(insandbox)
       // Remove backup when exiting (even if confirmation is cancelled)
       if (options.backup)
       {
-        DrawceptionPlay.exitGame_old = DrawceptionPlay.exitGame;
+        var old_exitGame = DrawceptionPlay.exitGame;
         DrawceptionPlay.exitGame = function()
         {
           localStorage.removeItem("anbt_drawingbackup");
-          DrawceptionPlay.exitGame_old();
+          old_exitGame();
         };
       }
 
