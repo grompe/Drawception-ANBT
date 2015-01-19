@@ -88,6 +88,11 @@ Forum:
 
 ## CHANGELOG
 
+1.46.2015.1
+- Old canvas: fix exit button not working with backup and async skip option
+- New canvas: fix 'false' displayed for bookmarked game title from an image panel
+- New canvas: new option to auto-bookmark games you caption
+
 1.45.2015.1
 - Fix lists in forum messages not being linkified
 - New canvas: fix color under the cursor indicator and improve performance
