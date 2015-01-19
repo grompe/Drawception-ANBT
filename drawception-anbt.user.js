@@ -47,6 +47,7 @@ var options =
   autoBypassNSFW: 0,
   colorNumberShortcuts: 1,
   colorUnderCursorHint: 1,
+  bookmarkOwnCaptions: 0,
 };
 
 /*
@@ -791,6 +792,16 @@ function bindCanvasEvents()
       ID("caption").focus();
       return alert("You haven't entered a caption!");
     }
+    var onCaptionSuccess = function()
+    {
+      if (options.bookmarkOwnCaptions)
+      {
+        var games = localStorage.getItem("gpe_gameBookmarks");
+        games = games ? JSON.parse(games) : {};
+        games[window.gameinfo.gameid] = {time: Date.now(), caption: '"' + title + '"', own: true};
+        localStorage.setItem("gpe_gameBookmarks", JSON.stringify(games));
+      }
+    };
     window.submitting = true;
     var params = "game_token=" + window.gameinfo.gameid + "&title=" + encodeURIComponent(title);
     ID("submitcaption").disabled = true;
@@ -809,12 +820,14 @@ function bindCanvasEvents()
         alert(o.error);
       } else if (o.callJS == "drawingComplete")
       {
+        onCaptionSuccess();
         location.replace(o.data.url);
       } else if (o.message) {
         ID("submitcaption").disabled = false;
         alert(o.message);
       } else if (o.redirect) {
-        window.location.replace(o.redirect);
+        onCaptionSuccess();
+        location.replace(o.redirect);
       }
     }, function()
     {
@@ -2404,9 +2417,13 @@ function viewMyGameBookmarks()
   var result = "";
   for (var id in games)
   {
+    var extraClass = "";
+    if (games[id].own) {
+      extraClass = " anbt_owncaption";
+    }
     if (id.length == 43) // token
     {
-      result += '<p class="well" id="' + id + '"><span>' + id + '</span>' + removeButtonHTML + '</p>';
+      result += '<p class="well' + extraClass + '" id="' + id + '"><span>' + id + '</span>' + removeButtonHTML + '</p>';
       (function(id)
         {
           $.ajax(
@@ -2425,6 +2442,7 @@ function viewMyGameBookmarks()
                 {
                   var gamename = "";
                   if (games[id].caption) gamename += " " + games[id].caption;
+                  if (games[id].own) gamename = " with your caption" + gamename;
                   if (games[id].time) gamename += " bookmarked on " + formatTimestamp(games[id].time);
                   if (!gamename) gamename = id;
                   var status = (m == "dust") ? "Deleted / dusted" : "Unfinished public";
@@ -2447,7 +2465,7 @@ function viewMyGameBookmarks()
     }
     else if (id.length == 10) // game ID
     {
-      result += '<p class="well" id="' + id + '"><a href="' + games[id].url + '">' + games[id].title + '</a>' + removeButtonHTML + '</p>';
+      result += '<p class="well' + extraClass + '" id="' + id + '"><a href="' + games[id].url + '">' + games[id].title + '</a>' + removeButtonHTML + '</p>';
     }
   }
   if (!result) result = "You don't have any bookmarked games.";
@@ -2803,6 +2821,7 @@ function addScriptSettings()
       ["rememberPosition", "boolean", "Show your panel position and track changes in unfinished games list"],
       ['colorNumberShortcuts', 'boolean', "Use 0-9 keys to select the color"],
       ['colorUnderCursorHint', 'boolean', "Show the color under the cursor in the palette (New canvas only)"],
+      ['bookmarkOwnCaptions', 'boolean', "Automatically bookmark your own captions in case of dustcatchers (New canvas only)"],
     ]
   );
   addGroup('Chat (Standalone address: <a href="http://chat.grompe.org.ru/#drawception">http://chat.grompe.org.ru/#drawception</a>)',
@@ -3109,6 +3128,7 @@ function pageEnhancements()
     ".anbt_favedpanel {color: #d9534f; border-color: #d9534f}" +
     ".anbt_replaypanel {top: 80px; font-weight: normal; padding: 6px 2px}" +
     ".anbt_replaypanel:hover {color: #8af; text-decoration: none}" +
+    ".anbt_owncaption:before {content: ''; display: inline-block; background: #5C5; border: 1px solid #080; width: 10px; height: 10px; border-radius: 10px; margin-right: 10px;}" +
     ".gamepanel, .thumbpanel, .comment-body {word-wrap: break-word}" +
     ".comment-body img {max-width: 100%}" +
     ""
