@@ -1967,6 +1967,17 @@ function betterView()
     return;
   }
 
+  // Automatically fix URL to a more canonical one
+  var ogurl = $('meta[property="og:url"]').attr("content");
+  if (ogurl)
+  {
+    ogurl = ogurl.replace("http://drawception.com", "");
+    try
+    {
+      if (location.pathname != ogurl) history.replaceState({}, null, ogurl);
+    } catch(e) {};
+  }
+
   var drawings = $('img[src^="/pub/panels/"]');
 
   // Show approximate creation time from the first drawing panel
@@ -2147,6 +2158,24 @@ function checkForRecording(url, yesfunc)
 
 function betterPanel()
 {
+  // Just for quickly opening a panel by its numerical ID
+  if (!$(".gamepanel").length && location.hash)
+  {
+    var id = location.hash.match(/\d+/);
+    location.pathname = "/panel/-/" + scrambleID(id) + "/-/";
+  }
+
+  // Automatically fix URL to a more canonical one
+  var ogurl = $('meta[property="og:url"]').attr("content");
+  if (ogurl)
+  {
+    ogurl = ogurl.replace("http://drawception.com", "");
+    try
+    {
+      if (location.pathname != ogurl) history.replaceState({}, null, ogurl);
+    } catch(e) {};
+  }
+
   var favButton = $('<button class="btn btn-info" style="margin-top: 20px"><span class="glyphicon glyphicon-heart"></span> <b>Favorite</b></button>');
   favButton.click(function(e)
     {
