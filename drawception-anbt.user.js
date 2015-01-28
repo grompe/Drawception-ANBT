@@ -2232,19 +2232,22 @@ function betterPanel()
   if (options.rememberPosition && $(".regForm > .lead").text().match(/public game/)) // your own panel
   {
     panelPositions.load();
-    if (panelPositions.player[panelId]) return;
-
-    var profileUrl = $(".btn").has(".avatar").attr("href");
-    $.get(profileUrl, function (html)
+    if (!panelPositions.player[panelId])
     {
-      html = html.replace(/<img\b[^>]*>/ig, ''); // prevent image preload
-      var profilePage = $.parseHTML(html);
-      var panelProgressText = $(profilePage).find("a[href='" + location.pathname + "']").next().find(".progress-bar-text").text();
-      var panelPosition = parseInt(panelProgressText.match(/\d+/)[0]);
-      panelPositions.player[panelId] = panelPosition;
-      panelPositions.clear(profilePage);
-      panelPositions.save();
-    });
+      var profileUrl = $(".btn").has(".avatar").attr("href");
+      $.get(profileUrl, function(html)
+      {
+        html = html.replace(/<img\b[^>]*>/ig, ''); // prevent image preload
+        var profilePage = $.parseHTML(html);
+        var panelProgressText = $(profilePage).find("a[href='" + location.pathname + "']").next().find(".progress-bar-text").text();
+        var panelPosition = parseInt(panelProgressText.match(/\d+/)[0]);
+        panelPositions.player[panelId] = panelPosition;
+        panelPositions.clear(profilePage);
+        panelPositions.save();
+
+        $(".regForm > .lead").append("<br>").append($("<span>").text(panelProgressText));
+      });
+    }
   }
 }
 
