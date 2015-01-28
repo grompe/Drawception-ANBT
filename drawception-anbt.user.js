@@ -1969,7 +1969,7 @@ function betterView()
 
   // Automatically fix URL to a more canonical one
   var ogurl = $('meta[property="og:url"]').attr("content");
-  if (ogurl)
+  if (ogurl && ogurl.match("/viewgame/"))
   {
     ogurl = ogurl.replace("http://drawception.com", "");
     try
@@ -2167,7 +2167,7 @@ function betterPanel()
 
   // Automatically fix URL to a more canonical one
   var ogurl = $('meta[property="og:url"]').attr("content");
-  if (ogurl)
+  if (ogurl && ogurl.match("/panel/"))
   {
     ogurl = ogurl.replace("http://drawception.com", "");
     try
