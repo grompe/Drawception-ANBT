@@ -88,6 +88,10 @@ Forum:
 
 ## CHANGELOG
 
+1.47.2015.1
+- Automatically fix panel and game URLs to be more canonical
+- Show panel position on submitted panel page, if option is enabled
+
 1.46.2015.1
 - Old canvas: fix exit button not working with backup and async skip option
 - New canvas: fix 'false' displayed for bookmarked game title from an image panel
