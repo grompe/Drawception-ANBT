@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      1.47.2015.1
+// @version      1.48.2015.1
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.47.2015.1";
+var SCRIPT_VERSION = "1.48.2015.1";
 var NEWCANVAS_VERSION = 17; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
@@ -863,6 +863,13 @@ function bindCanvasEvents()
         alert(o.error);
       } else if (o.callJS == "updatePlayTime") {
         timerStart += o.data.seconds * 1000;
+        if (window.timesup)
+        {
+          ID("newcanvasyo").classList.remove("locked");
+          anbt.Unlock();
+          timerStart -= 15000; // remove 15 seconds to submit
+          window.timesup = false;
+        }
         updateTimer();
         ID("timeplus").classList.remove("show");
         // Let play warning sound twice

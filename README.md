@@ -88,6 +88,9 @@ Forum:
 
 ## CHANGELOG
 
+1.48.2015.1
+- New canvas: hopefully fix usage of Time+ in the last moment
+
 1.47.2015.1
 - Automatically fix panel and game URLs to be more canonical
 - Show panel position on submitted panel page, if option is enabled
