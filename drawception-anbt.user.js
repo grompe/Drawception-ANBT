@@ -26,6 +26,7 @@ var options =
   fixTabletPluginGoingAWOL: 1, // Fix pressure sensitivity disappearing in case of stupid/old Wacom plugin
   hideCross: 0, // Whether to hide the cross when drawing
   enterToCaption: 0, // Whether to submit caption by pressing Enter
+  enterToStartGame: 0,
   pressureExponent: 0.5, // Smaller = softer tablet response, bigger = sharper
   brushSizes: [2, 5, 12, 35], // Brush sizes for choosing via keyboard
   loadChat: 1, // Whether to load the chat
@@ -1963,6 +1964,16 @@ function panelUrlToDate(url)
   return monthNames[parseInt(m[2], 10) - 1] + " " + day + ", " + m[1];
 }
 
+function betterCreateGame() {
+  if(!options.enterToStartGame) {
+    $($('#createGameForm')[0].title).on("keydown",function(e) {
+      if(e.keyCode==13) {
+        e.preventDefault();
+      }
+    });
+  }
+}
+
 function betterView()
 {
   if (document.title == "Not Safe For Work (18+) Gate")
@@ -2854,6 +2865,7 @@ function addScriptSettings()
       ["asyncSkip", "boolean", "Fast Async Skip (experimental, applies to old canvas only)"],
       ["hideCross", "boolean", "Hide the cross when drawing"],
       ["enterToCaption", "boolean", "Submit captions by pressing Enter"],
+      ["enterToStartGame", "boolean", "Start games by pressing Enter"],
       ["backup", "boolean", "Save the drawing in case of error and restore it in sandbox"],
       ["timeoutSound", "boolean", "Warning sound when only a minute is left (normal games)"],
       ["timeoutSoundBlitz", "boolean", "Warning sound when only 5 seconds left (blitz)"],
@@ -3149,6 +3161,10 @@ function pageEnhancements()
   if (loc.match(/drawception\.com\/settings\//))
   {
     addScriptSettings();
+  }
+  if (loc.match(/drawception\.com\/create/))
+  {
+    betterCreateGame();
   }
   GM_addStyle(
     ".thumbnail > .panel-details {max-height: 30px; overflow: visible; display: flex; flex-direction: row-reverse; justify-content: space-between}" +
