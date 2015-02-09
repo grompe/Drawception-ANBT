@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      1.48.2015.1
+// @version      1.49.2015.2
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.48.2015.1";
+var SCRIPT_VERSION = "1.49.2015.2";
 var NEWCANVAS_VERSION = 17; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
@@ -26,7 +26,6 @@ var options =
   fixTabletPluginGoingAWOL: 1, // Fix pressure sensitivity disappearing in case of stupid/old Wacom plugin
   hideCross: 0, // Whether to hide the cross when drawing
   enterToCaption: 0, // Whether to submit caption by pressing Enter
-  enterToStartGame: 0,
   pressureExponent: 0.5, // Smaller = softer tablet response, bigger = sharper
   brushSizes: [2, 5, 12, 35], // Brush sizes for choosing via keyboard
   loadChat: 1, // Whether to load the chat
@@ -1964,10 +1963,14 @@ function panelUrlToDate(url)
   return monthNames[parseInt(m[2], 10) - 1] + " " + day + ", " + m[1];
 }
 
-function betterCreateGame() {
-  if(!options.enterToStartGame) {
-    $($('#createGameForm')[0].title).on("keydown",function(e) {
-      if(e.keyCode==13) {
+function betterCreateGame()
+{
+  if (!options.enterToCaption)
+  {
+    $('#createGameForm input[name="title"]').on("keydown",function(e)
+    {
+      if(e.keyCode == 13)
+      {
         e.preventDefault();
       }
     });
@@ -2864,8 +2867,7 @@ function addScriptSettings()
       ["smoothening", "boolean", "Smoothening of strokes (New canvas only)"],
       ["asyncSkip", "boolean", "Fast Async Skip (experimental, applies to old canvas only)"],
       ["hideCross", "boolean", "Hide the cross when drawing"],
-      ["enterToCaption", "boolean", "Submit captions by pressing Enter"],
-      ["enterToStartGame", "boolean", "Start games by pressing Enter"],
+      ["enterToCaption", "boolean", "Submit captions (and start games) by pressing Enter"],
       ["backup", "boolean", "Save the drawing in case of error and restore it in sandbox"],
       ["timeoutSound", "boolean", "Warning sound when only a minute is left (normal games)"],
       ["timeoutSoundBlitz", "boolean", "Warning sound when only 5 seconds left (blitz)"],

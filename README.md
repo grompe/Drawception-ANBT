@@ -88,6 +88,9 @@ Forum:
 
 ## CHANGELOG
 
+1.49.2015.2
+- Enter to caption option now also affects game creation
+
 1.48.2015.1
 - New canvas: hopefully fix usage of Time+ in the last moment
 
