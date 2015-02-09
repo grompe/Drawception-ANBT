@@ -2627,7 +2627,19 @@ function betterPlayer()
 
       panelPositions.save();
     }
-  } else {
+
+    // Show your exact registration date
+    if (window.date)
+    {
+      var pubinfo = $(".profile-user-header>div.row>div>h1+p");
+      if (pubinfo.length)
+      {
+        var newregdate = formatTimestamp(date);
+        pubinfo.contents()[4].nodeValue = " " + newregdate + " \xa0";
+      }
+    }
+
+  } else { // Not the current user's profile or not profile homepage
     var drawings = $('img[src^="/pub/panels/"]');
     // Show replayable panels; links are not straightforward to make since there's no panel ID
     if (options.newCanvas)
