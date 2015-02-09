@@ -88,6 +88,9 @@ Forum:
 
 ## CHANGELOG
 
+1.50.2015.2
+- Changed the internal link to embedded chat script to site that supports https, so that chat can be loaded on secure version on Drawception
+
 1.49.2015.2
 - Enter to caption option now also affects game creation
 

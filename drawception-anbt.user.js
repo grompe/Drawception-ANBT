@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      1.49.2015.2
+// @version      1.50.2015.2
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.49.2015.2";
+var SCRIPT_VERSION = "1.50.2015.2";
 var NEWCANVAS_VERSION = 17; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
@@ -949,7 +949,7 @@ function deeper_main()
     include("//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js",
     function()
     {
-      include("http://chat.grompe.org.ru/jappix-mini.js", function()
+      include("//grompe.github.io/jappix-mini.js", function()
       {
         var username = localStorage.getItem("gpe_lastSeenName");
         var userid = localStorage.getItem("gpe_lastSeenId");
@@ -3345,7 +3345,7 @@ function pageEnhancements()
       {
         dataType: "script",
         cache: true,
-        url: "http://chat.grompe.org.ru/jappix-mini.js"
+        url: "//grompe.github.io/jappix-mini.js"
       }
     ).success(function()
     {
