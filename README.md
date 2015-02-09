@@ -89,6 +89,7 @@ Forum:
 ## CHANGELOG
 
 1.51.2015.2
+- Fixed embedded chat to work in Opera 12.x
 - Fixed the embedded chat doubling messages issue
 
 1.50.2015.2
