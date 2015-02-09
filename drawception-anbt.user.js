@@ -949,17 +949,20 @@ function deeper_main()
     include("//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js",
     function()
     {
-      include("//grompe.github.io/jappix-mini.js", function()
+      setTimeout(function()
       {
-        var username = localStorage.getItem("gpe_lastSeenName");
-        var userid = localStorage.getItem("gpe_lastSeenId");
+        include("//grompe.github.io/jappix-mini.js", function()
+        {
+          var username = localStorage.getItem("gpe_lastSeenName");
+          var userid = localStorage.getItem("gpe_lastSeenId");
 
-        MINI_GROUPCHATS = ["drawception"];
-        MINI_GROUPCHATS_NOCLOSE = ["drawception@chat.grompe.org.ru"];
-        MINI_NICKNAME = username;
-        MINI_RESOURCE = userid + "/jm" + Math.random().toString(36).slice(1, 5);
-        launchMini(Boolean(options.chatAutoConnect), true, "ip");
-      });
+          MINI_GROUPCHATS = ["drawception"];
+          MINI_GROUPCHATS_NOCLOSE = ["drawception@chat.grompe.org.ru"];
+          MINI_NICKNAME = username;
+          MINI_RESOURCE = userid + "/jm" + Math.random().toString(36).slice(1, 5);
+          launchMini(Boolean(options.chatAutoConnect), true, "ip");
+        });
+      }, 1);
     });
   }
 }
