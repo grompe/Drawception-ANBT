@@ -887,7 +887,7 @@ function bindCanvasEvents()
     });
   });
 }
-jmid = Math.random().toString(36).slice(1, 5);
+window.jmid = Math.random().toString(36).slice(1, 5);
 function deeper_main()
 {
   if (options.fixTabletPluginGoingAWOL) fixPluginGoingAWOL();
@@ -957,7 +957,7 @@ function deeper_main()
         MINI_GROUPCHATS = ["drawception"];
         MINI_GROUPCHATS_NOCLOSE = ["drawception@chat.grompe.org.ru"];
         MINI_NICKNAME = username;
-        MINI_RESOURCE = userid + "/jm" + jmid;
+        MINI_RESOURCE = userid + "/jm" + window.jmid;
         launchMini(Boolean(options.chatAutoConnect), true, "ip");
       });
     });
@@ -3352,7 +3352,7 @@ function pageEnhancements()
       MINI_GROUPCHATS = ["drawception"];
       MINI_GROUPCHATS_NOCLOSE = ["drawception@chat.grompe.org.ru"];
       MINI_NICKNAME = username;
-      MINI_RESOURCE = userid + "/jm" + jmid;
+      MINI_RESOURCE = userid + "/jm" + window.jmid;
       launchMini(Boolean(options.chatAutoConnect), true, "ip");
     });
   }
