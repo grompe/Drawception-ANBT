@@ -88,6 +88,10 @@ Forum:
 
 ## CHANGELOG
 
+1.52.2015.2
+- Show exact registration date on your own profile page
+- Warn when additional installed scripts conflict with ANBT new canvas
+
 1.51.2015.2
 - Fixed embedded chat to work in Opera 12.x
 - Fixed the embedded chat doubling messages issue
