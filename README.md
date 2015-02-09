@@ -88,6 +88,9 @@ Forum:
 
 ## CHANGELOG
 
+1.51.2015.2
+- Fixed the embedded chat doubling messages issue
+
 1.50.2015.2
 - Changed the internal link to embedded chat script to site that supports https, so that chat can be loaded on secure version on Drawception
 

@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      1.50.2015.2
+// @version      1.51.2015.2
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.50.2015.2";
+var SCRIPT_VERSION = "1.51.2015.2";
 var NEWCANVAS_VERSION = 17; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
@@ -953,6 +953,11 @@ function deeper_main()
       {
         include("//grompe.github.io/jappix-mini.js", function()
         {
+          disconnectMini(); // For browsers where embedded chat mysteriously
+          // survives the page being overwritten by the new canvas, causing
+          // double connection to the chat and doubling messages.
+          // Thanks go to vpzom for helping figuring that out.
+
           var username = localStorage.getItem("gpe_lastSeenName");
           var userid = localStorage.getItem("gpe_lastSeenId");
 
