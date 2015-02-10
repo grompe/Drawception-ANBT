@@ -37,6 +37,7 @@ var options =
   timeoutSoundBlitz: 0,
   newCanvas: 1,
   proxyImgur: 0,
+  doNotTrack: 1,
   rememberPosition: 0,
   ajaxRetry: 1,
   localeTimestamp: 0,
@@ -2916,6 +2917,7 @@ function addScriptSettings()
       ["removeFlagging", "boolean", "Remove flagging buttons"],
       ["ownPanelLikesSecret", "boolean", "Hide your own panels' number of Likes (in game only)"],
       ["proxyImgur", "boolean", "Replace imgur.com links to filmot.com to load, in case your ISP blocks them"],
+      ["doNotTrack", "boolean", "Block Mixpanel"],
       ["ajaxRetry", "boolean", "Retry failed AJAX requests"],
       ["autoplay", "boolean", "Automatically start replay when watching playback"],
       ["killDrawers", "boolean", "Kill drawers and display notifications in a dialog"],
@@ -3130,9 +3132,11 @@ function pageEnhancements()
 
   var scroll = $("#content").scrollTop();
 
-  // Stop tracking me! Best to block
-  // api.mixpanel.com and cdn.mxpnl.com
-  if (typeof mixpanel != "undefined") mixpanel = {track: function(){}, identify: function(){}};
+  if(options.doNotTrack) {
+    // Stop tracking me! Best to block
+    // api.mixpanel.com and cdn.mxpnl.com
+    if (typeof mixpanel != "undefined") mixpanel = {track: function(){}, identify: function(){}};
+  }
 
   initAjaxRetry();
 
