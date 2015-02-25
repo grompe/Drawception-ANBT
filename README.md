@@ -88,6 +88,11 @@ Forum:
 
 ## CHANGELOG
 
+1.53.2015.2
+- New canvas: ensure caption text box is empty after skipping
+- Dark style: fix some elements colors on game creation page to be more readable
+- On game creation page, switch to friend game type if it was selected last time
+
 1.52.2015.2
 - Show exact registration date on your own profile page
 - Warn when additional installed scripts conflict with ANBT new canvas
