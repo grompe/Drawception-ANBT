@@ -581,6 +581,7 @@ function handlePlayParameters()
     } else {
       ID("tocaption").src = info.image;
     }
+    ID("caption").value = "";
     ID("caption").focus();
   }
 
@@ -3021,7 +3022,7 @@ function stalkNextPanel(forward)
 {
   if (!forward) forward = 1;
   var sid = location.href.match(/\/panel\/[^\/]+\/(\w+)\/[^\/]+\//)[1];
-  var sid2 = scrambleID(unscrambleID(sid) + 4 * forward);
+  var sid2 = scrambleID(unscrambleID(sid) + 1 * forward);
   location.href = location.href.replace(sid, sid2);
 }
 
