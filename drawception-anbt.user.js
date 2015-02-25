@@ -1991,6 +1991,23 @@ function betterCreateGame()
       }
     });
   }
+  // Remember last type of the game created and switch to it,
+  // for easier bulk friend game creation
+  $("#type-public").on("click", function(e)
+  {
+    localStorage.removeItem("anbt_makingFriendGames");
+  });
+  $("#type-private").on("click", function(e)
+  {
+    localStorage.setItem("anbt_makingFriendGames", 1);
+  });
+  if (localStorage.getItem("anbt_makingFriendGames"))
+  {
+    $("#type-private").click();
+    $('#invitenote').show();
+    $('#sixplayers').show();
+    $('#numplayers').text(size);
+  }
 }
 
 function betterView()
