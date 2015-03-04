@@ -412,7 +412,7 @@ function extractInfoFromHTML(html)
     friendgames: extract(/alt="friendgames"[^>]*> (\d+)/),
     notifications: extract(/<span id="user-notify-count">(\d+)<\/span>/),
     drawingbylink: extract(/drawing by (<a href="\/player\/\d+\/\S+\/">[^<]+<\/a>)/),
-    h1: extract(/<h1>([^<]+)<\/h1>/),
+    h1: extract(/<h1>([^<]+)<\/h1>/) || extract(/<title>([^<]+) \(drawing by .*\)<\/title>/),
   };
 }
 
