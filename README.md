@@ -1,7 +1,7 @@
 Drawception ANBT [![Public domain](http://i.creativecommons.org/p/zero/1.0/88x31.png)](http://creativecommons.org/publicdomain/zero/1.0/)
 ================
 
-A userscript to make Drawception.com better: more drawing tools, tablet pressure support, sandbox with palettes and uploading to imgur, like all, quick menu buttons with old browser support, and other enhancements.
+A userscript to make Drawception.com better: more drawing tools, tablet support, sandbox with palettes and uploading to imgur, like all, quick menu buttons with old browser support, and other enhancements.
 
 [**Direct script link**](https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js) (use to install/update manually, or "save as...")
 
@@ -42,7 +42,7 @@ General:
 
 Canvas:
 
-- Wacom tablet eraser and smooth pressure support; doesn't conflict with mouse
+- Wacom tablet smooth pressure (old canvas only) and eraser support; doesn't conflict with mouse
 - Secondary color, used with right mouse button; palette right-clicking
 - Alt+click picks a color from the canvas
 - Brush cursor
