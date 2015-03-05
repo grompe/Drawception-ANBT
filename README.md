@@ -88,6 +88,10 @@ Forum:
 
 ## CHANGELOG
 
+1.54.2015.2
+- New canvas: fix title displayed for draw first panels
+- Game creation page: removed automatic switch to friend game type
+
 1.53.2015.2
 - New canvas: ensure caption text box is empty after skipping
 - Dark style: fix some elements colors on game creation page to be more readable
