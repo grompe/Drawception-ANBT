@@ -952,7 +952,7 @@ function deeper_main()
     {
       setTimeout(function()
       {
-        include("//grompe.github.io/jappix-mini.js", function()
+        include("//grompe.github.io/jappix-mini.js?1", function()
         {
           disconnectMini(); // For browsers where embedded chat mysteriously
           // survives the page being overwritten by the new canvas, causing
@@ -3399,7 +3399,7 @@ function pageEnhancements()
       {
         dataType: "script",
         cache: true,
-        url: "//grompe.github.io/jappix-mini.js"
+        url: "//grompe.github.io/jappix-mini.js?1"
       }
     ).success(function()
     {
