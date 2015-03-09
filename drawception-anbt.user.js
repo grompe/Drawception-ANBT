@@ -2946,7 +2946,7 @@ function addScriptSettings()
     ]
   );
   theForm.append('<div class="control-group"><div class="controls"><input name="submit" type="submit" class="btn btn-primary" value="Apply"> <b id="anbtSettingsOK" class="label label-theme_holiday" style="display:none">Saved!</b></div></div>');
-  $("#settingsForm").before(theForm);
+  $("#main").prepend(theForm);
 }
 
 function autoSkip(reason)
