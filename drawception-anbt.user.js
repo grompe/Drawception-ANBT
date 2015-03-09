@@ -3263,7 +3263,7 @@ function pageEnhancements()
   var newSettingsSeen = localStorage.getItem("anbt_newSettingsSeen");
   if (!newSettingsSeen && $(window).width() > 974)
   {
-    var freshSettingsHint = "Thanks for choosing ANBT! Script settings are on the settings page.";
+    var freshSettingsHint = "Thanks for choosing ANBT! Script settings are on the settings page, click to remove this hint.";
     if (!options.newCanvas)
     {
       freshSettingsHint += " Don't forget to try the new canvas!";
