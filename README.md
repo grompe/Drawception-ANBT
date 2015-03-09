@@ -88,6 +88,13 @@ Forum:
 
 ## CHANGELOG
 
+1.55.2015.3
+- Fix Google search on HTTPS version of the site
+- Fix embedded chat not applying style properly on HTTPS version of the site
+- Clarify intro hint to click settings button to make it disappear
+- Allow script settings to be seen when not logged in
+- New canvas: sane header when not logged in, with buttons to login and register
+
 1.54.2015.2
 - New canvas: fix title displayed for draw first panels
 - Game creation page: removed automatic switch to friend game type
