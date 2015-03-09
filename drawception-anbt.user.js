@@ -2816,6 +2816,28 @@ function betterForum()
   }
 }
 
+function fixHttpsSearch()
+{
+  $.ajax(
+    {
+      dataType: "script",
+      cache: true,
+      url: "//www.google.com/jsapi"
+    }
+  ).success(function()
+    {
+      google.load('search', '1', {style: google.loader.themes.MINIMALIST, callback: function()
+        {
+          var cse = new google.search.CustomSearchControl();
+          cse.setLinkTarget(google.search.Search.LINK_TARGET_BLANK);
+          cse.draw('cse');
+          cse.execute("");
+        }
+      });
+    }
+  );
+}
+
 function loadScriptSettings()
 {
   var result = localStorage.getItem("gpe_anbtSettings");
@@ -3195,6 +3217,10 @@ function pageEnhancements()
   if (loc.match(/drawception\.com\/create/))
   {
     betterCreateGame();
+  }
+  if (loc.match(/https:\/\/drawception\.com\/search/))
+  {
+    fixHttpsSearch();
   }
   GM_addStyle(
     ".thumbnail > .panel-details {max-height: 30px; overflow: visible; display: flex; flex-direction: row-reverse; justify-content: space-between}" +
