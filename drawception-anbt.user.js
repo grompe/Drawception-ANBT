@@ -385,6 +385,7 @@ function sendPost(url, params, onloadfunc, onerrorfunc, ontimeoutfunc)
 
 function extractInfoFromHTML(html)
 {
+  // Warning, there's a caveat: the script can match against its own plaintext.
   var extract = function(r)
   {
     var m = html.match(r);
@@ -413,6 +414,7 @@ function extractInfoFromHTML(html)
     notifications: extract(/<span id="user-notify-count">(\d+)<\/span>/),
     drawingbylink: extract(/drawing by (<a href="\/player\/\d+\/\S+\/">[^<]+<\/a>)/),
     h1: extract(/<h1>([^<]+)<\/h1>/) || extract(/<title>([^<]+) \(drawing by .*\)<\/title>/),
+    notloggedin: extract(/>Login<\/a>/),
   };
 }
 
@@ -466,6 +468,12 @@ function exitToSandbox()
 
 function handleCommonParameters()
 {
+  if (gameinfo.notloggedin)
+  {
+    ID("start").parentNode.innerHTML = '<a href="/login" class="headerbutton active">Login'
+      + '</a> <a href="/connect/" class="headerbutton active">Register</a>';
+    return;
+  }
   if (gameinfo.avatar)
   {
     ID("infoavatar").src = gameinfo.avatar;
