@@ -88,6 +88,9 @@ Forum:
 
 ## CHANGELOG
 
+1.56.2015.3
+- New canvas: rename March palette to Spring palette and support it in games
+
 1.55.2015.3
 - Fix Google search on HTTPS version of the site
 - Fix embedded chat not applying style properly on HTTPS version of the site

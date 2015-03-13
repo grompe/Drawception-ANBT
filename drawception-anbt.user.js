@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      1.55.2015.3
+// @version      1.56.2015.3
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,8 +14,8 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.55.2015.3";
-var NEWCANVAS_VERSION = 17; // Increase to update the cached canvas
+var SCRIPT_VERSION = "1.56.2015.3";
+var NEWCANVAS_VERSION = 18; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
 
@@ -243,12 +243,12 @@ var palettes =
     ],
   },
   {
-    name: "March",
+    name: "Spring",
     class: "label-theme_holiday",
     colors:
     [
       '#9ed396', '#57b947', '#4d7736', '#365431', '#231302',
-      '#3e2409', '#a66621', '#a67e21', '#ebbb49', '#ffc0cb', '#fff'
+      '#3e2409', '#a66621', '#a67e21', '#ebbb49', '#ffc0cb', '#ffffff'
     ],
   },
   {
@@ -559,16 +559,17 @@ function handlePlayParameters()
   var palettemap = {
     normal: ["Normal", "#fffdc9"],
     sepia: ["Sepia", "#ffe2c4"],
-    grayscale: ["Grayscale", "#eee"],
-    "b&amp;w": ["Black and white", "#fff"],
-    cga: ["CGA", "#ff5"],
+    grayscale: ["Grayscale", "#eeeeee"],
+    "b&amp;w": ["Black and white", "#ffffff"],
+    cga: ["CGA", "#ffff55"],
     gameboy: ["Gameboy", "#9bbc0f"],
     neon: ["Neon", "#00abff"],
     thanksgiving: ["Thanksgiving", "#f5e9ce"],
-    holiday: ["Holiday", "#fff"],
+    holiday: ["Holiday", "#ffffff"],
     valentines: ["Valentine's", "#ffccdf"],
     halloween: ["Halloween", "#444444"],
-    "the blues": ["the blues", "#295c6f"]
+    "the blues": ["the blues", "#295c6f"],
+    spring: ["Spring", "#ffffff"],
   };
   var pal = info.palette || "normal";
   var paldata = palettemap[pal.toLowerCase()];
