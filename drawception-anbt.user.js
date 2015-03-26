@@ -32,6 +32,7 @@ var options =
   chatAutoConnect: 0, // Whether to automatically connect to the chat
   removeFlagging: 1, // Whether to remove flagging buttons
   ownPanelLikesSecret: 0,
+  gameLevels: 0,
   backup: 1,
   timeoutSound: 0,
   timeoutSoundBlitz: 0,
@@ -2041,6 +2042,25 @@ function betterView()
     }
   });
 
+  // Load player levels
+  if(options.gameLevels) {
+    $('.gamepanel').each(function()
+    {
+      var pu = $(this).parent().find('.panel-user');
+      var un = pu.find('a').text();
+      var pp = pu.find('a').attr('href');
+      $.ajax({
+        url: pp,
+        success: function(e) {
+          var lvl = e.match(/Level:<\/b> [0-9]*/)[0].substring(11);
+          var sp = $('<span>');
+          pu.append('&nbsp;');
+          sp.addClass('badge').text(lvl).appendTo(pu);
+        }
+      });
+    });
+  }
+
   // Fix misaligned panels
   var tryNextPanel = function()
   {
@@ -2946,6 +2966,7 @@ function addScriptSettings()
     [
       ["localeTimestamp", "boolean", "Format timestamps as your system locale (" + (new Date()).toLocaleString() +")"],
       ["removeFlagging", "boolean", "Remove flagging buttons"],
+      ["gameLevels", "boolean", "Show player levels in games"],
       ["ownPanelLikesSecret", "boolean", "Hide your own panels' number of Likes (in game only)"],
       ["proxyImgur", "boolean", "Replace imgur.com links to filmot.com to load, in case your ISP blocks them"],
       ["ajaxRetry", "boolean", "Retry failed AJAX requests"],
