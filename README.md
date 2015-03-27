@@ -88,6 +88,9 @@ Forum:
 
 ## CHANGELOG
 
+1.57.2015.3
+- New canvas: fix Firefox not applying proper palette when starting a game or following play link directly
+
 1.56.2015.3
 - New canvas: rename March palette to Spring palette and support it in games
 

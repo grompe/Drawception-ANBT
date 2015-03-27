@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      1.56.2015.3
+// @version      1.57.2015.3
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.56.2015.3";
+var SCRIPT_VERSION = "1.57.2015.3";
 var NEWCANVAS_VERSION = 18; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
@@ -402,7 +402,7 @@ function extractInfoFromHTML(html)
     timeleft2: extract(/<span id="timeleft" class="hasCountdown">[^:]+>(\d+:\d+)/) || extract(/<span class="hasCountdown" id="timeleft">[^:]+>(\d+:\d+)/),
     caption: extract(/<p class="play-phrase">\s+([^<]+)\s+<\/p>/),
     image: extract(/<img src="(data:image\/png;base64,[^"]*)"/),
-    palette: extract(/heme item was applied to this game">([^<]+)<\/span>/),
+    palette: extract(/heme item was applied to this game"[^>]*>([^<]+)<\/span>/),
     bgbutton: extract(/<img src="\/img\/draw_bglayer.png"/),
     playerid: extract(/<a href="\/player\/(\d+)\//),
     playername: extract(/<span class="glyphicon glyphicon-user"><\/span> (.+)\n/),
