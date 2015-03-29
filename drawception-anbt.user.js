@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      1.57.2015.3
+// @version      1.58.2015.3
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.57.2015.3";
+var SCRIPT_VERSION = "1.58.2015.3";
 var NEWCANVAS_VERSION = 18; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
@@ -2701,7 +2701,8 @@ function betterForum()
   {
     var d = new Date(year, month, day, hours, minutes);
     var tzo = d.getTimezoneOffset() * 60 * 1000;
-    return formatTimestamp(d.getTime() - tzo + 6 * 60 * 60 * 1000);
+    var dst = 1;
+    return formatTimestamp(d.getTime() - tzo + (6 - dst) * 60 * 60 * 1000);
   }
 
   $("span.muted, span.text-muted").each(function(index)

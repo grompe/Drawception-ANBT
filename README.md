@@ -88,6 +88,9 @@ Forum:
 
 ## CHANGELOG
 
+1.58.2015.3
+- Adjust site timestamps for DST
+
 1.57.2015.3
 - New canvas: fix Firefox not applying proper palette when starting a game or following play link directly
 
