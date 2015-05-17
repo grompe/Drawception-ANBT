@@ -88,6 +88,9 @@ Forum:
 
 ## CHANGELOG
 
+1.59.2015.3
+- New canvas: fix warning on close when embedded chat is enabled (jQuery overwrites window.onbeforeunload)
+
 1.58.2015.3
 - Adjust site timestamps for DST
 
