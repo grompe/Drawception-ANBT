@@ -359,7 +359,7 @@ button:disabled {
 #seekbar {
   width: 530px;
   height: 0px;
-  margin: 10px 50px;
+  margin: 20px 50px 0;
   background: #333;
   border: 10px solid #333;
   border-radius: 10px;

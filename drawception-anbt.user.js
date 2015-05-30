@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      1.59.2015.5
+// @version      1.60.2015.5
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,8 +14,8 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.59.2015.5";
-var NEWCANVAS_VERSION = 18; // Increase to update the cached canvas
+var SCRIPT_VERSION = "1.60.2015.5";
+var NEWCANVAS_VERSION = 19; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
 
@@ -515,6 +515,7 @@ function handlePlayParameters()
   ID("exit").disabled = false;
   ID("start").disabled = false;
   ID("bookmark").disabled = info.drawfirst;
+  ID("options").disabled = true; // Not implemented yet!
   ID("timeplus").disabled = false;
   ID("timeplus").classList.remove("show");
 
@@ -1000,6 +1001,13 @@ function isBlitzInPlay()
   var mode = $(".label-game-mode");
   if (mode.length && mode.text().match(/blitz/i)) return true;
   return false;
+}
+
+function linkifyNodeText(node)
+{
+  var t = $(node);
+  if (t.text().indexOf("://") == -1) return;
+  t.html(t.html().replace(/([^"]|^)(https?:\/\/(?:(?:(?:[^\s<()]*\([^\s<()]*\))+)|(?:[^\s<()]+)))/g, '$1<a href="$2">$2</a>'));
 }
 
 function enhanceCanvas(insandbox)
@@ -2133,9 +2141,7 @@ function betterView()
   // Linkify the links
   $('.comment-body').each(function()
     {
-      var t = $(this);
-      if (t.text().indexOf("://") == -1) return;
-      t.html(t.html().replace(/([^"]|^)(https?:\/\/[^\s<]+)/g, '$1<a href="$2">$2</a>'));
+      linkifyNodeText(this);
     }
   );
 
@@ -2753,9 +2759,7 @@ function betterForum()
   // Linkify the links
   $('.comment-body *').each(function()
     {
-      var t = $(this);
-      if (t.text().indexOf("://") == -1) return;
-      t.html(t.html().replace(/([^"]|^)(https?:\/\/[^\s<]+)/g, '$1<a href="$2">$2</a>'));
+      linkifyNodeText(this);
     }
   );
 

@@ -88,6 +88,11 @@ Forum:
 
 ## CHANGELOG
 
+1.60.2015.5
+- New canvas: moved the playback bar further away from the drawing area
+- New canvas: disabled the options button which is not used yet
+- Changed linkifying behavior to only match paired parentheses
+
 1.59.2015.5
 - New canvas: fix warning on close when embedded chat is enabled (jQuery overwrites window.onbeforeunload)
 
