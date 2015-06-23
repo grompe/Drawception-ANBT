@@ -88,6 +88,9 @@ Forum:
 
 ## CHANGELOG
 
+1.61.2015.6
+- New canvas: when skipping, enable skip button only after entering a new game, to prevent double skips
+
 1.60.2015.5
 - New canvas: moved the playback bar further away from the drawing area
 - New canvas: disabled the options button which is not used yet

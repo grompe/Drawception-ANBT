@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      1.60.2015.5
+// @version      1.61.2015.6
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.60.2015.5";
+var SCRIPT_VERSION = "1.61.2015.6";
 var NEWCANVAS_VERSION = 19; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
@@ -716,6 +716,10 @@ function bindCanvasEvents()
     if (unsavedStopAction()) return;
     ID("skip").disabled = true;
     sendGet("/play/skip.json?game_token=" + window.gameinfo.gameid, function()
+    {
+      // Postpone enabling skip until we get game info
+      getParametersFromPlay();
+    }, function()
     {
       ID("skip").disabled = false;
       getParametersFromPlay();
