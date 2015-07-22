@@ -88,6 +88,9 @@ Forum:
 
 ## CHANGELOG
 
+1.62.2015.7
+- Fix "Like All" and "Reverse" buttons location, since "Random Game" button was moved in site update
+
 1.61.2015.6
 - New canvas: when skipping, enable skip button only after entering a new game, to prevent double skips
 

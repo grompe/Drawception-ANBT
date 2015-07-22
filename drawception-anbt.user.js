@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      1.61.2015.6
+// @version      1.62.2015.7
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.61.2015.6";
+var SCRIPT_VERSION = "1.62.2015.7";
 var NEWCANVAS_VERSION = 19; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
@@ -2076,7 +2076,7 @@ function betterView()
     $(".panel-user").find('a[href*="/' + userid + '/"]').parent().parent().find("span.disabled .numlikes").text("?").css("opacity", "0.5");
 
   // Reverse panels button and like all button
-  $("#btn-copy-url")
+  $("#btn-remove-favorite")
     .after(' <a href="#" class="btn btn-default" onclick="return reversePanels();" title="Reverse panels"><span class="glyphicon glyphicon-refresh"></span> Reverse</a>')
     .after(' <a href="#" class="btn btn-default" onclick="return likeAll();" title="Like all panels"><span class="glyphicon glyphicon-thumbs-up"></span> Like all</a>');
 
@@ -3374,7 +3374,7 @@ function pageEnhancements()
     jsVersion = $('script[src*="main-ck.js"]').attr("src").match(/\?v=([^&]+)/)[1];
     cssVersion = $('head link[href*="core.css"]').attr("href").match(/\?v=([^&]+)/)[1];
     versionDisplay = "ANBT v" + SCRIPT_VERSION + " | js v" + jsVersion + ", css v" + cssVersion;
-    if (jsVersion != "4.28" || cssVersion != "3.24") versionDisplay += " | woah, site got updated!";
+    if (jsVersion != "4.29" || cssVersion != "3.24") versionDisplay += " | woah, site got updated!";
   } catch(e)
   {
     versionDisplay = "ANBT v" + SCRIPT_VERSION + " | js/css unknown";
