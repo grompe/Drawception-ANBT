@@ -461,6 +461,8 @@ var palettes = {
                       '#c19292', '#8c2c2c', '#295c6f'],
   "Spring":          ['#9ed396', '#57b947', '#4d7736', '#365431', '#231302',
                       '#3e2409', '#a66621', '#a67e21', '#ebbb49', '#ffc0cb', '#ffffff'],
+  "Beach":           ['#1ca4d2', '#65bbe2', '#6ab7bf', '#94cbda', '#9cbf80', '#d2e1ab',
+                      '#b8a593', '#d7cfb9', '#dc863e', '#f7dca2'],
   "DawnBringer 16":  ['#140c1c', '#442434', '#30346d', '#4e4a4e', '#854c30', '#346524',
                       '#d04648', '#757161', '#597dce', '#d27d2c', '#8595a1', '#6daa2c',
                       '#d2aa99', '#6dc2ca', '#dad45e', '#deeed6'],
@@ -508,6 +510,7 @@ var anbt =
   fastUndoLevels: 10,
   rewindCache: [],
   snap: false,
+  fillNext: false,
   BindContainer: function(el)
   {
     this.container = el;
@@ -609,6 +612,7 @@ var anbt =
         var color = color2dword(el.getAttribute("stroke"));
         if (el.getAttribute("class") == "eraser") color = "\xFF\xFF\xFF\x00";
         var size = el.getAttribute("stroke-width");
+        var fill = el.getAttribute("fill");
         var pattern = el.pattern || 0;
         if (color != lastcolor || size != lastsize)
         {
@@ -617,6 +621,12 @@ var anbt =
           arr.push(color);
           lastcolor = color;
           lastsize = size;
+        }
+        if (fill != "none")
+        {
+          arr.push(pack_uint16be(-4));
+          arr.push(pack_uint16be(0));
+          arr.push(color2dword(fill));
         }
         if (pattern != lastpattern)
         {
@@ -651,14 +661,14 @@ var anbt =
         throw new Error("Unknown node name: " + el.nodeName);
       }
     }
-    var result = "\x04" + bytes2string(pako.deflate(string2bytes(arr.join(""))));
+    var result = "\x05" + bytes2string(pako.deflate(string2bytes(arr.join(""))));
     return result;
   },
   UnpackPlayback: function(bytes)
   {
     var version = bytes[0];
     var start;
-    if (version == 4)
+    if (version == 4 || version == 5)
     {
       bytes = pako.inflate(bytes.subarray(1));
       start = 0;
@@ -679,6 +689,7 @@ var anbt =
       width: "600", height: "500",
     });
     var color = "#000000";
+    var fill;
     var size = 14.4;
     var lastx, lasty, x, y;
     var pattern = 0;
@@ -723,7 +734,7 @@ var anbt =
               "stroke-width": size,
               "stroke-linejoin": "round",
               "stroke-linecap": "round",
-              fill: "none",
+              fill: fill ? fill : "none",
             }
           );
           // Restore blots
@@ -781,6 +792,19 @@ var anbt =
             }
           } else if (x === -3) {
             pattern = y;
+            i += 4;
+          } else if (x === -4) {
+            fill = [
+              "rgba(",
+              bytes[i],
+              ',',
+              bytes[i + 1],
+              ',',
+              bytes[i + 2],
+              ',',
+              bytes[i + 3] / 255,
+              ')'
+            ].join("");
             i += 4;
           }
         } else {
@@ -852,12 +876,14 @@ var anbt =
     } else {
       context.lineJoin = "round";
       context.lineCap = "round";
+      context.save();
       context.scale(width / 600, height / 500);
       // Skip background rect
       for (var i = 1; i < this.svg.childNodes.length; i++)
       {
         this.DrawSVGElement(this.svg.childNodes[i], context);
       }
+      context.restore();
       context.globalCompositeOperation = "destination-over";
       context.fillStyle = this.background;
       context.fillRect(0, 0, width, height);
@@ -1042,6 +1068,13 @@ var anbt =
           ctx.bezierCurveTo(seg.x1, seg.y1, seg.x2, seg.y2, seg.x, seg.y);
         }
       }
+      var fill = el.getAttribute("fill");
+      if (fill && fill != "none")
+      {
+        ctx.closePath();
+        ctx.fillStyle = el.pattern ? this.MakePattern(fill, el.pattern) : fill;
+        ctx.fill();
+      }
       ctx.stroke();
     }
     else if (el.nodeName == "rect")
@@ -1104,9 +1137,11 @@ var anbt =
         "stroke-width": this.size,
         "stroke-linejoin": "round",
         "stroke-linecap": "round",
-        fill: "none",
+        fill: this.fillNext ? color : "none",
       }
     );
+    this.fillNext = false;
+
     this.lastcolor = color;
     this.path.pattern = this.pattern;
     //this.svgDisp.insertBefore(this.path, this.svgDisp.firstChild);
@@ -1150,6 +1185,15 @@ var anbt =
     this.path.pathSegList.appendItem(this.path.createSVGPathSegLinetoAbs(x, y));
     this.DrawDispLine(p.x, p.y, x, y);
     this.points.push({x: x, y: y});
+    // Todo: realtime smoothening
+    /*
+    p = this.points;
+    if (p.length > 2)
+    {
+      p = simplifyDouglasPeucker(p, this.smoothening);
+      buildSmoothPath(p, this.path);
+    }
+    */
   },
   // Experimental, for making polylines like in Photoshop
   // Caveat: undo will erase whole polyline
@@ -2517,6 +2561,11 @@ function bindEvents()
         }
       }
     }
+    else if (e.keyCode == "F".charCodeAt(0) && !e.shiftKey)
+    {
+      e.preventDefault();
+      anbt.fillNext = true;
+    }
     else if (e.keyCode == "F".charCodeAt(0) && e.shiftKey)
     {
       e.preventDefault();
@@ -2608,7 +2657,13 @@ function main()
   if (window.location.hash.length > 7)
   {
     var id = window.location.hash.substr(1);
-    anbt.FromImgur(id);
+    var m = id.match(/drawception\/(\w{8})/);
+    if (m)
+    {
+      anbt.FromURL("drawception-get-panel.php?panelid=" + m[1]);
+    } else {
+      anbt.FromImgur(id);
+    }
   }
   timerStart = Date.now();
   runTimer();

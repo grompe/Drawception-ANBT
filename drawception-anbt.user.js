@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      1.62.2015.7
+// @version      1.63.2015.7
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,8 +14,8 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.62.2015.7";
-var NEWCANVAS_VERSION = 19; // Increase to update the cached canvas
+var SCRIPT_VERSION = "1.63.2015.7";
+var NEWCANVAS_VERSION = 20; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
 
@@ -249,6 +249,15 @@ var palettes =
     [
       '#9ed396', '#57b947', '#4d7736', '#365431', '#231302',
       '#3e2409', '#a66621', '#a67e21', '#ebbb49', '#ffc0cb', '#ffffff'
+    ],
+  },
+  {
+    name: "Beach",
+    class: "label-theme_beach",
+    colors:
+    [
+      '#1ca4d2', '#65bbe2', '#6ab7bf', '#94cbda', '#9cbf80',
+      '#d2e1ab', '#b8a593', '#d7cfb9', '#dc863e', '#f7dca2'
     ],
   },
   {
@@ -571,6 +580,7 @@ function handlePlayParameters()
     halloween: ["Halloween", "#444444"],
     "the blues": ["the blues", "#295c6f"],
     spring: ["Spring", "#ffffff"],
+    beach: ["Beach", "#f7dca2"],
   };
   var pal = info.palette || "normal";
   var paldata = palettemap[pal.toLowerCase()];
@@ -3374,7 +3384,7 @@ function pageEnhancements()
     jsVersion = $('script[src*="main-ck.js"]').attr("src").match(/\?v=([^&]+)/)[1];
     cssVersion = $('head link[href*="core.css"]').attr("href").match(/\?v=([^&]+)/)[1];
     versionDisplay = "ANBT v" + SCRIPT_VERSION + " | js v" + jsVersion + ", css v" + cssVersion;
-    if (jsVersion != "4.29" || cssVersion != "3.24") versionDisplay += " | woah, site got updated!";
+    if (jsVersion != "4.30" || cssVersion != "3.25") versionDisplay += " | woah, site got updated!";
   } catch(e)
   {
     versionDisplay = "ANBT v" + SCRIPT_VERSION + " | js/css unknown";

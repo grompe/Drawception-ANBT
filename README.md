@@ -88,6 +88,9 @@ Forum:
 
 ## CHANGELOG
 
+1.63.2015.7
+- Add support for the new palette: Beach
+
 1.62.2015.7
 - Fix "Like All" and "Reverse" buttons location, since "Random Game" button was moved in site update
 
