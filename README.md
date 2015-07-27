@@ -20,11 +20,12 @@ A userscript to make Drawception.com better: more drawing tools, tablet support,
 - Opera 12: add the script in "site properties"
 - Opera 15+: add the script in [Violentmonkey add-on](https://addons.opera.com/en/extensions/details/violent-monkey/?display=en)
 - Maxthon: add the script in [Violentmonkey add-on](http://extension.maxthon.com/detail/index.php?view_id=1680)
-- Other browsers/Single use:
+- Mobile browsers / other / single use:
   - create a bookmark with the following URL:
-    `javascript:void($.ajax({dataType:"script",cache:!0,url:"//raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js"}))`
-    and follow it while being on drawception.com site; you can also use the shortened URL:
-    `javascript:void($.ajax({dataType:"script",cache:!0,url:"//goo.gl/a6rzzP"}))`
+
+    `javascript:void($.ajax({dataType:"script",cache:!0,url:"//rawgit.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js"}))`
+    
+    and follow it while being on drawception.com site; if that doesn't work, try pasting it in the address bar.
 
 After installing script management add-on, just click on the [**Direct script link**](https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js).
 
