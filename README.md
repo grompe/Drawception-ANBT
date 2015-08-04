@@ -89,6 +89,10 @@ Forum:
 
 ## CHANGELOG
 
+1.64.2015.8
+- New canvas: make sure players cannot draw with a wrong palette
+- Attempt to fix script loading in the newest Chrome
+
 1.63.2015.7
 - Add support for the new palette: Beach
 

@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.63.2015.7";
+var SCRIPT_VERSION = "1.64.2015.8";
 var NEWCANVAS_VERSION = 20; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
@@ -584,7 +584,12 @@ function handlePlayParameters()
   };
   var pal = info.palette || "normal";
   var paldata = palettemap[pal.toLowerCase()];
-  if (!paldata) alert("Error, please report! Unknown palette: '" + pal + "'");
+  if (!paldata)
+  {
+    alert("Error, please report! Unknown palette: '" + pal + "'.\nAre you using the latest ANBT version?");
+    // Prevent from drawing with a wrong palette
+    anbt.Lock();
+  }
   setPaletteByName(paldata[0]);
   anbt.SetBackground(paldata[1]);
   anbt.color = [palettes[paldata[0]][0], "eraser"];
@@ -3384,7 +3389,7 @@ function pageEnhancements()
     jsVersion = $('script[src*="main-ck.js"]').attr("src").match(/\?v=([^&]+)/)[1];
     cssVersion = $('head link[href*="core.css"]').attr("href").match(/\?v=([^&]+)/)[1];
     versionDisplay = "ANBT v" + SCRIPT_VERSION + " | js v" + jsVersion + ", css v" + cssVersion;
-    if (jsVersion != "4.30" || cssVersion != "3.25") versionDisplay += " | woah, site got updated!";
+    if (jsVersion != "4.31" || cssVersion != "3.26") versionDisplay += " | woah, site got updated!";
   } catch(e)
   {
     versionDisplay = "ANBT v" + SCRIPT_VERSION + " | js/css unknown";
@@ -3449,7 +3454,21 @@ mark.id = "_anbt_";
 mark.style = "display:none";
 document.body.appendChild(mark);
 
-pageEnhancements();
+if (typeof DrawceptionPlay == "undefined")
+{
+  // Fix for Chrome new loading algorithm, apparently
+  var loader = setInterval(
+    function()
+    {
+      if (typeof DrawceptionPlay == "undefined") return;
+      pageEnhancements();
+      clearInterval(loader);
+    },
+    100
+  );
+} else {
+  pageEnhancements();
+}
 
 } // wrapped
 
