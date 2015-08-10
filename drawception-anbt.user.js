@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      1.64.2015.8
+// @version      1.65.2015.8
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.64.2015.8";
+var SCRIPT_VERSION = "1.65.2015.8";
 var NEWCANVAS_VERSION = 20; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
@@ -461,6 +461,16 @@ function getParametersFromPlay()
 
 function exitToSandbox()
 {
+  if (window.gameinfo.drawfirst)
+  {
+    sendGet("/play/abort-start.json?game_token=" + window.gameinfo.gameid, function()
+    {
+      alert("You have missed your Draw First game.\nIt has been aborted.");
+    }, function()
+    {
+      alert("You have missed your Draw First game.\nI tried aborting it, but an error occured. :(");
+    });
+  }
   timerStart = Date.now();
   ID("newcanvasyo").className = "sandbox";
   timerCallback = function(){};

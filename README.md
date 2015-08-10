@@ -89,6 +89,9 @@ Forum:
 
 ## CHANGELOG
 
+1.65.2015.8
+- New canvas: if Draw First game is left hanging, automatically abort it
+
 1.64.2015.8
 - New canvas: make sure players cannot draw with a wrong palette
 - Attempt to fix script loading in the newest Chrome
