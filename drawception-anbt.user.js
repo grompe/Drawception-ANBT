@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      1.65.2015.8
+// @version      1.66.2015.9
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.65.2015.8";
+var SCRIPT_VERSION = "1.66.2015.9";
 var NEWCANVAS_VERSION = 20; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
@@ -3475,13 +3475,13 @@ function pageEnhancements()
     }
   };
 
-  var jsVersion, cssVersion, versionDisplay;
+  var versionDisplay;
   try
   {
-    jsVersion = $('script[src*="main-ck.js"]').attr("src").match(/\?v=([^&]+)/)[1];
+    jsVersion = $('script[src*="/js/compiled/"]').attr("src").match(/compiled\/(\w+)\.js$/)[1];
     cssVersion = $('head link[href*="core.css"]').attr("href").match(/\?v=([^&]+)/)[1];
-    versionDisplay = "ANBT v" + SCRIPT_VERSION + " | js v" + jsVersion + ", css v" + cssVersion;
-    if (jsVersion != "4.31" || cssVersion != "3.26") versionDisplay += " | woah, site got updated!";
+    versionDisplay = "ANBT v" + SCRIPT_VERSION + " | js " + jsVersion + ", css " + cssVersion;
+    if (jsVersion != "ac8932b" || cssVersion != "3.26") versionDisplay += " | woah, site got updated!";
   } catch(e)
   {
     versionDisplay = "ANBT v" + SCRIPT_VERSION + " | js/css unknown";

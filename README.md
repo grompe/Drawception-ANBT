@@ -89,6 +89,12 @@ Forum:
 
 ## CHANGELOG
 
+1.66.2015.9
+- New canvas: silence the "periodsToSeconds" bogus error
+- New canvas: add code to investigate server error on submitting
+- Ability to hide forum threads
+- Fix up site js/css version display
+
 1.65.2015.8
 - New canvas: if Draw First game is left hanging, automatically abort it
 
