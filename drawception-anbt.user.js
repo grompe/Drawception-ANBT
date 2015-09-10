@@ -2884,6 +2884,59 @@ function betterForum()
       }
     );
   }
+
+  // For the topic list pages only
+  if (document.location.pathname.match(/\/forums\/(\w+)\/$/))
+  {
+    var hidden_topics = localStorage.getItem("gpe_forumHiddenTopics");
+    hidden_topics = hidden_topics ? JSON.parse(hidden_topics) : [];
+    var hidden = 0;
+
+    var tempUnhideLink = $('<a class="text-muted anbt_unhidet">');
+
+    $(".forum-thread").each(function()
+      {
+        var t = $(this);
+        var m = t.find("a:first-child").attr("href").match(/\/forums\/\w+\/(\d+)\//);
+        // Don't let them hide the ANBT topic ;)
+        if (!m || !m[1] || (m[1] == 11830)) return;
+
+        var id = m[1];
+        if (hidden_topics.indexOf(id) != -1)
+        {
+          t.addClass("anbt_hidden");
+          hidden++;
+        }
+        var hideLink = $('<a class="text-muted anbt_hft">');
+        hideLink.click(function()
+          {
+            var ht = localStorage.getItem("gpe_forumHiddenTopics");
+            ht = ht ? JSON.parse(ht) : [];
+            if (hidden_topics.indexOf(id) != -1)
+            {
+              if (ht.indexOf(id) != -1) ht.remove(id);
+              hidden_topics.remove(id);
+              t.removeClass("anbt_hidden");
+              hidden--;
+            } else {
+              if (ht.indexOf(id) == -1) ht.push(id);
+              hidden_topics.push(id);
+              t.addClass("anbt_hidden");
+              hidden++;
+              tempUnhideLink.show();
+            }
+            tempUnhideLink.text(hidden);
+            localStorage.setItem("gpe_forumHiddenTopics", JSON.stringify(ht));
+          }
+        );
+        t.find("p:nth-child(2)").append(hideLink);
+      }
+    );
+    tempUnhideLink.text(hidden);
+    tempUnhideLink.click(function(){ $("#main").toggleClass("anbt_showt"); });
+    if (!hidden) tempUnhideLink.hide();
+    $(".forum-thread").first().before(tempUnhideLink);
+  }
 }
 
 function fixHttpsSearch()
@@ -3312,6 +3365,12 @@ function pageEnhancements()
     ".anbt_owncaption:before {content: ''; display: inline-block; background: #5C5; border: 1px solid #080; width: 10px; height: 10px; border-radius: 10px; margin-right: 10px;}" +
     ".gamepanel, .thumbpanel, .comment-body {word-wrap: break-word}" +
     ".comment-body img {max-width: 100%}" +
+    ".forum-thread.anbt_hidden {display: none}" +
+    ".anbt_showt .forum-thread.anbt_hidden {display: block; opacity: 0.6}" +
+    ".anbt_unhidet:after {content: ' threads hidden. Show'}" +
+    ".anbt_showt .anbt_unhidet:after {content: ' threads hidden. Hide'}" +
+    ".anbt_hft:after {content: '[hide]'}" +
+    ".forum-thread.anbt_hidden .anbt_hft:after {content: '[show]'}" +
     ""
   );
   // Enhance menu for higher resolutions
