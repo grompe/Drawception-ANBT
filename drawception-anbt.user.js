@@ -802,7 +802,15 @@ function bindCanvasEvents()
       if (o.error)
       {
         ID("submit").disabled = false;
-        alert(o.error);
+        if (typeof o.error == "object")
+        {
+          alert("Error! Please report this data:\n" +
+            "game: " + window.gameinfo.gameid + "\n\n" +
+            "response: \n" + JSON.stringify(o.error)
+            );
+        } else {
+          alert(o.error);
+        }
       } else if (o.callJS == "drawingComplete")
       {
         window.onbeforeunload = function(){};
@@ -857,7 +865,15 @@ function bindCanvasEvents()
       if (o.error)
       {
         ID("submitcaption").disabled = false;
-        alert(o.error);
+        if (typeof o.error == "object")
+        {
+          alert("Error! Please report this data:\n" +
+            "game: " + window.gameinfo.gameid + "\n\n" +
+            "response: \n" + JSON.stringify(o.error)
+            );
+        } else {
+          alert(o.error);
+        }
       } else if (o.callJS == "drawingComplete")
       {
         onCaptionSuccess();
@@ -930,6 +946,13 @@ function bindCanvasEvents()
 
 function deeper_main()
 {
+  window.onerror = function(e)
+  {
+    // Silence the bogus error message from the overwritten page's timer
+    if (e.toString().indexOf("periodsToSeconds") != -1) return;
+    alert(e);
+  };
+
   if (options.fixTabletPluginGoingAWOL) fixPluginGoingAWOL();
   bindCanvasEvents();
   if (window.insandbox)
