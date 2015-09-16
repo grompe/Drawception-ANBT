@@ -2433,7 +2433,8 @@ function bindEvents()
   
   var toggleSmooth = function(e)
   {
-    if (window.toggleSmooth)
+    anbt.smoothening = parseInt(prompt("Smoothening threshold in pixels (0 to disable):", anbt.smoothening));
+    if (anbt.smoothening && window.old_buildSmoothPath)
     {
       buildSmoothPath = old_buildSmoothPath;
     } else {
@@ -2449,9 +2450,6 @@ function bindEvents()
         }
       };
     }
-    window.toggleSmooth = !window.toggleSmooth;
-    ID("togglesmooth").childNodes[0].nodeValue =
-      (window.toggleSmooth ? "Enable" : "Disable") + " stroke smoothening";
   };
   ID("togglesmooth").addEventListener('mousedown', toggleSmooth);
   ID("togglesmooth").addEventListener('touchend', toggleSmooth);

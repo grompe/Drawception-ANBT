@@ -655,7 +655,7 @@ button:disabled {
     <div id="headercont">
       <div class="headerleft">
         <a href="/" title="Home"><img src="/img/logo-d.png"></a>
-        <span id="headerinfo" class="hideonsmall">New Canvas v20</span>
+        <span id="headerinfo" class="hideonsmall">New Canvas v21</span>
       </div>
       <div class="headerright">
         <a id="start" title="Play Drawception!" class="headerbutton active onlysandbox">Play</a>
@@ -1280,7 +1280,6 @@ var anbt =
   isStroking: false,
   isPlaying: false,
   size: 14.4,
-  smoothening: 1,
   palette: palettes.Normal,
   patternCache: {},
   delay: 100,
@@ -1360,7 +1359,7 @@ var anbt =
         }
         if (points.length > 2)
         {
-          points = simplifyDouglasPeucker(points, this.smoothening);
+          points = simplifyDouglasPeucker(points, options.smoothening);
           buildSmoothPath(points, el);
         }
         el.orig = points;
@@ -1900,7 +1899,7 @@ var anbt =
     var p = this.points;
     if (p.length > 2)
     {
-      p = simplifyDouglasPeucker(p, this.smoothening);
+      p = simplifyDouglasPeucker(p, options.smoothening);
       buildSmoothPath(p, this.path);
     }
     this.path.orig = p;

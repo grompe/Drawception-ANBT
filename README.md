@@ -91,6 +91,7 @@ Forum:
 
 1.67.2015.9
 - Added tracking of changes in your level progress
+- Added an option to set smoothing threshold
 
 1.66.2015.9
 - New canvas: silence the "periodsToSeconds" bogus error

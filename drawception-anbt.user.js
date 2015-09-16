@@ -15,7 +15,7 @@
 function wrapped() {
 
 var SCRIPT_VERSION = "1.67.2015.9";
-var NEWCANVAS_VERSION = 20; // Increase to update the cached canvas
+var NEWCANVAS_VERSION = 21; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
 
@@ -3021,6 +3021,8 @@ function updateScriptSettings(theForm)
   var result = {};
   $(theForm).find("input").each(function()
     {
+      if (this.type == "radio" && !this.checked) return;
+      
       if (this.type == "checkbox")
       {
         result[this.name] = this.checked ? 1 : 0;
@@ -3052,7 +3054,7 @@ function addScriptSettings()
     div.append('<label class="control-label" for="">' + name + '</label>');
     settings.forEach(function(id)
       {
-        var v = options[id[0]], name = id[0], t = id[1], desc = id[2];
+        var v = options[id[0]], name = id[0], t = id[1], desc = id[2], opt = id[3];
         var c = $('<div class="controls"></div>');
         if (t == "boolean")
         {
@@ -3062,6 +3064,22 @@ function addScriptSettings()
         else if (t == "number")
         {
           c.append('<b>' + desc + ':</b><input class="form-control" type="text" data-subtype="number" name="' + name + '" value="' + v + '">');
+        }
+        else if (t == "radio")
+        {
+          c.append('<b>' + desc + ':</b>');
+          for (var key in opt) if (opt.hasOwnProperty(key))
+          {
+            var id = "anbt_" + name + "_" + key;
+            $('<input class="form-control" type="radio">')
+              .attr({id: id, name: name, value: key, "data-subtype": ($.isArray(opt) ? "number" : "string")})
+              .prop("checked", key == v)
+              .appendTo(c);
+            $('<label style="margin-left: 16px">')
+              .attr({"for": id})
+              .html(opt[key])
+              .appendTo(c);
+          }
         }
         else
         {
@@ -3083,7 +3101,7 @@ function addScriptSettings()
     [
       ["newCanvas", "boolean", 'New drawing canvas (also allows <a href="http://grompe.org.ru/replayable-drawception/">watching playback</a>)'],
       ["submitConfirm", "boolean", "Confirm submitting if more than a minute is left (New canvas only)"],
-      ["smoothening", "boolean", "Smoothening of strokes (New canvas only)"],
+      ["smoothening", "radio", "Smoothing of strokes (New canvas only)", ["Disabled", "1px", "2px", "3px", "4px"]],
       ["asyncSkip", "boolean", "Fast Async Skip (experimental, applies to old canvas only)"],
       ["hideCross", "boolean", "Hide the cross when drawing"],
       ["enterToCaption", "boolean", "Submit captions (and start games) by pressing Enter"],
