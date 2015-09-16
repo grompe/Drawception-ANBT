@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      1.66.2015.9
+// @version      1.67.2015.9
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.66.2015.9";
+var SCRIPT_VERSION = "1.67.2015.9";
 var NEWCANVAS_VERSION = 20; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
@@ -95,7 +95,7 @@ Play
 - Play modes for those who only caption or only draw
 - Enter pressed in caption mode submits the caption
 - Ability to bookmark games without participating
-- Show your panel position and track changes in unfinished games list
+- Show your panel position and track changes in unfinished games list and your experience
 Forum
 - Better-looking timestamps with correct timezone
 - Clickable drawing panels
@@ -2363,21 +2363,27 @@ var panelPositions =
 {
   player: null,
   last: null,
+  level: null,
+  experience: null,
   load: function ()
   {
-    function loadObj(key)
+    function loadObj(key, fallback)
     {
       var val = localStorage.getItem(key);
-      return val && JSON.parse(val) || {};
+      return val && JSON.parse(val) || fallback;
     }
 
-    panelPositions.player = loadObj("gpe_panelPositions");
-    panelPositions.last = loadObj("gpe_lastGamePositions");
+    panelPositions.player = loadObj("gpe_panelPositions", {});
+    panelPositions.last = loadObj("gpe_lastGamePositions", {});
+    panelPositions.level = loadObj("gpe_lastLevel", null);
+    panelPositions.experience = loadObj("gpe_lastExperience", null);
   },
   save: function ()
   {
     localStorage.setItem("gpe_panelPositions", JSON.stringify(panelPositions.player));
     localStorage.setItem("gpe_lastGamePositions", JSON.stringify(panelPositions.last));
+    localStorage.setItem("gpe_lastLevel", JSON.stringify(panelPositions.level));
+    localStorage.setItem("gpe_lastExperience", JSON.stringify(panelPositions.experience));
   },
   clear: function (page)
   {
@@ -2661,12 +2667,12 @@ function betterPlayer()
         var panelId = getPanelId($(this).prev().attr("href"));
         var playerPanelPosition = panelPositions.player[panelId];
         var lastSeenPanelPosition = panelPositions.last[panelId];
-        var panelProgress = $(this).find(".progress-bar-text");
-        var panelProgressText = panelProgress.text();
+        var panelProgressLabel = $(this).find(".progress-bar-text");
+        var panelProgressText = panelProgressLabel.text();
         var panelPosition = parseInt(panelProgressText.match(/\d+/)[0]);
         var totalPanelCount = parseInt(panelProgressText.match(/\d+/g)[1]);
 
-        panelProgress.css("pointer-events", "none"); // to make tooltips work under label
+        panelProgressLabel.css("pointer-events", "none"); // to make tooltips work under label
         if ((playerPanelPosition || lastSeenPanelPosition || panelPosition) < panelPosition)
         {
           $(this).find(".progress-bar")
@@ -2676,21 +2682,21 @@ function betterPlayer()
         {
           $('<div class="progress-bar progress-bar-info" title="Panels added after yours">')
             .width((Math.min(lastSeenPanelPosition || panelPosition, panelPosition) - playerPanelPosition) / totalPanelCount * 100 + "%")
-            .insertBefore(panelProgress)
+            .insertBefore(panelProgressLabel)
             .tooltip();
         }
         if (lastSeenPanelPosition && panelPosition > lastSeenPanelPosition)
         {
           $('<div class="progress-bar progress-bar-success" title="Panels added recently">')
             .width((panelPosition - lastSeenPanelPosition) / totalPanelCount * 100 + "%")
-            .insertBefore(panelProgress)
+            .insertBefore(panelProgressLabel)
             .tooltip();
         }
         if (lastSeenPanelPosition && panelPosition < lastSeenPanelPosition)
         {
           $('<div class="progress-bar progress-bar-danger" title="Panel was removed recently">')
             .width(1 / totalPanelCount * 100 + "%")
-            .insertBefore(panelProgress)
+            .insertBefore(panelProgressLabel)
             .tooltip();
         }
         if (playerPanelPosition)
@@ -2703,6 +2709,46 @@ function betterPlayer()
 
         panelPositions.last[panelId] = panelPosition;
       });
+      
+      var levelProgress = $(".progress-bar-profile .progress-bar");
+      var levelProgressLabel = $(".progress-bar-profile-text");
+      var profileHeaderLabel = $(".profile-user-header p:last");
+      var currentLevel = parseInt(profileHeaderLabel.text().match(/\d+/)[0]);
+      var currentExperience = parseInt(levelProgressLabel.text().match(/\d+/)[0]);
+      if (panelPositions.level && panelPositions.experience)
+      {
+        if (currentLevel != panelPositions.level)
+        {
+            levelProgress
+              .removeClass("progress-bar-info")
+              .addClass(currentLevel > panelPositions.level ? "progress-bar-success" : "progress-bar-danger");
+            profileHeaderLabel.text(profileHeaderLabel.text().replace(/\d+/, 
+              currentLevel + " (" + (currentLevel > panelPositions.level ? "+" : "") + (currentLevel - panelPositions.level) + ")"));
+        }
+        else
+        {
+            var experienceChange = currentExperience - panelPositions.experience;
+            if (experienceChange != 0)
+            {
+              var levelProgressBarWidth = parseFloat(levelProgress.attr("aria-valuenow")) / 100;
+              var experienceToLevelUp = parseInt(levelProgressLabel.text().match(/\d+/g)[1]);
+              var experiencePointWidth = (1 - levelProgressBarWidth) / experienceToLevelUp;
+              var experienceSinceLevelUp = Math.round(levelProgressBarWidth / experiencePointWidth);
+              var experienceAbsChange = Math.abs(experienceChange);
+              $(".progress-bar-profile .progress-bar")
+                .width((experienceSinceLevelUp - experienceAbsChange) * experiencePointWidth * 100 + "%");
+              $('<div class="progress-bar">')
+                .width(experienceAbsChange * experiencePointWidth * 100 + "%")
+                .addClass(experienceChange > 0 ? "progress-bar-success" : "progress-bar-danger")
+                .insertBefore(levelProgressLabel);
+              levelProgressLabel.text(
+                currentExperience + " XP (" + experienceToLevelUp + " to next level, "
+                  + experienceAbsChange + " " + (experienceChange > 0 ? "gained" : "lost") + " recently)");
+            }
+        }
+      }
+      panelPositions.level = currentLevel;
+      panelPositions.experience = currentExperience;
 
       panelPositions.save();
     }
@@ -3044,7 +3090,7 @@ function addScriptSettings()
       ["backup", "boolean", "Save the drawing in case of error and restore it in sandbox"],
       ["timeoutSound", "boolean", "Warning sound when only a minute is left (normal games)"],
       ["timeoutSoundBlitz", "boolean", "Warning sound when only 5 seconds left (blitz)"],
-      ["rememberPosition", "boolean", "Show your panel position and track changes in unfinished games list"],
+      ["rememberPosition", "boolean", "Show your panel position and track changes in unfinished games list and your experience"],
       ['colorNumberShortcuts', 'boolean', "Use 0-9 keys to select the color"],
       ['colorUnderCursorHint', 'boolean', "Show the color under the cursor in the palette (New canvas only)"],
       ['bookmarkOwnCaptions', 'boolean', "Automatically bookmark your own captions in case of dustcatchers (New canvas only)"],

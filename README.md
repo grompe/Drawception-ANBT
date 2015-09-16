@@ -78,7 +78,7 @@ Play:
 - Play modes for those who only caption or only draw
 - Enter pressed in caption mode submits the caption
 - Ability to bookmark games without participating
-- Show your panel position and track changes in unfinished games list
+- Show your panel position and track changes in unfinished games list and your experience
 
 Forum:
 
@@ -88,6 +88,9 @@ Forum:
 - Show and highlight direct links to forum posts
 
 ## CHANGELOG
+
+1.67.2015.9
+- Added tracking of changes in your level progress
 
 1.66.2015.9
 - New canvas: silence the "periodsToSeconds" bogus error
