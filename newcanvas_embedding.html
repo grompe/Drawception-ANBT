@@ -655,7 +655,7 @@ button:disabled {
     <div id="headercont">
       <div class="headerleft">
         <a href="/" title="Home"><img src="/img/logo-d.png"></a>
-        <span id="headerinfo" class="hideonsmall">New Canvas v20</span>
+        <span id="headerinfo" class="hideonsmall">New Canvas v21</span>
       </div>
       <div class="headerright">
         <a id="start" title="Play Drawception!" class="headerbutton active onlysandbox">Play</a>
@@ -2334,7 +2334,7 @@ function bindEvents()
     if (e.button === 0 || e.button === 2)
     {
       e.preventDefault();
-      anbt.StrokeEnd();
+      if (anbt.isStroking) anbt.StrokeEnd();
       if (options.hideCross) ID("svgContainer").classList.remove("hidecursor");
       window.removeEventListener('mouseup', mouseUp);
       window.removeEventListener('mousemove', mouseMove);
@@ -2871,13 +2871,18 @@ function bindEvents()
       };
       ID("svgContainer").addEventListener('mousemove', removeEyedropper);
     }
-    else if (e.keyCode == "Z".charCodeAt(0) && e.ctrlKey)
+    else if (e.keyCode == "Q".charCodeAt(0))
+    {
+      e.preventDefault();
+      options.colorDoublePress = !options.colorDoublePress;
+    }
+    else if (e.keyCode == "Z".charCodeAt(0))
     {
       e.preventDefault();
       ID("play").classList.remove("pause");
       anbt.Undo();
     }
-    else if (e.keyCode == "Y".charCodeAt(0) && e.ctrlKey)
+    else if (e.keyCode == "Y".charCodeAt(0))
     {
       e.preventDefault();
       ID("play").classList.remove("pause");
@@ -2908,7 +2913,8 @@ function bindEvents()
     {
       e.preventDefault();
       var i = (e.keyCode == 48) ? 9 : e.keyCode - 49;
-      if (e.shiftKey) i += 8;
+      if (e.shiftKey || (options.colorDoublePress && (anbt.prevColorKey == i))) i += 8;
+      anbt.prevColorKey = i;
       var els = ID("colors").querySelectorAll("b");
       if (i < els.length)
       {
@@ -2925,6 +2931,12 @@ function bindEvents()
           anbt.SetColor(0, color);
           updateColorIndicators();
         }
+      }
+      if (anbt.isStroking)
+      {
+        anbt.StrokeEnd();
+        var p = anbt.points[anbt.points.length - 1];
+        anbt.StrokeBegin(p.x, p.y);
       }
     }
     else if ((e.keyCode == 189 || e.keyCode == 219 || e.keyCode == 188) && !e.ctrlKey) // - or [ or ,

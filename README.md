@@ -89,6 +89,13 @@ Forum:
 
 ## CHANGELOG
 
+1.67.2015.9
+- New canvas: fix stroking while skipping leaving the stroke on a fresh canvas
+- New canvas: allow undo/redo with simple Z and Y
+- New canvas: handle color changing mid-stroke
+- New canvas: option to select colors with double press of 0-9 instead of shift
+- New canvas: handle play limit
+
 1.66.2015.9
 - New canvas: silence the "periodsToSeconds" bogus error
 - New canvas: add code to investigate server error on submitting

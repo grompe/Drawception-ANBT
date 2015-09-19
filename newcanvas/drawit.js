@@ -466,6 +466,9 @@ var palettes = {
   "DawnBringer 16":  ['#140c1c', '#442434', '#30346d', '#4e4a4e', '#854c30', '#346524',
                       '#d04648', '#757161', '#597dce', '#d27d2c', '#8595a1', '#6daa2c',
                       '#d2aa99', '#6dc2ca', '#dad45e', '#deeed6'],
+  "Freedom":         ['#000000', '#2c3539', '#2b3856', '#002a6c', '#800080', '#a52a2a',
+                      '#c2113a', '#ff0000', '#ffd700', '#ffff00', '#ffffff'],
+
 };
 
 var anbt =
@@ -641,8 +644,8 @@ var anbt =
         arr.push(pack_uint16be(lasty));
         for (var j = 1; j < el.orig.length; j++)
         {
-          var dx = el.orig[j].x - lastx;
-          var dy = el.orig[j].y - lasty;
+          var dx = Math.round(el.orig[j].x - lastx);
+          var dy = Math.round(el.orig[j].y - lasty);
           // Ignore repeating points
           if (dx === 0 && dy === 0) continue;
           arr.push(pack_uint16be(dx));
@@ -749,6 +752,7 @@ var anbt =
           path.pattern = pattern;
           svg.appendChild(path);
           points = [];
+          fill = null;
         } else {
           x = x + lastx;
           y = y + lasty;
@@ -969,6 +973,10 @@ var anbt =
     xhr.onload = function()
     {
       _anbt.FromPNG(this.response);
+    };
+    xhr.onerror = function()
+    {
+      alert("Error loading an image. Wrong URL?");
     };
     xhr.send();
   },
@@ -1199,7 +1207,7 @@ var anbt =
   // Caveat: undo will erase whole polyline
   StrokeBeginModifyLast: function(x, y, left)
   {
-    if (this.position == 0 || !this.points) return StrokeBegin(x, y, left);
+    if (this.position == 0 || !this.points) return anbt.StrokeBegin(x, y, left);
     if (this.snap)
     {
       x = Math.round(x / this.snap) * this.snap;
@@ -1714,7 +1722,7 @@ function bindEvents()
     if (e.button === 0 || e.button === 2)
     {
       e.preventDefault();
-      anbt.StrokeEnd();
+      if (anbt.isStroking) anbt.StrokeEnd();
       window.removeEventListener('mouseup', mouseUp);
       window.removeEventListener('mousemove', mouseMove);
     }
@@ -1732,7 +1740,15 @@ function bindEvents()
 
       if (e.altKey)
       {
-        anbt.SetColor(e.button === 0 ? 0 : 1, anbt.Eyedropper(x, y));
+        var whichcolor = e.button === 0 ? 0 : 1;
+        if (e.shiftKey && (anbt.color[whichcolor] != "eraser"))
+        {
+          var alpha = Math.round(color2rgba(anbt.color[whichcolor])[3] / 2.55) / 100;
+          var c = color2rgba(anbt.Eyedropper(x, y));
+          anbt.SetColor(whichcolor, "rgba(" + c[0] + "," + c[1] + "," + c[2] + "," + alpha + ")");
+        } else {
+          anbt.SetColor(whichcolor, anbt.Eyedropper(x, y));
+        }
         updateColorIndicators();
       } else {
         // PointerType == 3 is pen tablet eraser
@@ -2353,7 +2369,11 @@ function bindEvents()
   var usageTips = function(e)
   {
     e.preventDefault();
-    alert("Read tooltips on the buttons!\n\nPress Alt to pick colors\nPress X to swap colors\n\nOn touchscreen:\n" +
+    alert("Read tooltips on the buttons!\n\n" +
+      "Press Alt to pick colors (with Shift to preserve opacity)\n" +
+      "Press T to halve primary color opacity\n" +
+      "Press X to swap colors\n\n" +
+      "On touchscreen:\n" +
       "put one finger, tap with second finger on the left to undo,\non the right to redo");
   }
   ID("usagetips").addEventListener('mousedown', usageTips);
@@ -2461,7 +2481,9 @@ function bindEvents()
     var m = prompt("Grid size in pixels (6 makes brush 2 and brush 4 exact; 0 to disable):", "0");
     if (!m) return;
     m = m.match(/(\d+)/g);
-    anbt.snap = m ? m : false;
+    if (!m) return;
+    var a = parseInt(m[0], 10);
+    anbt.snap = a ? a : false;
   };
   ID("setsnap").addEventListener('mousedown', setSnap);
   ID("setsnap").addEventListener('touchend', setSnap);
@@ -2560,6 +2582,18 @@ function bindEvents()
           updateColorIndicators();
         }
       }
+    }
+    else if (e.keyCode == "T".charCodeAt(0) && !e.ctrlKey && !e.altKey && !e.shiftKey)
+    {
+      e.preventDefault();
+
+      if (anbt.color[0] != "eraser")
+      {
+        var c = color2rgba(anbt.color[0]);
+        var alpha = Math.round(Math.max(c[3]/510, 0.06) * 100) / 100;
+        anbt.SetColor(0, "rgba(" + c[0] + "," + c[1] + "," + c[2] + "," + alpha + ")");
+      }
+      updateColorIndicators();
     }
     else if (e.keyCode == "F".charCodeAt(0) && !e.shiftKey)
     {

@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      1.66.2015.9
+// @version      1.67.2015.9
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,8 +14,8 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.66.2015.9";
-var NEWCANVAS_VERSION = 20; // Increase to update the cached canvas
+var SCRIPT_VERSION = "1.67.2015.9";
+var NEWCANVAS_VERSION = 21; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
 
@@ -48,6 +48,7 @@ var options =
   colorNumberShortcuts: 1,
   colorUnderCursorHint: 1,
   bookmarkOwnCaptions: 0,
+  colorDoublePress: 0,
 };
 
 /*
@@ -424,6 +425,7 @@ function extractInfoFromHTML(html)
     drawingbylink: extract(/drawing by (<a href="\/player\/\d+\/\S+\/">[^<]+<\/a>)/),
     h1: extract(/<h1>([^<]+)<\/h1>/) || extract(/<title>([^<]+) \(drawing by .*\)<\/title>/),
     notloggedin: extract(/>Login<\/a>/),
+    limitreached: extract(/>Play Limit Reached</),
   };
 }
 
@@ -549,6 +551,11 @@ function handlePlayParameters()
     alert("Play Error:\n" + info.error);
     return exitToSandbox();
   }
+  if (info.limitreached)
+  {
+    alert("Play limit reached!");
+    return exitToSandbox();
+  }
 
   ID("gamemode").innerHTML = (info.friend ? "Friend " : "Public ") +
     (info.nsfw ? "Not Safe For Work (18+) " : "safe for work ") +
@@ -566,6 +573,7 @@ function handlePlayParameters()
   newcanvas.classList.add(info.image ? "captioning" : "drawing");
 
   // Clear
+  if (anbt.isStroking) anbt.StrokeEnd();
   anbt.Unlock();
   for (var i = anbt.svg.childNodes.length - 1; i > 0; i--)
   {
@@ -3047,6 +3055,7 @@ function addScriptSettings()
       ["rememberPosition", "boolean", "Show your panel position and track changes in unfinished games list"],
       ['colorNumberShortcuts', 'boolean', "Use 0-9 keys to select the color"],
       ['colorUnderCursorHint', 'boolean', "Show the color under the cursor in the palette (New canvas only)"],
+      ['colorDoublePress', 'boolean', 'Double press 0-9 keys to select color without pressing shift (New canvas only)'],
       ['bookmarkOwnCaptions', 'boolean', "Automatically bookmark your own captions in case of dustcatchers (New canvas only)"],
     ]
   );
