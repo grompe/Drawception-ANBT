@@ -2876,7 +2876,7 @@ function bindEvents()
       e.preventDefault();
       options.colorDoublePress = !options.colorDoublePress;
     }
-    else if (e.keyCode == "Z".charCodeAt(0))
+    else if (e.keyCode == "Z".charCodeAt(0) || ((e.keyCode == 8) && anbt.unsaved))
     {
       e.preventDefault();
       ID("play").classList.remove("pause");
