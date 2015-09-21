@@ -425,7 +425,8 @@ function extractInfoFromHTML(html)
     drawingbylink: extract(/drawing by (<a href="\/player\/\d+\/\S+\/">[^<]+<\/a>)/),
     h1: extract(/<h1>([^<]+)<\/h1>/) || extract(/<title>([^<]+) \(drawing by .*\)<\/title>/),
     notloggedin: extract(/>Login<\/a>/),
-    limitreached: extract(/>Play Limit Reached</),
+    limitreached: extract(/>Play Limit Reached[<]/),
+    html: html,
   };
 }
 
