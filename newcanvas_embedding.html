@@ -2915,6 +2915,11 @@ function bindEvents()
       var i = (e.keyCode == 48) ? 9 : e.keyCode - 49;
       if (e.shiftKey || (options.colorDoublePress && (anbt.prevColorKey == i))) i += 8;
       anbt.prevColorKey = i;
+      if (options.colorDoublePress)
+      {
+        if (anbt.prevColorKeyTimer) clearTimeout(anbt.prevColorKeyTimer);
+        anbt.prevColorKeyTimer = setTimeout(function() {anbt.prevColorKey = -1}, 500);
+      }
       var els = ID("colors").querySelectorAll("b");
       if (i < els.length)
       {
