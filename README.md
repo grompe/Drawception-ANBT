@@ -89,6 +89,11 @@ Forum:
 
 ## CHANGELOG
 
+1.68.2015.9
+- New canvas: add timeout to double press color choose feature
+- New canvas: backspace for undo if canvas is drawn on
+- New canvas: fix regression introduced with play limit handling
+
 1.67.2015.9
 - New canvas: fix stroking while skipping leaving the stroke on a fresh canvas
 - New canvas: allow undo/redo with simple Z and Y
