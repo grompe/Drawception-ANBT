@@ -3488,10 +3488,10 @@ function pageEnhancements()
   var versionDisplay;
   try
   {
-    jsVersion = $('script[src*="/js/compiled/"]').attr("src").match(/compiled\/(\w+)\.js$/)[1];
-    cssVersion = $('head link[href*="core.css"]').attr("href").match(/\?v=([^&]+)/)[1];
+    jsVersion = $('script[src^="/js/"]').attr("src").match(/\/js\/(\w+)\.js$/)[1];
+    cssVersion = $('head link[href^="/css/"]').attr("href").match(/\/css\/(\w+)\.css$/)[1];
     versionDisplay = "ANBT v" + SCRIPT_VERSION + " | js " + jsVersion + ", css " + cssVersion;
-    if (jsVersion != "ac8932b" || cssVersion != "3.26") versionDisplay += " | woah, site got updated!";
+    if (jsVersion != "8879631" || cssVersion != "d7c6200") versionDisplay += " | woah, site got updated!";
   } catch(e)
   {
     versionDisplay = "ANBT v" + SCRIPT_VERSION + " | js/css unknown";
