@@ -90,6 +90,7 @@ Forum:
 ## CHANGELOG
 
 1.67.2015.9
+- Fixed captions of created games not being registered for progress tracking
 - Added tracking of changes in your level progress
 - Added an option to set smoothing threshold
 

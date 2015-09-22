@@ -2064,6 +2064,11 @@ function betterCreateGame()
       }
     });
   }
+  
+  if (options.rememberPosition && $(".page-header h1").text().match(/Game Created/))
+  {
+    panelPositions.registerPanel();
+  }
 }
 
 function betterView()
@@ -2339,23 +2344,10 @@ function betterPanel()
 
   if (options.rememberPosition && $(".regForm > .lead").text().match(/public game/)) // your own panel
   {
-    panelPositions.load();
-    if (!panelPositions.player[panelId])
+    panelPositions.registerPanel(panelId, function(position)
     {
-      var profileUrl = $(".btn").has(".avatar").attr("href");
-      $.get(profileUrl, function(html)
-      {
-        html = html.replace(/<img\b[^>]*>/ig, ''); // prevent image preload
-        var profilePage = $.parseHTML(html);
-        var panelProgressText = $(profilePage).find("a[href='" + location.pathname + "']").next().find(".progress-bar-text").text();
-        var panelPosition = parseInt(panelProgressText.match(/\d+/)[0]);
-        panelPositions.player[panelId] = panelPosition;
-        panelPositions.clear(profilePage);
-        panelPositions.save();
-
-        $(".regForm > .lead").append("<br>").append($("<span>").text(panelProgressText));
-      });
-    }
+      $(".regForm > .lead").append("<br>").append($("<span>").text(position.join(" of ")));
+    });
   }
 }
 
@@ -2398,6 +2390,42 @@ var panelPositions =
     }).get();
     clearKeys(panelPositions.player, existingIds);
     clearKeys(panelPositions.last, existingIds);
+  },
+  registerPanel: function (panelId, callback)
+  {
+    function getPanelPosition (link)
+    {
+      var panelProgressText = link.next().find(".progress-bar-text").text();
+      return [parseInt(panelProgressText.match(/\d+/)[0]), parseInt(panelProgressText.match(/\d+/g)[1])];
+    }
+    
+    panelPositions.load();
+    // panelId is undefined when the game is just created
+    if (!panelId || !panelPositions.player[panelId])
+    {
+      var profileUrl = $(".btn").has(".avatar").attr("href");
+      $.get(profileUrl, function(html)
+      {
+        html = html.replace(/<img\b[^>]*>/ig, ''); // prevent image preload
+        var profilePage = $.parseHTML(html);
+        
+        // Panel panelId is just created, record its position
+        if (panelId)
+        {
+          var position = getPanelPosition($(profilePage).find("a[href='" + location.pathname + "']"));
+          panelPositions.player[panelId] = position[0];
+          callback && callback(position);
+        }
+        
+        // Panels with position 1 are always ours
+        $(profilePage).find("a")
+          .filter(function() { return $(this).next().hasClass("progress-striped") && getPanelPosition($(this))[0] == 1; })
+          .each(function() { panelPositions.player[getPanelId(this.href)] = 1; });
+        
+        panelPositions.clear(profilePage);
+        panelPositions.save();
+      });
+    }
   }
 };
 
