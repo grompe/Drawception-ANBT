@@ -3079,29 +3079,6 @@ function autoSkip(reason)
   });
 }
 
-function uploadToCanvas()
-{
-  if (!fileInput)
-  {
-    fileInput = $('<input type="file">');
-    $(document.body).append(fileInput);
-    fileInput.on("change", function(theEvt)
-      {
-        var thefile = theEvt.target.files[0];
-        var reader = new FileReader();
-        reader.onload = function(evt)
-        {
-          // can't do this with new undo
-          //restorePoints.push(evt.target.result);
-          //undo();
-        };
-        reader.readAsDataURL(thefile);
-      }
-    );
-  }
-  fileInput.get(0).click();
-}
-
 var theAlphabet = "36QtfkmuFds0UjlvCGIXZ125bEMhz48JSYgipwKn7OVHRBPoy9DLWaceqxANTr";
 // Game IDs will never contain these symbols: u 0U lv I J i V o
 // So they are base 52 for some reason...
@@ -3159,45 +3136,6 @@ function stalkNextPanel(forward)
   location.href = location.href.replace(sid, sid2);
 }
 
-window.drawingHint = drawingHint;
-function drawingHint()
-{
-  var gp = $(".gamepanel");
-  if (!gp.length) return;
-  var id = gp.attr("src").match(/\d+/)[0];
-  $.ajax(
-    {
-      url: '/panel/get.json?panelid=' + id,
-      complete: function(result)
-      {
-        result = JSON.parse(result.responseText);
-
-        alert("Title: " + result.data.title + "\nImage: http://drawception.com" + result.data.image);
-      }
-    }
-  );
-}
-
-window.dataToCanvas = dataToCanvas;
-function dataToCanvas()
-{
-  var url = prompt("Enter data:URI of the image you want to paste");
-  if (url)
-  {
-    var img = new Image();
-    if (url.indexOf("http://") != -1 && url.indexOf("//drawception.com/") == -1) img.crossOrigin = "Yes please";
-    img.src = url;
-    img.onload = function()
-    {
-      var oo = drawApp.context.globalCompositeOperation;
-      drawApp.context.globalCompositeOperation = "copy";
-      drawApp.context.drawImage(this, 0, 0, drawApp.context.canvas.width, drawApp.context.canvas.height);
-      drawApp.context.globalCompositeOperation = oo;
-      save();
-    };
-  }
-}
-
 function valueToHex(val)
 {
   return (Math.floor(val/16)%16).toString(16)+(Math.floor(val)%16).toString(16);
@@ -3217,17 +3155,6 @@ function invertColor(c)
   // Ensure it's in long form
   if (c.length == 3) c = c.charAt(0) + c.charAt(0) + c.charAt(1) + c.charAt(1) + c.charAt(2) + c.charAt(2);
   return "#" + ("000000" + (parseInt(c, 16) ^ 0xFFFFFF).toString(16)).slice(-6);
-}
-
-function dbg()
-{
-  if (!__DEBUG__) return;
-  var out = [];
-  for (var i = 0; i < arguments.length; i++)
-  {
-    out.push(arguments[i]);
-  }
-  __DEBUG__.innerHTML = out.join(", ");
 }
 
 function pagodaBoxError()
