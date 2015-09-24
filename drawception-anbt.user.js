@@ -514,7 +514,9 @@ function handleSandboxParameters()
     var playerid = gameinfo.drawingbylink.match(/\d+/);
     var playername = gameinfo.drawingbylink.match(/>([^<]+)</);
     var avatar = '<img src="/pub/avatars/' + playerid + '.jpg" width="25" height="25">';
-    ID("headerinfo").innerHTML = 'Drawing by ' + avatar + " " + gameinfo.drawingbylink;
+    var replaylink = '<a href="http://grompe.org.ru/drawit/#drawception/' +
+      location.hash.substr(1) + '" title="Public replay link for sharing">Drawing</a>';
+    ID("headerinfo").innerHTML = replaylink + ' by ' + avatar + " " + gameinfo.drawingbylink;
     if (playername) document.title = playername[1] + "'s drawing - Drawception";
     ID("drawthis").innerHTML = '"' + gameinfo.h1 + '"';
     ID("drawthis").classList.remove("onlyplay");
