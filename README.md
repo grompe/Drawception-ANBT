@@ -89,6 +89,13 @@ Forum:
 
 ## CHANGELOG
 
+1.69.2015.9
+- Update site version detection
+- Remove https search fix (fixed onsite)
+- Fix forum timestamps, handle edited post timestamps
+- New canvas: on replay, add shareable links in header
+- New canvas: don't bug about the wacom plugin if not enabled
+
 1.68.2015.9
 - New canvas: add timeout to double press color choose feature
 - New canvas: backspace for undo if canvas is drawn on
