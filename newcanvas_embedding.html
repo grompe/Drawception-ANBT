@@ -655,7 +655,7 @@ button:disabled {
     <div id="headercont">
       <div class="headerleft">
         <a href="/" title="Home"><img src="/img/logo-d.png"></a>
-        <span id="headerinfo" class="hideonsmall">New Canvas v22</span>
+        <span id="headerinfo" class="hideonsmall">New Canvas v23</span>
       </div>
       <div class="headerright">
         <a id="start" title="Play Drawception!" class="headerbutton active onlysandbox">Play</a>
@@ -769,9 +769,7 @@ button:disabled {
       </div>
     </div>
   </div>
-  <div id="wacomContainer">
-    <object id="wacom" type="application/x-wacomtabletplugin" width="1" height="1"></object>
-  </div>
+  <div id="wacomContainer"></div>
 <script>
 /* pako 0.2.5 nodeca/pako */
 !function(t){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=t();else if("function"==typeof define&&define.amd)define([],t);else{var e;"undefined"!=typeof window?e=window:"undefined"!=typeof global?e=global:"undefined"!=typeof self&&(e=self),e.pako=t()}}(function(){return function t(e,a,i){function n(s,o){if(!a[s]){if(!e[s]){var l="function"==typeof require&&require;if(!o&&l)return l(s,!0);if(r)return r(s,!0);throw new Error("Cannot find module '"+s+"'")}var h=a[s]={exports:{}};e[s][0].call(h.exports,function(t){var a=e[s][1][t];return n(a?a:t)},h,h.exports,t,e,a,i)}return a[s].exports}for(var r="function"==typeof require&&require,s=0;s<i.length;s++)n(i[s]);return n}({1:[function(t,e){"use strict";var a=t("./lib/utils/common").assign,i=t("./lib/deflate"),n=t("./lib/inflate"),r=t("./lib/zlib/constants"),s={};a(s,i,n,r),e.exports=s},{"./lib/deflate":2,"./lib/inflate":3,"./lib/utils/common":4,"./lib/zlib/constants":7}],2:[function(t,e,a){"use strict";function
@@ -2305,7 +2303,7 @@ function bindEvents()
   var wacom = ID("wacom");
   var getPointerType = function()
   {
-    return wacom.penAPI && wacom.penAPI.isWacom ? wacom.penAPI.pointerType : 0;
+    return wacom && wacom.penAPI && wacom.penAPI.isWacom ? wacom.penAPI.pointerType : 0;
   };
 
   var checkPlayingAndStop = function()

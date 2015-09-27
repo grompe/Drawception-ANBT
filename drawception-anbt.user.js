@@ -15,7 +15,7 @@
 function wrapped() {
 
 var SCRIPT_VERSION = "1.68.2015.9";
-var NEWCANVAS_VERSION = 22; // Increase to update the cached canvas
+var NEWCANVAS_VERSION = 23; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
 
@@ -964,7 +964,17 @@ function deeper_main()
     alert(e);
   };
 
-  if (options.fixTabletPluginGoingAWOL) fixPluginGoingAWOL();
+  if (options.enableWacom)
+  {
+    var stupidPlugin = document.createElement("object");
+    var container = ID("wacomContainer");
+    stupidPlugin.setAttribute("id", "wacom");
+    stupidPlugin.setAttribute("type", "application/x-wacomtabletplugin");
+    stupidPlugin.setAttribute("width", "1");
+    stupidPlugin.setAttribute("height", "1");
+    container.appendChild(stupidPlugin);
+    if (options.fixTabletPluginGoingAWOL) fixPluginGoingAWOL();
+  }
   bindCanvasEvents();
   if (window.insandbox)
   {
