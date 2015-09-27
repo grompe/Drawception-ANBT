@@ -2778,7 +2778,7 @@ function betterForum()
     return formatTimestamp(d.getTime() - tzo + (6 - dst) * 60 * 60 * 1000);
   }
 
-  $("span.muted, span.text-muted").each(function(index)
+  $("span.muted, span.text-muted, small.text-muted").each(function(index)
     {
       var year, month, day, minutes, hours;
       var m, t = $(this), tx = t.text();
@@ -2806,7 +2806,7 @@ function betterForum()
           }
         }
       }
-      else if (m = tx.match(/^\s*\[ (\d+):(\d+) ([ap]m) ... (...) (\d+).., (\d{4}) \]\s*$/))
+      else if (m = tx.match(/^\s*\[ (\d+):(\d+)([ap]m) ... (...) (\d+).., (\d{4}) \]\s*$/))
       {
         hours = parseInt(m[1], 10) % 12;
         minutes = parseInt(m[2], 10);
@@ -2815,6 +2815,16 @@ function betterForum()
         day = parseInt(m[5], 10);
         year = parseInt(m[6], 10);
         t.text("[ " + convertForumTime(year, month, day, hours, minutes) + " ]");
+      }
+      else if (m = tx.match(/^\s*edited: (\d+):(\d+)([ap]m) (\d+)\/(\d+)\/(\d+)\s*$/))
+      {
+        hours = parseInt(m[1], 10) % 12;
+        minutes = parseInt(m[2], 10);
+        hours += (m[3] == 'pm') ? 12 : 0;
+        month = parseInt(m[4], 10) - 1;
+        day = parseInt(m[5], 10);
+        year = parseInt(m[6], 10) + 2000;
+        t.text("edited: " + convertForumTime(year, month, day, hours, minutes));
       }
     }
   );
@@ -3394,7 +3404,7 @@ function pageEnhancements()
     jsVersion = $('script[src^="/js/"]').attr("src").match(/\/js\/\w+\.js\?(.+)$/)[1];
     cssVersion = $('head link[href^="/css/"]').attr("href").match(/\/css\/\w+\.css\?(.+)$/)[1];
     versionDisplay = "ANBT v" + SCRIPT_VERSION + " | js " + jsVersion + ", css " + cssVersion;
-    if (jsVersion != "v2.0.2" || cssVersion != "v2.0.2") versionDisplay += " | woah, site got updated!";
+    if (jsVersion != "v2.0.3" || cssVersion != "v2.0.3") versionDisplay += " | woah, site got updated!";
   } catch(e)
   {
     versionDisplay = "ANBT v" + SCRIPT_VERSION + " | js/css unknown";
