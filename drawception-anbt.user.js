@@ -3411,10 +3411,10 @@ function pageEnhancements()
   var versionDisplay;
   try
   {
+    // JS and CSS update simultaneously now
     jsVersion = $('script[src^="/js/"]').attr("src").match(/\/js\/\w+\.js\?(.+)$/)[1];
-    cssVersion = $('head link[href^="/css/"]').attr("href").match(/\/css\/\w+\.css\?(.+)$/)[1];
-    versionDisplay = "ANBT v" + SCRIPT_VERSION + " | js " + jsVersion + ", css " + cssVersion;
-    if (jsVersion != "v2.0.3" || cssVersion != "v2.0.3") versionDisplay += " | woah, site got updated!";
+    versionDisplay = "ANBT v" + SCRIPT_VERSION + " | site " + jsVersion;
+    if (jsVersion != "v2.0.7") versionDisplay += "*";
   } catch(e)
   {
     versionDisplay = "ANBT v" + SCRIPT_VERSION + " | js/css unknown";
