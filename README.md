@@ -89,6 +89,14 @@ Forum:
 
 ## CHANGELOG
 
+1.70.2015.10
+- Change ANBT script link in the footer to link to the last page
+- Dark style: panel thumbnails cleaner look
+- Dark style: fix login page
+- Dark style: slightly more pleasing blue and cyan button colors
+- Make http:// links in "location" field on player pages clickable
+- Extend "location" field length to 65 characters on settings page
+
 1.69.2015.9
 - Update site version detection
 - Remove https search fix (fixed onsite)
