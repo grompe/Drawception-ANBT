@@ -2647,6 +2647,13 @@ function betterPlayer()
   // Remove the temptation to judge
   if (options.removeFlagging) $('a.btn:contains("Report")').remove();
 
+  // Linkify the links in location
+  var pubinfo = $(".profile-user-header>div.row>div>h1+p");
+  if (pubinfo.length)
+  {
+    linkifyNodeText(pubinfo);
+  }
+
   var loc = document.location.href;
   // If it's user's homepage, add new buttons in there
   if (loc.match(new RegExp('/player/' + userid + '/[^/]+/(?:$|#)')))
@@ -3080,6 +3087,9 @@ function addScriptSettings()
   );
   theForm.append('<div class="control-group"><div class="controls"><input name="submit" type="submit" class="btn btn-primary" value="Apply"> <b id="anbtSettingsOK" class="label label-theme_holiday" style="display:none">Saved!</b></div></div>');
   $("#main").prepend(theForm);
+
+  // Extend "location" input to max server-accepted 65 characters
+  $('input[name="location"]').attr('maxlength', "65");
 }
 
 function autoSkip(reason)
