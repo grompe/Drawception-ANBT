@@ -3414,7 +3414,7 @@ function pageEnhancements()
     // JS and CSS update simultaneously now
     jsVersion = $('script[src^="/js/"]').attr("src").match(/\/js\/\w+\.js\?(.+)$/)[1];
     versionDisplay = "ANBT v" + SCRIPT_VERSION + " | site " + jsVersion;
-    if (jsVersion != "v2.0.7") versionDisplay += "*";
+    if (jsVersion != "v2.1.0") versionDisplay += "*";
   } catch(e)
   {
     versionDisplay = "ANBT v" + SCRIPT_VERSION + " | js/css unknown";
