@@ -3191,10 +3191,15 @@ function invertColor(c)
 
 function pagodaBoxError()
 {
-  if (document.body.innerHTML.match("There appears to be an error" + " with this site."))
+  if ((document.title == "Pagoda Box") &&
+      (
+           (document.body.innerHTML.match("All Routes" + " Down."))
+        || (document.body.innerHTML.match("There appears to be an error" + " with this site."))
+      )
+    )
   {
     GM_addStyle(
-      "body {background: #755}" +
+      "body {background: #755 !important}" +
       ""
     );
     div = document.createElement("div");
@@ -3211,8 +3216,6 @@ function pageEnhancements()
 {
   var loc = document.location.href;
   loadScriptSettings();
-
-  if (pagodaBoxError()) return;
 
   if (typeof jQuery == "undefined") return; // Firefox Greasemonkey seems to call pageEnhancements() after document.write...
   if (document.getElementById("newcanvasyo")) return; // Chrome, I'm looking at you too...
@@ -3488,6 +3491,8 @@ var mark = document.createElement("b");
 mark.id = "_anbt_";
 mark.style = "display:none";
 document.body.appendChild(mark);
+
+if (pagodaBoxError()) return;
 
 if (typeof DrawceptionPlay == "undefined")
 {
