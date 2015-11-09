@@ -2358,6 +2358,41 @@ function betterPanel()
     }
   }
 
+  if ($(".btn-primary").last().text() == "Play again")
+  {
+    // Allow adding to cover creator
+    var ccButton = $('<button class="btn btn-info" style="margin-top: 20px"><span class="glyphicon glyphicon-plus"></span> <b>Add to Cover Creator</b></button>');
+    ccButton.click(function(e)
+      {
+        e.preventDefault();
+        var ids;
+        var id = unscrambleID(panelId);
+        var cookie = $.cookie('covercreatorids');
+        if (!cookie) {
+          ids = [];
+        } else {
+          ids = JSON.parse(cookie);
+        }
+        if (ids.indexOf(id) == -1)
+        {
+          if (ids.length > 98)
+          {
+            apprise("Max cover creator drawings selected. Please remove some before adding more.");
+            return;
+          } else {
+            ids.push(id.toString());
+          }
+        } else {
+          $(this).attr("disabled", "disabled").find("b").text("Already added!");
+          return;
+        }
+        $.cookie('covercreatorids', JSON.stringify(ids), {expires: 365, path: '/'});
+        $(this).attr("disabled", "disabled").find("b").text("Added!");
+      }
+    );
+    $(".gamepanel").after(ccButton);
+  }
+
   if (options.rememberPosition && $(".regForm > .lead").text().match(/public game/)) // your own panel
   {
     panelPositions.load();
@@ -2598,7 +2633,7 @@ function viewMyGameBookmarks()
               },
               success: function(e)
               {
-                var m = e.match(/Game is not private/) || e.match(/Problem loading game/) && "dust";
+                var m = e.match(/Game is not private/) || e.match(/Problem loading game/) && "del";
                 if (m)
                 {
                   var gamename = "";
@@ -2606,7 +2641,7 @@ function viewMyGameBookmarks()
                   if (games[id].own) gamename = " with your caption" + gamename;
                   if (games[id].time) gamename += " bookmarked on " + formatTimestamp(games[id].time);
                   if (!gamename) gamename = id;
-                  var status = (m == "dust") ? "Deleted / dusted" : "Unfinished public";
+                  var status = (m == "del") ? "Deleted" : "Unfinished public";
                   $("#" + id).find("span").text(status + " game" + gamename);
                   return;
                 }
@@ -2642,6 +2677,62 @@ function viewMyGameBookmarks()
   );
 }
 
+window.viewMyCover = viewMyCover;
+function viewMyCover()
+{
+  $("#anbt_userpage").html("Loading the cover creator...");
+  $.ajax(
+    {
+      url: '/player/cover-creator/',
+      cache: false,
+    }
+  ).success(function(html)
+  {
+    var doc = document.implementation.createHTMLDocument("");
+    doc.body.innerHTML = html;
+
+    var cookie = $.cookie('covercreatorids');
+    var panels = cookie ? JSON.parse(cookie) : [];
+    var result = "";
+    for (var i = 0; i < panels.length; i++)
+    {
+      var id = panels[i];
+      var image;
+      var caption;
+      var sid;
+      if (isNaN(id))
+      {
+        sid = "invalid";
+        image = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAH0AAABoAQMAAADmVW1OAAAABlBMVEWAQED///94jotxAAAAaUlEQVR4Xu3UUQqAMAwD0OQiev9bdRepIgFxv1lAP+wYG++jdKUMbEzhwMbajzvKhFGPjBawuQyAA+k6Ev0I9pRD2wSAumgbEKjjaz3FNf/tghrE0mlDfvh/wPSxGRANpe4lYGm9BIm3nLQcSKh4KcheAAAAAElFTkSuQmCC";
+        caption = "invalid";
+      } else {
+        sid = scrambleID(id);
+        var el = doc.querySelector('.thumbpanel[data-panelid="' + id + '"]');
+        var img = el.querySelector("img");
+        image = img.src;
+        caption = img.alt;
+      }
+      result += '<div id="' + id + '" class="col-xs-6 col-sm-4 col-md-2" style="min-width: 150px;">' +
+        '<div class="thumbnail" style="overflow:hidden"><a class="anbt_paneldel" href="#" title="Remove">X</a>' +
+        '<a href="/panel/-/' + sid + '/-/" class="thumbnail thumbpanel">' +
+        '<img src="' + image + '" width="125" height="104" alt="' + caption + '" />' +
+        '</a></div></div>';
+    }
+    if (!result) result = "You don't have any cover panels.";
+    $("#anbt_userpage").html(result);
+    $("#anbt_userpage").on("click", ".anbt_paneldel", function(e)
+      {
+        e.preventDefault();
+        var id = $(this).parent().parent().attr("id");
+        $("#" + id).fadeOut();
+        panels.remove(parseInt(id, 10));
+        panels.remove(id);
+        $.cookie('covercreatorids', JSON.stringify(panels), {expires: 365, path: '/'});
+      }
+    );
+  });
+}
+
 function betterPlayer()
 {
   // Remove the temptation to judge
@@ -2660,13 +2751,15 @@ function betterPlayer()
   {
     var a = $("<h3>ANBT stuff: </h3>");
     a.append('<a class="btn btn-primary" href="#anbt_panelfavorites" onclick="viewMyPanelFavorites();">Panel Favorites</a> ');
-    a.append('<a class="btn btn-primary" href="#anbt_gamebookmarks" onclick="viewMyGameBookmarks();">Game Bookmarks</a>');
+    a.append('<a class="btn btn-primary" href="#anbt_gamebookmarks" onclick="viewMyGameBookmarks();">Game Bookmarks</a> ');
+    a.append('<a class="btn btn-primary" href="#anbt_cover" onclick="viewMyCover();">Cover Panels</a> ');
     var newrow = $('<div class="row"></div>');
     newrow.append($('<div class="col-md-12"></div>').append(a).append('<div id="anbt_userpage">' + randomGreeting() + '</div>'));
     $("div.col-md-8").first().parent().before(newrow);
 
     if (document.location.hash.indexOf("#anbt_panelfavorites") != -1) viewMyPanelFavorites();
     if (document.location.hash.indexOf("#anbt_gamebookmarks") != -1) viewMyGameBookmarks();
+    if (document.location.hash.indexOf("#anbt_cover") != -1) viewMyCover();
 
     // Make delete cover button safer
     var old_deleteCover = DrawceptionPlay.deleteCover;
@@ -3176,6 +3269,7 @@ function _62ToDec(n)
 window.scrambleID = scrambleID;
 function scrambleID(num)
 {
+  if (isNaN(num)) throw new Error("Invalid panel ID");
   return decTo62(parseInt(num, 10) + 3521614606208).split("").reverse().join("");
 }
 
