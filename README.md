@@ -89,6 +89,11 @@ Forum:
 
 ## CHANGELOG
 
+1.71.2015.11
+- Fix timestamps by detecting Florida DST
+- Add a button to panel page of your own panels to add panels to cover creator
+- Add a subpage on your own profile page to remove panels from cover creator
+
 1.70.2015.10
 - Change ANBT script link in the footer to link to the last page
 - Dark style: panel thumbnails cleaner look
