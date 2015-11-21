@@ -49,6 +49,7 @@ var options =
   colorUnderCursorHint: 1,
   bookmarkOwnCaptions: 0,
   colorDoublePress: 0,
+  markStalePosts: 1,
 };
 
 /*
@@ -2914,6 +2915,7 @@ function betterForum()
     return formatTimestamp(d.getTime() - tzo + (6 - dst) * 60 * 60 * 1000);
   }
 
+  var ncPosts = [];
   $("span.muted, span.text-muted, small.text-muted").each(function(index)
     {
       var year, month, day, minutes, hours;
@@ -2951,6 +2953,7 @@ function betterForum()
         day = parseInt(m[5], 10);
         year = parseInt(m[6], 10);
         t.text("[ " + convertForumTime(year, month, day, hours, minutes) + " ]");
+        ncPosts.push([this, day + month * 30 + (year - 1970) * 365]);
       }
       else if (m = tx.match(/^\s*edited: (\d+):(\d+)([ap]m) (\d+)\/(\d+)\/(\d+)\s*$/))
       {
@@ -2965,6 +2968,40 @@ function betterForum()
     }
   );
 
+  if (options.markStalePosts)
+  {
+    function markStalePost(el, age)
+    {
+      if (age < 30) return;
+      var r = 0;
+      if (age > 60) r = 1;
+      if (age > 120) r = 2;
+      if (age > 365) r = 3;
+      el.addClass("anbt_necropost anbt_necropost" + r);
+    }
+    // Skip the first post
+    for (var i = 1; i < ncPosts.length; i++)
+    {
+      var el = ncPosts[i][0];
+      var time = ncPosts[i][1];
+      var lastpage = !$(".pagination").length || $(".pagination .active:last-child").length;
+      var nexttime = ncPosts[i + 1] ? ncPosts[i + 1][1] : (lastpage ? Date.now() / 86400000 : 0);
+      var age = nexttime - time;
+      if (age > 30)
+      {
+        markStalePost($(el).parent().parent().parent().parent(), age);
+      }
+    }
+
+    GM_addStyle(
+      ".anbt_necropost:after {display: block; height: 14px; border-bottom: 2px solid black; content: ' '; background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAOCAMAAADOvxanAAAAElBMVEUAAAD///8wLiSYlYNnZFXm5Nfd4sMOAAAAAnRSTlMAAHaTzTgAAABBSURBVHheXchBEoBADAJBMsD/v2yZdS8Oly40k9NIk54ySm/8DYb6NWuuex1ak7VdbAcpNrCU8HmP4/hzd9oAXj6sBgHBLAHrRAAAAABJRU5ErkJggg==)}" +
+      ".anbt_necropost0:after {background: none; border-bottom: 1px solid black}" +
+      ".anbt_necropost1:after {background: none}" +
+      ".anbt_necropost2:after {background-repeat: no-repeat; background-position: center}" +
+      ".anbt_necropost3:after {}" +
+      ".anbt_necropost span.muted:after {content: ' (old post)'}"
+    );
+  }
   // Linkify the links
   $('.comment-body *').each(function()
     {
@@ -3202,6 +3239,7 @@ function addScriptSettings()
       ["autoplay", "boolean", "Automatically start replay when watching playback"],
       ["killDrawers", "boolean", "Kill drawers and display notifications in a dialog"],
       ["autoBypassNSFW", "boolean", "Automatically bypass NSFW game warning"],
+      ["markStalePosts", "boolean", "Mark stale forum posts"],
     ]
   );
   theForm.append('<div class="control-group"><div class="controls"><input name="submit" type="submit" class="btn btn-primary" value="Apply"> <b id="anbtSettingsOK" class="label label-theme_holiday" style="display:none">Saved!</b></div></div>');
