@@ -962,6 +962,8 @@ function deeper_main()
   {
     // Silence the bogus error message from the overwritten page's timer
     if (e.toString().indexOf("periodsToSeconds") != -1) return;
+    // Silence the useless error message
+    if (e.toString().match(/script error/i)) return;
     alert(e);
   };
 
