@@ -1,3 +1,4 @@
+// Drawing in Time by Grom PE. Public domain.
 // Utilities
 function ID(id) {return document.getElementById(id);}
 function svgElement(name, attrs)
@@ -980,7 +981,7 @@ var anbt =
     };
     xhr.send();
   },
-  FromLocalFile: function()
+  FromLocalFile: function(forceAltMethod)
   {
     if (!this.fileInput)
     {
@@ -1006,7 +1007,7 @@ var anbt =
         false
       );
     }
-    if (!navigator.userAgent.match(/\bPresto\b/))
+    if (!navigator.userAgent.match(/\bPresto\b/) && !forceAltMethod)
     {
       var clickEvent = document.createEvent("MouseEvent");
       clickEvent.initMouseEvent("click", true, true, window, 1,
@@ -1897,7 +1898,7 @@ function bindEvents()
   {
     e.preventDefault();
     ID("svgContainer").classList.add("loading");
-    anbt.FromLocalFile();
+    anbt.FromLocalFile(e.shiftKey || e.ctrlKey);
     ID("svgContainer").classList.remove("loading");
   });
   var warnStrokesAfterPos = function()
@@ -2528,13 +2529,18 @@ function bindEvents()
       };
       ID("svgContainer").addEventListener('mousemove', removeEyedropper);
     }
-    else if (e.keyCode == "Z".charCodeAt(0) && e.ctrlKey)
+    else if (e.keyCode == "Q".charCodeAt(0))
+    {
+      e.preventDefault();
+      anbt.altShortcuts = !anbt.altShortcuts;
+    }
+    else if (e.keyCode == "Z".charCodeAt(0) || ((e.keyCode == 8) && anbt.unsaved))
     {
       e.preventDefault();
       ID("play").classList.remove("pause");
       anbt.Undo();
     }
-    else if (e.keyCode == "Y".charCodeAt(0) && e.ctrlKey)
+    else if (e.keyCode == "Y".charCodeAt(0))
     {
       e.preventDefault();
       ID("play").classList.remove("pause");
@@ -2564,7 +2570,13 @@ function bindEvents()
     {
       e.preventDefault();
       var i = (e.keyCode == 48) ? 9 : e.keyCode - 49;
-      if (e.shiftKey) i += 8;
+      if (e.shiftKey || (anbt.altShortcuts && (anbt.prevColorKey == i))) i += 8;
+      anbt.prevColorKey = i;
+      if (anbt.altShortcuts)
+      {
+        if (anbt.prevColorKeyTimer) clearTimeout(anbt.prevColorKeyTimer);
+        anbt.prevColorKeyTimer = setTimeout(function() {anbt.prevColorKey = -1}, 500);
+      }
       var els = ID("colors").querySelectorAll("b");
       if (i < els.length)
       {
@@ -2581,6 +2593,12 @@ function bindEvents()
           anbt.SetColor(0, color);
           updateColorIndicators();
         }
+      }
+      if (anbt.isStroking)
+      {
+        anbt.StrokeEnd();
+        var p = anbt.points[anbt.points.length - 1];
+        anbt.StrokeBegin(p.x, p.y);
       }
     }
     else if (e.keyCode == "T".charCodeAt(0) && !e.ctrlKey && !e.altKey && !e.shiftKey)
@@ -2703,4 +2721,9 @@ function main()
   runTimer();
 }
 
-main();
+if (!("SVGPathSeg" in window))
+{
+  require("pathseg.min.js", main)
+} else {
+  main();
+}
