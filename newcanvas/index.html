@@ -8,7 +8,7 @@
 <body id="newcanvasyo" class="sandbox">
   <div id="myheader">
     <button id="openmenu" title="Open menu"></button>
-    Drawing in Time! (<a href="canvas_checklist.txt">last update: 12 Dec 2015</a>)
+    Drawing in Time! (<a href="canvas_checklist.txt">last update: 21 Dec 2015</a>)
     made by <a href="http://grompe.org.ru/">Grom PE</a>
     <a class="prominent" href="http://chat.grompe.org.ru/#drawception">(discuss)</a>
   </div>
@@ -122,11 +122,11 @@
       </div>
     </div>
   </div>
-  <div id="wacomContainer">
-    <object id="wacom" type="application/x-wacomtabletplugin" width="1" height="1"></object>
-  </div>
+  <div id="wacomContainer"></div>
 <script>
 window.options = {
+  enableWacom: "auto",
+  fixTabletPluginGoingAWOL: 1,
   hideCross: 1,
   colorNumberShortcuts: 1,
   colorDoublePress: 0,
@@ -134,5 +134,5 @@ window.options = {
 };
 </script>
 <script src="pako.min.js"></script>
-<script src="drawit.js?3"></script>
+<script src="drawit.js?4"></script>
 </body>

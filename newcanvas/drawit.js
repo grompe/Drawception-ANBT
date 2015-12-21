@@ -1697,7 +1697,7 @@ function bindEvents()
   var wacom = ID("wacom");
   var getPointerType = function()
   {
-    return wacom.penAPI && wacom.penAPI.isWacom ? wacom.penAPI.pointerType : 0;
+    return wacom && wacom.penAPI && wacom.penAPI.isWacom ? wacom.penAPI.pointerType : 0;
   };
 
   var checkPlayingAndStop = function()
@@ -2536,6 +2536,11 @@ function bindEvents()
       e.preventDefault();
       options.colorDoublePress = !options.colorDoublePress;
     }
+    else if (e.keyCode == "C".charCodeAt(0) && !e.ctrlKey)
+    {
+      e.preventDefault();
+      options.hideCross = !options.hideCross;
+    }
     else if (e.keyCode == "Z".charCodeAt(0) || ((e.keyCode == 8) && anbt.unsaved))
     {
       e.preventDefault();
@@ -2672,19 +2677,20 @@ function bindEvents()
       return msg;
     }
   };
-  (function fixPluginGoingAWOL()
+}
+
+function fixPluginGoingAWOL()
+{
+  var stupidPlugin = ID("wacom");
+  var container = ID("wacomContainer");
+  window.onblur = function(e)
   {
-    var stupidPlugin = ID("wacom");
-    var container = ID("wacomContainer");
-    window.onblur = function(e)
-    {
-      if (container.childNodes.length === 1) container.removeChild(stupidPlugin);
-    };
-    window.onfocus = function(e)
-    {
-      if (container.childNodes.length === 0) container.appendChild(stupidPlugin);
-    };
-  })();
+    if (container.childNodes.length === 1) container.removeChild(stupidPlugin);
+  };
+  window.onfocus = function(e)
+  {
+    if (container.childNodes.length === 0) container.appendChild(stupidPlugin);
+  };
 }
 
 function runTimer()
@@ -2706,6 +2712,29 @@ function runTimer()
 function main()
 {
   if (!window.options) window.options = {};
+  if (options.enableWacom == "auto")
+  {
+    options.enableWacom = 0;
+    for (var i = 0; i < navigator.plugins.length; i++)
+    {
+      if (navigator.plugins[i].name.match(/wacom/i))
+      {
+        options.enableWacom = 1;
+        break;
+      }
+    }
+  }
+  if (options.enableWacom)
+  {
+    var stupidPlugin = document.createElement("object");
+    var container = ID("wacomContainer");
+    stupidPlugin.setAttribute("id", "wacom");
+    stupidPlugin.setAttribute("type", "application/x-wacomtabletplugin");
+    stupidPlugin.setAttribute("width", "1");
+    stupidPlugin.setAttribute("height", "1");
+    container.appendChild(stupidPlugin);
+    if (options.fixTabletPluginGoingAWOL) fixPluginGoingAWOL();
+  }
   anbt.BindContainer(ID("svgContainer"));
   bindEvents();
   ID("svgContainer").style.background = 'url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAHElEQVR4AWPYgAM8wAFoo2FUAy4JXAbRRMOoBgD42lgf5s146gAAAABJRU5ErkJggg==")';
