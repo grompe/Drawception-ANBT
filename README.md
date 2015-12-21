@@ -89,6 +89,10 @@ Forum:
 
 ## CHANGELOG
 
+1.72.2015.12
+- Necropost detection feature
+- New canvas: try silence the useless 'Script Error' message
+
 1.71.2015.11
 - Fix timestamps by detecting Florida DST
 - Add a button to panel page of your own panels to add panels to cover creator
