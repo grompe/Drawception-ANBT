@@ -1724,6 +1724,7 @@ function bindEvents()
     {
       e.preventDefault();
       if (anbt.isStroking) anbt.StrokeEnd();
+      if (options.hideCross) ID("svgContainer").classList.remove("hidecursor");
       window.removeEventListener('mouseup', mouseUp);
       window.removeEventListener('mousemove', mouseMove);
     }
@@ -1754,6 +1755,7 @@ function bindEvents()
       } else {
         // PointerType == 3 is pen tablet eraser
         var left = e.button === 0 && getPointerType() !== 3;
+        if (options.hideCross) ID("svgContainer").classList.add("hidecursor");
         if (e.shiftKey)
         {
           anbt.StrokeBeginModifyLast(x, y, left);
@@ -1773,7 +1775,7 @@ function bindEvents()
     var y = e.pageY - rect.top - pageYOffset;
     anbt.MoveCursor(x, y);
     // Highlight color we're pointing at
-    if (!anbt.isStroking)
+    if (options.colorUnderCursorHint && !anbt.isStroking)
     {
       var color = anbt.Eyedropper(x, y);
       if (lastSeenColorToHighlight != color)
@@ -2532,7 +2534,7 @@ function bindEvents()
     else if (e.keyCode == "Q".charCodeAt(0))
     {
       e.preventDefault();
-      anbt.altShortcuts = !anbt.altShortcuts;
+      options.colorDoublePress = !options.colorDoublePress;
     }
     else if (e.keyCode == "Z".charCodeAt(0) || ((e.keyCode == 8) && anbt.unsaved))
     {
@@ -2566,13 +2568,13 @@ function bindEvents()
       anbt.SetColor(0, "eraser");
       updateColorIndicators();
     }
-    else if (e.keyCode >= 48 && e.keyCode <= 57 && !e.ctrlKey)
+    else if (e.keyCode >= 48 && e.keyCode <= 57 && !e.ctrlKey && options.colorNumberShortcuts)
     {
       e.preventDefault();
       var i = (e.keyCode == 48) ? 9 : e.keyCode - 49;
-      if (e.shiftKey || (anbt.altShortcuts && (anbt.prevColorKey == i))) i += 8;
+      if (e.shiftKey || (options.colorDoublePress && (anbt.prevColorKey == i))) i += 8;
       anbt.prevColorKey = i;
-      if (anbt.altShortcuts)
+      if (options.colorDoublePress)
       {
         if (anbt.prevColorKeyTimer) clearTimeout(anbt.prevColorKeyTimer);
         anbt.prevColorKeyTimer = setTimeout(function() {anbt.prevColorKey = -1}, 500);
@@ -2703,6 +2705,7 @@ function runTimer()
 
 function main()
 {
+  if (!window.options) window.options = {};
   anbt.BindContainer(ID("svgContainer"));
   bindEvents();
   ID("svgContainer").style.background = 'url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAHElEQVR4AWPYgAM8wAFoo2FUAy4JXAbRRMOoBgD42lgf5s146gAAAABJRU5ErkJggg==")';
