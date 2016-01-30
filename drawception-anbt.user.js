@@ -14,8 +14,8 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.72.2015.12";
-var NEWCANVAS_VERSION = 23; // Increase to update the cached canvas
+var SCRIPT_VERSION = "1.73.2016.1";
+var NEWCANVAS_VERSION = 24; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
 
@@ -542,7 +542,6 @@ function handlePlayParameters()
   ID("bookmark").disabled = info.drawfirst;
   ID("options").disabled = true; // Not implemented yet!
   ID("timeplus").disabled = false;
-  ID("timeplus").classList.remove("show");
 
   ID("headerinfo").innerHTML = 'Playing with ' + vertitle;
   ID("drawthis").classList.add("onlyplay");
@@ -641,7 +640,6 @@ function handlePlayParameters()
   timerStart = Date.now() + 1000 * info.timeleft;
   updateTimer();
   window.timesup = false;
-  window.timeplus = false;
 
   if ((options.timeoutSound && !info.blitz) || (options.timeoutSoundBlitz && info.blitz))
   {
@@ -651,11 +649,6 @@ function handlePlayParameters()
 
   timerCallback = function(s)
   {
-    if (s <= 121 && !window.timeplus)
-    {
-      ID("timeplus").classList.add("show");
-      window.timeplus = true;
-    }
     if (alarm && !window.playedWarningSound && s <= (info.blitz ? 5 : 61) && s > 0)
     {
       alarm.play();
