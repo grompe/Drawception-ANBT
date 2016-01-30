@@ -89,6 +89,10 @@ Forum:
 
 ## CHANGELOG
 
+1.73.2016.1
+- New canvas: make Time+ button always visible
+- New canvas: add pathseg polyfill for Chrome 48. No thanks to Google!
+
 1.72.2015.12
 - Necropost detection feature
 - New canvas: try silence the useless 'Script Error' message
