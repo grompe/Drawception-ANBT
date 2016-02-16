@@ -89,6 +89,9 @@ Forum:
 
 ## CHANGELOG
 
+1.74.2016.2
+- New canvas: ability to apply custom CSS, experimental
+
 1.73.2016.1
 - New canvas: make Time+ button always visible
 - New canvas: add pathseg polyfill for Chrome 48. No thanks to Google!

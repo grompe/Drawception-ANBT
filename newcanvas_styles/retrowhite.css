@@ -1,0 +1,108 @@
+/* "Retro White" style */
+body {
+  background: #FFF;
+}
+#myheader {
+  background: #6EE36E;
+  color: #FFF;
+  border-bottom: 1px solid #999;
+}
+a {
+  color: #AFE;
+}
+a.prominent {
+  color: #FFF;
+}
+a.prominent:hover {
+  color: #AFE;
+}
+#openmenu { 
+  background-color: #6AD16A;
+}
+#openmenu:hover { 
+  background-color: #6BCB6B;
+}
+#newcanvasyo {
+  background: #FFF;
+}
+.panel {
+  -background: #eee;
+  -border-color: #ddd;
+  background: transparent;
+  border: 1px solid #e3e3e3;
+}
+#colors b {
+  line-height: 30px;
+  margin: 4px 7px;
+  width: 32px;
+  height: 32px;
+  border: 2px solid #333;
+  border-radius: 100px;
+}
+#colors #eraser:before {
+  content: '';
+}
+#colors b:before {
+  opacity: 0;
+}
+#colors #eraser {
+  background: #fff url(http://drawception.com/img/draw_eraser.png) center no-repeat;
+  background-size: 50%;
+}
+#timer, #drawthis {
+  color: #333;
+}
+button, #play {
+  background-color: #FFFB8D;
+}
+button:hover, #play:hover {
+  background-color: #F6F166;
+}
+#palettename {
+  color: #eee;
+  background: #888;
+  border-radius: 5px;
+}
+#svgContainer {
+  border: 1px solid #c0c0c0;
+}
+#seekbar {
+  background: #DDD;
+  border: 10px solid #DDD;
+}
+.headerbutton {
+  background: #6ad16a;
+  color: #ded;
+}
+.headerbutton.active {
+  background: #337ab7;
+  color: #fff;
+}
+.headerbutton.active:hover {
+  background: #286090;
+}
+@media screen and (min-width: 1000px) {
+  #colors {
+    padding: 10px;
+    float: right;
+  }
+  #timer {
+    width: 120px;
+    float: right;
+  }
+  #tools {
+    width: 500px;
+    position: absolute;
+    left: 300px;
+    bottom: -70px;
+  }
+  #tools hr {
+    display: inline;
+    border: none;
+    margin: 5px;
+  }
+  #seekbar {
+    position: absolute;
+    bottom: -110px;
+  }
+}

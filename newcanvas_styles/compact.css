@@ -1,0 +1,73 @@
+/* "Compact" style, Warning: ugly hack */
+
+@media screen and (max-width: 999px) and (min-width: 800px) {
+  body {
+    overflow-x: hidden;
+  }
+  #bl {
+    width: 410px;
+  }
+  #toolpane {
+    width: 180px;
+    height: 500px;
+    position: absolute;
+    margin-left: -200px;
+  }
+  #toolpane:after {
+    display: none;
+  }
+  #infopane {
+    width: 1px;
+    height: 500px;
+    position: absolute;
+    margin: 0 0 0 600px;
+    top: 0;
+  }
+  .submit {
+    position: absolute;
+    top: 500px;
+    left: -776px;
+    width: 156px;
+    height: 50px;
+  }
+  #timer {
+    width: 176px;
+    float: left;
+    -margin-top: 50px;
+  }
+  #colors {
+    width: 100px;
+    margin-left: 0px;
+    float: left;
+  }
+  #primary, #secondary {
+    width: 50px;
+  }
+  #tools {
+    width: 68px;
+  }
+  #tools button {
+    margin: 3px 0;
+  }
+  #gamemode {
+    position: absolute;
+    left: -790px;
+    top: -100px;
+  }
+  #gamebuttons {
+    width: 300px;
+    position: absolute;
+    margin-left: 0;
+    left: -600px;
+    top: -100px;
+    padding: 2px;
+  }
+  .sandbox #gamebuttons {
+    width: 350px;
+    left: -660px;
+    top: -62px;
+  }
+  .guidelines, #options {
+    display: none;
+  }
+}

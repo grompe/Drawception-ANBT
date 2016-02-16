@@ -1,0 +1,63 @@
+/* "White" style */
+body {
+  background: #FFF;
+}
+#myheader {
+  background: #6EE36E;
+  color: #FFF;
+  border-bottom: 1px solid #999;
+}
+a {
+  color: #AFE;
+}
+a.prominent {
+  color: #FFF;
+}
+a.prominent:hover {
+  color: #AFE;
+}
+#openmenu { 
+  background-color: #6AD16A;
+}
+#openmenu:hover { 
+  background-color: #6BCB6B;
+}
+#newcanvasyo {
+  background: #FFF;
+}
+.panel {
+  background: transparent;
+  border: 1px solid #e3e3e3;
+}
+#timer, #drawthis {
+  color: #333;
+}
+button, #play {
+  background-color: #FFFB8D;
+}
+button:hover, #play:hover {
+  background-color: #F6F166;
+}
+#palettename {
+  color: #eee;
+  background: #888;
+  border-radius: 5px;
+}
+#svgContainer {
+  border: 1px solid #c0c0c0;
+}
+#seekbar {
+  background: #DDD;
+  border: 10px solid #DDD;
+}
+.headerbutton {
+  background: #6ad16a;
+  color: #ded;
+}
+.headerbutton.active {
+  background: #337ab7;
+  color: #fff;
+}
+.headerbutton.active:hover {
+  background: #286090;
+}

@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      1.73.2016.1
+// @version      1.74.2016.2
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.73.2016.1";
+var SCRIPT_VERSION = "1.74.2016.2";
 var NEWCANVAS_VERSION = 24; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
@@ -50,6 +50,7 @@ var options =
   bookmarkOwnCaptions: 0,
   colorDoublePress: 0,
   markStalePosts: 1,
+  newCanvasCSS: "",
 };
 
 /*
@@ -960,6 +961,17 @@ function deeper_main()
     alert(e);
   };
 
+  if (options.newCanvasCSS)
+  {
+    var parent = document.getElementsByTagName("head")[0];
+    if (!parent) parent = document.documentElement;
+    var style = document.createElement("style");
+    style.type = "text/css";
+    var textNode = document.createTextNode(options.newCanvasCSS);
+    style.appendChild(textNode);
+    parent.appendChild(style);
+  }
+  
   if (options.enableWacom)
   {
     var stupidPlugin = document.createElement("object");
@@ -3140,7 +3152,7 @@ window.updateScriptSettings = updateScriptSettings;
 function updateScriptSettings(theForm)
 {
   var result = {};
-  $(theForm).find("input").each(function()
+  $(theForm).find("input,textarea").each(function()
     {
       if (this.type == "checkbox")
       {
@@ -3160,6 +3172,15 @@ function updateScriptSettings(theForm)
   loadScriptSettings();
   $("#anbtSettingsOK").fadeIn("slow").fadeOut("slow");
   return false;
+}
+
+function escapeHTML(t)
+{
+  return t.toString().replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
 
 function addScriptSettings()
@@ -3182,11 +3203,15 @@ function addScriptSettings()
         }
         else if (t == "number")
         {
-          c.append('<b>' + desc + ':</b><input class="form-control" type="text" data-subtype="number" name="' + name + '" value="' + v + '">');
+          c.append('<b>' + desc + ':</b><input class="form-control" type="text" data-subtype="number" name="' + name + '" value="' + escapeHTML(v) + '">');
+        }
+        else if (t == "longstr")
+        {
+          c.append('<b>' + desc + ':</b><textarea class="form-control" name="' + name + '">' + escapeHTML(v) + '</textarea>');
         }
         else
         {
-          c.append('<b>' + desc + ':</b><input class="form-control" type="text" name="' + name + '" value="' + v + '">');
+          c.append('<b>' + desc + ':</b><input class="form-control" type="text" name="' + name + '" value="' + escapeHTML(v) + '">');
         }
         div.append(c);
       }
@@ -3237,7 +3262,12 @@ function addScriptSettings()
       ["markStalePosts", "boolean", "Mark stale forum posts"],
     ]
   );
-  theForm.append('<div class="control-group"><div class="controls"><input name="submit" type="submit" class="btn btn-primary" value="Apply"> <b id="anbtSettingsOK" class="label label-theme_holiday" style="display:none">Saved!</b></div></div>');
+  addGroup("Advanced",
+    [
+      ["newCanvasCSS", "longstr", 'Custom CSS for new canvas (experimental, <a href="https://github.com/grompe/Drawception-ANBT/tree/master/newcanvas_styles">get styles here</a>)'],
+    ]
+  );
+  theForm.append('<br><div class="control-group"><div class="controls"><input name="submit" type="submit" class="btn btn-primary" value="Apply"> <b id="anbtSettingsOK" class="label label-theme_holiday" style="display:none">Saved!</b></div></div>');
   $("#main").prepend(theForm);
 
   // Extend "location" input to max server-accepted 65 characters
