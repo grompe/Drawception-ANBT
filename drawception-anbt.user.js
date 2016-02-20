@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      1.67.2015.9
+// @version      1.75.2016.2
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,8 +14,8 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.67.2015.9";
-var NEWCANVAS_VERSION = 21; // Increase to update the cached canvas
+var SCRIPT_VERSION = "1.75.2016.2";
+var NEWCANVAS_VERSION = 25; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
 
@@ -48,6 +48,9 @@ var options =
   colorNumberShortcuts: 1,
   colorUnderCursorHint: 1,
   bookmarkOwnCaptions: 0,
+  colorDoublePress: 0,
+  markStalePosts: 1,
+  newCanvasCSS: "",
 };
 
 /*
@@ -424,6 +427,8 @@ function extractInfoFromHTML(html)
     drawingbylink: extract(/drawing by (<a href="\/player\/\d+\/\S+\/">[^<]+<\/a>)/),
     h1: extract(/<h1>([^<]+)<\/h1>/) || extract(/<title>([^<]+) \(drawing by .*\)<\/title>/),
     notloggedin: extract(/>Login<\/a>/),
+    limitreached: extract(/>Play Limit Reached[<]/),
+    html: html,
   };
 }
 
@@ -511,7 +516,9 @@ function handleSandboxParameters()
     var playerid = gameinfo.drawingbylink.match(/\d+/);
     var playername = gameinfo.drawingbylink.match(/>([^<]+)</);
     var avatar = '<img src="/pub/avatars/' + playerid + '.jpg" width="25" height="25">';
-    ID("headerinfo").innerHTML = 'Drawing by ' + avatar + " " + gameinfo.drawingbylink;
+    var replaylink = '<a href="http://grompe.org.ru/drawit/#drawception/' +
+      location.hash.substr(1) + '" title="Public replay link for sharing">Drawing</a>';
+    ID("headerinfo").innerHTML = replaylink + ' by ' + avatar + " " + gameinfo.drawingbylink;
     if (playername) document.title = playername[1] + "'s drawing - Drawception";
     ID("drawthis").innerHTML = '"' + gameinfo.h1 + '"';
     ID("drawthis").classList.remove("onlyplay");
@@ -536,7 +543,6 @@ function handlePlayParameters()
   ID("bookmark").disabled = info.drawfirst;
   ID("options").disabled = true; // Not implemented yet!
   ID("timeplus").disabled = false;
-  ID("timeplus").classList.remove("show");
 
   ID("headerinfo").innerHTML = 'Playing with ' + vertitle;
   ID("drawthis").classList.add("onlyplay");
@@ -547,6 +553,11 @@ function handlePlayParameters()
   if (info.error)
   {
     alert("Play Error:\n" + info.error);
+    return exitToSandbox();
+  }
+  if (info.limitreached)
+  {
+    alert("Play limit reached!");
     return exitToSandbox();
   }
 
@@ -566,6 +577,7 @@ function handlePlayParameters()
   newcanvas.classList.add(info.image ? "captioning" : "drawing");
 
   // Clear
+  if (anbt.isStroking) anbt.StrokeEnd();
   anbt.Unlock();
   for (var i = anbt.svg.childNodes.length - 1; i > 0; i--)
   {
@@ -629,7 +641,6 @@ function handlePlayParameters()
   timerStart = Date.now() + 1000 * info.timeleft;
   updateTimer();
   window.timesup = false;
-  window.timeplus = false;
 
   if ((options.timeoutSound && !info.blitz) || (options.timeoutSoundBlitz && info.blitz))
   {
@@ -639,11 +650,6 @@ function handlePlayParameters()
 
   timerCallback = function(s)
   {
-    if (s <= 121 && !window.timeplus)
-    {
-      ID("timeplus").classList.add("show");
-      window.timeplus = true;
-    }
     if (alarm && !window.playedWarningSound && s <= (info.blitz ? 5 : 61) && s > 0)
     {
       alarm.play();
@@ -950,10 +956,33 @@ function deeper_main()
   {
     // Silence the bogus error message from the overwritten page's timer
     if (e.toString().indexOf("periodsToSeconds") != -1) return;
+    // Silence the useless error message
+    if (e.toString().match(/script error/i)) return;
     alert(e);
   };
 
+  if (options.newCanvasCSS)
+  {
+    var parent = document.getElementsByTagName("head")[0];
+    if (!parent) parent = document.documentElement;
+    var style = document.createElement("style");
+    style.type = "text/css";
+    var textNode = document.createTextNode(options.newCanvasCSS);
+    style.appendChild(textNode);
+    parent.appendChild(style);
+  }
+  
+  if (options.enableWacom)
+  {
+    var stupidPlugin = document.createElement("object");
+    var container = ID("wacomContainer");
+    stupidPlugin.setAttribute("id", "wacom");
+    stupidPlugin.setAttribute("type", "application/x-wacomtabletplugin");
+    stupidPlugin.setAttribute("width", "1");
+    stupidPlugin.setAttribute("height", "1");
+    container.appendChild(stupidPlugin);
   if (options.fixTabletPluginGoingAWOL) fixPluginGoingAWOL();
+  }
   bindCanvasEvents();
   if (window.insandbox)
   {
@@ -2342,6 +2371,41 @@ function betterPanel()
     }
   }
 
+  if ($(".btn-primary").last().text() == "Play again")
+  {
+    // Allow adding to cover creator
+    var ccButton = $('<button class="btn btn-info" style="margin-top: 20px"><span class="glyphicon glyphicon-plus"></span> <b>Add to Cover Creator</b></button>');
+    ccButton.click(function(e)
+      {
+        e.preventDefault();
+        var ids;
+        var id = unscrambleID(panelId);
+        var cookie = $.cookie('covercreatorids');
+        if (!cookie) {
+          ids = [];
+        } else {
+          ids = JSON.parse(cookie);
+        }
+        if (ids.indexOf(id) == -1)
+        {
+          if (ids.length > 98)
+          {
+            apprise("Max cover creator drawings selected. Please remove some before adding more.");
+            return;
+          } else {
+            ids.push(id.toString());
+          }
+        } else {
+          $(this).attr("disabled", "disabled").find("b").text("Already added!");
+          return;
+        }
+        $.cookie('covercreatorids', JSON.stringify(ids), {expires: 365, path: '/'});
+        $(this).attr("disabled", "disabled").find("b").text("Added!");
+      }
+    );
+    $(".gamepanel").after(ccButton);
+  }
+
   if (options.rememberPosition && $(".regForm > .lead").text().match(/public game/)) // your own panel
   {
     panelPositions.registerPanel(panelId, function(position)
@@ -2611,7 +2675,7 @@ function viewMyGameBookmarks()
               },
               success: function(e)
               {
-                var m = e.match(/Game is not private/) || e.match(/Problem loading game/) && "dust";
+                var m = e.match(/Game is not private/) || e.match(/Problem loading game/) && "del";
                 if (m)
                 {
                   var gamename = "";
@@ -2619,7 +2683,7 @@ function viewMyGameBookmarks()
                   if (games[id].own) gamename = " with your caption" + gamename;
                   if (games[id].time) gamename += " bookmarked on " + formatTimestamp(games[id].time);
                   if (!gamename) gamename = id;
-                  var status = (m == "dust") ? "Deleted / dusted" : "Unfinished public";
+                  var status = (m == "del") ? "Deleted" : "Unfinished public";
                   $("#" + id).find("span").text(status + " game" + gamename);
                   return;
                 }
@@ -2655,10 +2719,73 @@ function viewMyGameBookmarks()
   );
 }
 
+window.viewMyCover = viewMyCover;
+function viewMyCover()
+{
+  $("#anbt_userpage").html("Loading the cover creator...");
+  $.ajax(
+    {
+      url: '/player/cover-creator/',
+      cache: false,
+    }
+  ).success(function(html)
+  {
+    var doc = document.implementation.createHTMLDocument("");
+    doc.body.innerHTML = html;
+
+    var cookie = $.cookie('covercreatorids');
+    var panels = cookie ? JSON.parse(cookie) : [];
+    var result = "";
+    for (var i = 0; i < panels.length; i++)
+    {
+      var id = panels[i];
+      var image;
+      var caption;
+      var sid;
+      if (isNaN(id))
+      {
+        sid = "invalid";
+        image = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAH0AAABoAQMAAADmVW1OAAAABlBMVEWAQED///94jotxAAAAaUlEQVR4Xu3UUQqAMAwD0OQiev9bdRepIgFxv1lAP+wYG++jdKUMbEzhwMbajzvKhFGPjBawuQyAA+k6Ev0I9pRD2wSAumgbEKjjaz3FNf/tghrE0mlDfvh/wPSxGRANpe4lYGm9BIm3nLQcSKh4KcheAAAAAElFTkSuQmCC";
+        caption = "invalid";
+      } else {
+        sid = scrambleID(id);
+        var el = doc.querySelector('.thumbpanel[data-panelid="' + id + '"]');
+        var img = el.querySelector("img");
+        image = img.src;
+        caption = img.alt;
+      }
+      result += '<div id="' + id + '" class="col-xs-6 col-sm-4 col-md-2" style="min-width: 150px;">' +
+        '<div class="thumbnail" style="overflow:hidden"><a class="anbt_paneldel" href="#" title="Remove">X</a>' +
+        '<a href="/panel/-/' + sid + '/-/" class="thumbnail thumbpanel">' +
+        '<img src="' + image + '" width="125" height="104" alt="' + caption + '" />' +
+        '</a></div></div>';
+    }
+    if (!result) result = "You don't have any cover panels.";
+    $("#anbt_userpage").html(result);
+    $("#anbt_userpage").on("click", ".anbt_paneldel", function(e)
+      {
+        e.preventDefault();
+        var id = $(this).parent().parent().attr("id");
+        $("#" + id).fadeOut();
+        panels.remove(parseInt(id, 10));
+        panels.remove(id);
+        $.cookie('covercreatorids', JSON.stringify(panels), {expires: 365, path: '/'});
+      }
+    );
+  });
+}
+
 function betterPlayer()
 {
   // Remove the temptation to judge
   if (options.removeFlagging) $('a.btn:contains("Report")').remove();
+
+  // Linkify the links in location
+  var pubinfo = $(".profile-user-header>div.row>div>h1+p");
+  if (pubinfo.length)
+  {
+    linkifyNodeText(pubinfo);
+  }
 
   var loc = document.location.href;
   // If it's user's homepage, add new buttons in there
@@ -2666,13 +2793,15 @@ function betterPlayer()
   {
     var a = $("<h3>ANBT stuff: </h3>");
     a.append('<a class="btn btn-primary" href="#anbt_panelfavorites" onclick="viewMyPanelFavorites();">Panel Favorites</a> ');
-    a.append('<a class="btn btn-primary" href="#anbt_gamebookmarks" onclick="viewMyGameBookmarks();">Game Bookmarks</a>');
+    a.append('<a class="btn btn-primary" href="#anbt_gamebookmarks" onclick="viewMyGameBookmarks();">Game Bookmarks</a> ');
+    a.append('<a class="btn btn-primary" href="#anbt_cover" onclick="viewMyCover();">Cover Panels</a> ');
     var newrow = $('<div class="row"></div>');
     newrow.append($('<div class="col-md-12"></div>').append(a).append('<div id="anbt_userpage">' + randomGreeting() + '</div>'));
     $("div.col-md-8").first().parent().before(newrow);
 
     if (document.location.hash.indexOf("#anbt_panelfavorites") != -1) viewMyPanelFavorites();
     if (document.location.hash.indexOf("#anbt_gamebookmarks") != -1) viewMyGameBookmarks();
+    if (document.location.hash.indexOf("#anbt_cover") != -1) viewMyCover();
 
     // Make delete cover button safer
     var old_deleteCover = DrawceptionPlay.deleteCover;
@@ -2832,16 +2961,43 @@ function betterForum()
 {
   // Convert times
   // Forum time is Florida, GMT-6, to be +1 DST since 08 Mar 2015, 2:00
+  // starts on the second Sunday in March and ends on the first Sunday in November
+  function isFloridaDST()
+  {
+    d = new Date(Date.now() - 6 * 60 * 60 * 1000);
+    var month = d.getUTCMonth();
+    var day = d.getUTCDate();
+    var hours = d.getUTCHours();
+    var dayofweek = d.getUTCDay();
+
+    if (month < 2 || month > 10) return false;
+    if (month > 2 && month < 10) return true;
+    if (month == 2)
+    {
+      if (day < 8) return false;
+      if (day > 14) return true;
+      if (dayofweek == 7) return (hours > 1);
+      return day > dayofweek + 7;
+    }
+    if (month == 10)
+    {
+      if (day > 7) return false;
+      if (dayofweek == 7) return (hours < 1);
+      return day <= dayofweek;
+    }
+  }
+
   var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   function convertForumTime(year, month, day, hours, minutes)
   {
     var d = new Date(year, month, day, hours, minutes);
     var tzo = d.getTimezoneOffset() * 60 * 1000;
-    var dst = 1;
+    var dst = isFloridaDST();
     return formatTimestamp(d.getTime() - tzo + (6 - dst) * 60 * 60 * 1000);
   }
 
-  $("span.muted, span.text-muted").each(function(index)
+  var ncPosts = [];
+  $("span.muted, span.text-muted, small.text-muted").each(function(index)
     {
       var year, month, day, minutes, hours;
       var m, t = $(this), tx = t.text();
@@ -2869,7 +3025,7 @@ function betterForum()
           }
         }
       }
-      else if (m = tx.match(/^\s*\[ (\d+):(\d+) ([ap]m) ... (...) (\d+).., (\d{4}) \]\s*$/))
+      else if (m = tx.match(/^\s*\[ (\d+):(\d+)([ap]m) ... (...) (\d+).., (\d{4}) \]\s*$/))
       {
         hours = parseInt(m[1], 10) % 12;
         minutes = parseInt(m[2], 10);
@@ -2878,10 +3034,55 @@ function betterForum()
         day = parseInt(m[5], 10);
         year = parseInt(m[6], 10);
         t.text("[ " + convertForumTime(year, month, day, hours, minutes) + " ]");
+        ncPosts.push([this, day + month * 30 + (year - 1970) * 365]);
       }
+      else if (m = tx.match(/^\s*edited: (\d+):(\d+)([ap]m) (\d+)\/(\d+)\/(\d+)\s*$/))
+      {
+        hours = parseInt(m[1], 10) % 12;
+        minutes = parseInt(m[2], 10);
+        hours += (m[3] == 'pm') ? 12 : 0;
+        month = parseInt(m[4], 10) - 1;
+        day = parseInt(m[5], 10);
+        year = parseInt(m[6], 10) + 2000;
+        t.text("edited: " + convertForumTime(year, month, day, hours, minutes));
+    }
     }
   );
 
+  if (options.markStalePosts)
+  {
+    function markStalePost(el, age)
+    {
+      if (age < 30) return;
+      var r = 0;
+      if (age > 60) r = 1;
+      if (age > 120) r = 2;
+      if (age > 365) r = 3;
+      el.addClass("anbt_necropost anbt_necropost" + r);
+    }
+    // Skip the first post
+    for (var i = 1; i < ncPosts.length; i++)
+    {
+      var el = ncPosts[i][0];
+      var time = ncPosts[i][1];
+      var lastpage = !$(".pagination").length || $(".pagination .active:last-child").length;
+      var nexttime = ncPosts[i + 1] ? ncPosts[i + 1][1] : (lastpage ? Date.now() / 86400000 : 0);
+      var age = nexttime - time;
+      if (age > 30)
+      {
+        markStalePost($(el).parent().parent().parent().parent(), age);
+      }
+    }
+
+    GM_addStyle(
+      ".anbt_necropost:after {display: block; height: 14px; border-bottom: 2px solid black; content: ' '; background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAOCAMAAADOvxanAAAAElBMVEUAAAD///8wLiSYlYNnZFXm5Nfd4sMOAAAAAnRSTlMAAHaTzTgAAABBSURBVHheXchBEoBADAJBMsD/v2yZdS8Oly40k9NIk54ySm/8DYb6NWuuex1ak7VdbAcpNrCU8HmP4/hzd9oAXj6sBgHBLAHrRAAAAABJRU5ErkJggg==)}" +
+      ".anbt_necropost0:after {background: none; border-bottom: 1px solid black}" +
+      ".anbt_necropost1:after {background: none}" +
+      ".anbt_necropost2:after {background-repeat: no-repeat; background-position: center}" +
+      ".anbt_necropost3:after {}" +
+      ".anbt_necropost span.muted:after {content: ' (old post)'}"
+    );
+  }
   // Linkify the links
   $('.comment-body *').each(function()
     {
@@ -3013,28 +3214,6 @@ function betterForum()
   }
 }
 
-function fixHttpsSearch()
-{
-  $.ajax(
-    {
-      dataType: "script",
-      cache: true,
-      url: "//www.google.com/jsapi"
-    }
-  ).success(function()
-    {
-      google.load('search', '1', {style: google.loader.themes.MINIMALIST, callback: function()
-        {
-          var cse = new google.search.CustomSearchControl();
-          cse.setLinkTarget(google.search.Search.LINK_TARGET_BLANK);
-          cse.draw('cse');
-          cse.execute("");
-        }
-      });
-    }
-  );
-}
-
 function loadScriptSettings()
 {
   var result = localStorage.getItem("gpe_anbtSettings");
@@ -3047,7 +3226,7 @@ window.updateScriptSettings = updateScriptSettings;
 function updateScriptSettings(theForm)
 {
   var result = {};
-  $(theForm).find("input").each(function()
+  $(theForm).find("input,textarea").each(function()
     {
       if (this.type == "radio" && !this.checked) return;
       
@@ -3071,6 +3250,15 @@ function updateScriptSettings(theForm)
   return false;
 }
 
+function escapeHTML(t)
+{
+  return t.toString().replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 function addScriptSettings()
 {
   var theForm = $('<form class="regForm form-horizontal" action="#" onsubmit="return updateScriptSettings(this);"></form>');
@@ -3091,7 +3279,11 @@ function addScriptSettings()
         }
         else if (t == "number")
         {
-          c.append('<b>' + desc + ':</b><input class="form-control" type="text" data-subtype="number" name="' + name + '" value="' + v + '">');
+          c.append('<b>' + desc + ':</b><input class="form-control" type="text" data-subtype="number" name="' + name + '" value="' + escapeHTML(v) + '">');
+        }
+        else if (t == "longstr")
+        {
+          c.append('<b>' + desc + ':</b><textarea class="form-control" name="' + name + '">' + escapeHTML(v) + '</textarea>');
         }
         else if (t == "radio")
         {
@@ -3111,7 +3303,7 @@ function addScriptSettings()
         }
         else
         {
-          c.append('<b>' + desc + ':</b><input class="form-control" type="text" name="' + name + '" value="' + v + '">');
+          c.append('<b>' + desc + ':</b><input class="form-control" type="text" name="' + name + '" value="' + escapeHTML(v) + '">');
         }
         div.append(c);
       }
@@ -3139,6 +3331,7 @@ function addScriptSettings()
       ["rememberPosition", "boolean", "Show your panel position and track changes in unfinished games list and your experience"],
       ['colorNumberShortcuts', 'boolean', "Use 0-9 keys to select the color"],
       ['colorUnderCursorHint', 'boolean', "Show the color under the cursor in the palette (New canvas only)"],
+      ['colorDoublePress', 'boolean', 'Double press 0-9 keys to select color without pressing shift (New canvas only)'],
       ['bookmarkOwnCaptions', 'boolean', "Automatically bookmark your own captions in case of dustcatchers (New canvas only)"],
     ]
   );
@@ -3158,10 +3351,19 @@ function addScriptSettings()
       ["autoplay", "boolean", "Automatically start replay when watching playback"],
       ["killDrawers", "boolean", "Kill drawers and display notifications in a dialog"],
       ["autoBypassNSFW", "boolean", "Automatically bypass NSFW game warning"],
+      ["markStalePosts", "boolean", "Mark stale forum posts"],
     ]
   );
-  theForm.append('<div class="control-group"><div class="controls"><input name="submit" type="submit" class="btn btn-primary" value="Apply"> <b id="anbtSettingsOK" class="label label-theme_holiday" style="display:none">Saved!</b></div></div>');
+  addGroup("Advanced",
+    [
+      ["newCanvasCSS", "longstr", 'Custom CSS for new canvas (experimental, <a href="https://github.com/grompe/Drawception-ANBT/tree/master/newcanvas_styles">get styles here</a>)'],
+    ]
+  );
+  theForm.append('<br><div class="control-group"><div class="controls"><input name="submit" type="submit" class="btn btn-primary" value="Apply"> <b id="anbtSettingsOK" class="label label-theme_holiday" style="display:none">Saved!</b></div></div>');
   $("#main").prepend(theForm);
+
+  // Extend "location" input to max server-accepted 65 characters
+  $('input[name="location"]').attr('maxlength', "65");
 }
 
 function autoSkip(reason)
@@ -3181,29 +3383,6 @@ function autoSkip(reason)
       format: "S",
       onExpiry: timesUp
   });
-}
-
-function uploadToCanvas()
-{
-  if (!fileInput)
-  {
-    fileInput = $('<input type="file">');
-    $(document.body).append(fileInput);
-    fileInput.on("change", function(theEvt)
-      {
-        var thefile = theEvt.target.files[0];
-        var reader = new FileReader();
-        reader.onload = function(evt)
-        {
-          // can't do this with new undo
-          //restorePoints.push(evt.target.result);
-          //undo();
-        };
-        reader.readAsDataURL(thefile);
-      }
-    );
-  }
-  fileInput.get(0).click();
 }
 
 var theAlphabet = "36QtfkmuFds0UjlvCGIXZ125bEMhz48JSYgipwKn7OVHRBPoy9DLWaceqxANTr";
@@ -3245,6 +3424,7 @@ function _62ToDec(n)
 window.scrambleID = scrambleID;
 function scrambleID(num)
 {
+  if (isNaN(num)) throw new Error("Invalid panel ID");
   return decTo62(parseInt(num, 10) + 3521614606208).split("").reverse().join("");
 }
 
@@ -3261,45 +3441,6 @@ function stalkNextPanel(forward)
   var sid = location.href.match(/\/panel\/[^\/]+\/(\w+)\/[^\/]+\//)[1];
   var sid2 = scrambleID(unscrambleID(sid) + 1 * forward);
   location.href = location.href.replace(sid, sid2);
-}
-
-window.drawingHint = drawingHint;
-function drawingHint()
-{
-  var gp = $(".gamepanel");
-  if (!gp.length) return;
-  var id = gp.attr("src").match(/\d+/)[0];
-  $.ajax(
-    {
-      url: '/panel/get.json?panelid=' + id,
-      complete: function(result)
-      {
-        result = JSON.parse(result.responseText);
-
-        alert("Title: " + result.data.title + "\nImage: http://drawception.com" + result.data.image);
-      }
-    }
-  );
-}
-
-window.dataToCanvas = dataToCanvas;
-function dataToCanvas()
-{
-  var url = prompt("Enter data:URI of the image you want to paste");
-  if (url)
-  {
-    var img = new Image();
-    if (url.indexOf("http://") != -1 && url.indexOf("//drawception.com/") == -1) img.crossOrigin = "Yes please";
-    img.src = url;
-    img.onload = function()
-    {
-      var oo = drawApp.context.globalCompositeOperation;
-      drawApp.context.globalCompositeOperation = "copy";
-      drawApp.context.drawImage(this, 0, 0, drawApp.context.canvas.width, drawApp.context.canvas.height);
-      drawApp.context.globalCompositeOperation = oo;
-      save();
-    };
-  }
 }
 
 function valueToHex(val)
@@ -3323,23 +3464,17 @@ function invertColor(c)
   return "#" + ("000000" + (parseInt(c, 16) ^ 0xFFFFFF).toString(16)).slice(-6);
 }
 
-function dbg()
-{
-  if (!__DEBUG__) return;
-  var out = [];
-  for (var i = 0; i < arguments.length; i++)
-  {
-    out.push(arguments[i]);
-  }
-  __DEBUG__.innerHTML = out.join(", ");
-}
-
 function pagodaBoxError()
 {
-  if (document.body.innerHTML.match("There appears to be an error" + " with this site."))
+  if ((document.title == "Pagoda Box") &&
+      (
+           (document.body.innerHTML.match("All Routes" + " Down."))
+        || (document.body.innerHTML.match("There appears to be an error" + " with this site."))
+      )
+    )
   {
     GM_addStyle(
-      "body {background: #755}" +
+      "body {background: #755 !important}" +
       ""
     );
     div = document.createElement("div");
@@ -3356,8 +3491,6 @@ function pageEnhancements()
 {
   var loc = document.location.href;
   loadScriptSettings();
-
-  if (pagodaBoxError()) return;
 
   if (typeof jQuery == "undefined") return; // Firefox Greasemonkey seems to call pageEnhancements() after document.write...
   if (document.getElementById("newcanvasyo")) return; // Chrome, I'm looking at you too...
@@ -3432,10 +3565,6 @@ function pageEnhancements()
   if (loc.match(/drawception\.com\/create/))
   {
     betterCreateGame();
-  }
-  if (loc.match(/https:\/\/drawception\.com\/search/))
-  {
-    fixHttpsSearch();
   }
   GM_addStyle(
     ".thumbnail > .panel-details {max-height: 30px; overflow: visible; display: flex; flex-direction: row-reverse; justify-content: space-between}" +
@@ -3570,17 +3699,17 @@ function pageEnhancements()
   var versionDisplay;
   try
   {
-    jsVersion = $('script[src*="/js/compiled/"]').attr("src").match(/compiled\/(\w+)\.js$/)[1];
-    cssVersion = $('head link[href*="core.css"]').attr("href").match(/\?v=([^&]+)/)[1];
-    versionDisplay = "ANBT v" + SCRIPT_VERSION + " | js " + jsVersion + ", css " + cssVersion;
-    if (jsVersion != "ac8932b" || cssVersion != "3.26") versionDisplay += " | woah, site got updated!";
+    // JS and CSS update simultaneously now
+    jsVersion = $('script[src^="/js/"]').attr("src").match(/\/js\/\w+\.js\?(.+)$/)[1];
+    versionDisplay = "ANBT v" + SCRIPT_VERSION + " | site " + jsVersion;
+    if (jsVersion != "v2.1.1") versionDisplay += "*";
   } catch(e)
   {
     versionDisplay = "ANBT v" + SCRIPT_VERSION + " | js/css unknown";
   }
   $("#navbar-user").append('<div id="anbtver">' + versionDisplay + '</div>');
 
-  $(".footer-main .list-unstyled").eq(0).append('<li><a href="/forums/general/11830/anbt-script/?page=20">ANBT script</a></li>');
+  $(".footer-main .list-unstyled").eq(0).append('<li><a href="/forums/general/11830/anbt-script/?page=9999">ANBT script</a></li>');
   $(".footer-main .list-unstyled").eq(1).append('<li><a href="http://drawception.wikia.com/">Wiki</a></li>');
   $(".footer-main .list-unstyled").eq(2).append('<li><a href="http://chat.grompe.org.ru/#drawception">Chat</a> (<a href="http://cgiirc.synirc.net/?chan=%23drawception">IRC</a>)</li>');
   
@@ -3638,6 +3767,8 @@ mark.id = "_anbt_";
 mark.style = "display:none";
 document.body.appendChild(mark);
 
+if (pagodaBoxError()) return;
+
 if (typeof DrawceptionPlay == "undefined")
 {
   // Fix for Chrome new loading algorithm, apparently
@@ -3662,15 +3793,15 @@ localStorage.setItem("gpe_darkCSS",
   ".btn-default:hover,.btn-default:focus,.btn-default:active,.btn-default.active,.open .dropdown-toggle.btn-default{~#757575$;border-bottom-color:#565656$;border-left-color:#565656$;border-right-color:#565656$;border-top-color:#565656$;color:#DDD$}" +
   ".btn-success{~#2e2e2e$;border-bottom-color:#262626$;border-left-color:#262626$;border-right-color:#262626$;border-top-color:#262626$;color:#CCC$}" +
   ".btn-success:hover,.btn-success:focus,.btn-success:active,.btn-success.active,.open .dropdown-toggle.btn-success{~#232323$;border-bottom-color:#1c1c1c$;border-left-color:#1c1c1c$;border-right-color:#1c1c1c$;border-top-color:#1c1c1c$;color:#DDD$}" +
-  ".btn-primary{~#212184$;border-bottom-color:#1a1a68$;border-left-color:#1a1a68$;border-right-color:#1a1a68$;border-top-color:#1a1a68$;color:#CCC$}" +
+  ".btn-primary{~#213184$;border-bottom-color:#1a1a68$;border-left-color:#1a1a68$;border-right-color:#1a1a68$;border-top-color:#1a1a68$;color:#CCC$}" +
   ".btn-primary:hover,.btn-primary:focus,.btn-primary:active,.btn-primary.active,.open .dropdown-toggle.btn-primary{~#191964$;border-bottom-color:#141450$;border-left-color:#141450$;border-right-color:#141450$;border-top-color:#141450$;color:#DDD$}" +
-  ".btn-info{~#2d8787$;border-bottom-color:#236969$;border-left-color:#236969$;border-right-color:#236969$;border-top-color:#236969$;color:#CCC$}" +
+  ".btn-info{~#2d7787$;border-bottom-color:#236969$;border-left-color:#236969$;border-right-color:#236969$;border-top-color:#236969$;color:#CCC$}" +
   ".btn-info:hover,.btn-info:focus,.btn-info:active,.btn-info.active,.open .dropdown-toggle.btn-info{~#1c5454$;border-bottom-color:#133939$;border-left-color:#133939$;border-right-color:#133939$;border-top-color:#133939$;color:#DDD$}" +
   ".navbar-default .navbar-toggle:hover,.navbar-default .navbar-toggle:focus{~#3b3b3b$}.navbar-toggle{~#393939$}.navbar{border-bottom:1px solid #000$}.forum-thread-starter,.breadcrumb,.regForm{~#555$}" +
   ".form-control{~#555$;border:1px solid #000$;color:#EEE$}code,pre{~#656$;color:#FCC$}body{color:#EEE$}footer{~#333$;border-top:1px solid #000$}" +
   ".pagination>li>a:hover,.pagination>li>span:hover,.pagination>li>a:focus,.pagination>li>span:focus{~#444$}.pagination>li>a,.pagination>li>span{~#555$;border:1px solid #000$}" +
   ".pagination>.active>a,.pagination>.active>span,.pagination>.active>a:hover,.pagination>.active>span:hover,.pagination>.active>a:focus,.pagination>.active>span:focus{~#666$;border-top:1px solid #444$;border-bottom:1px solid #444$}" +
-  ".drawingForm{~#555$}.well{~#666$;border:1px solid #333$}#timeleft{color:#AAA$}legend{border-bottom:1px solid #000$}.thumbnail{~#555$}.thumbpanel img{~#fffdc9$}.panel-number,.modal-content,.profile-user-header{~#555$}" +
+  ".drawingForm{~#555$}.well{~#666$;border:1px solid #333$}#timeleft{color:#AAA$}legend{border-bottom:1px solid #000$}.thumbnail{~#444$}a.thumbnail{~#555$}.thumbpanel img{~#fffdc9$}.panel-number,.modal-content,.profile-user-header{~#555$}" +
   "#commentForm{~#555$;border:1px solid #000$}.comment-holder,.modal-header,.nav-tabs{border-bottom:1px solid #000$}hr,.modal-footer{border-top:1px solid #000$}" +
   ".store-item{background:#666$;~-moz-linear-gradient(top,#666 0,#333 100%)$;~-webkit-gradient(linear,left top,left bottom,color-stop(0,#666),color-stop(100%,#333))$;~-webkit-linear-gradient(top,#666 0,#333 100%)$;~-o-linear-gradient(top,#666 0,#333 100%)$;~-ms-linear-gradient(top,#666 0,#333 100%)$;~linear-gradient(to bottom,#666 0,#333 100%)$;border:1px solid #222$}" +
   ".store-item:hover{border:1px solid #000$}.store-item-title{~#222$;color:#DDD$}.store-title-link{color:#DDD$}.profile-award{~#222$}.profile-award-unlocked{~#888$}.progress-bar{color:#CCC$;~#214565$}.progress{~#333$}" +
@@ -3683,11 +3814,10 @@ localStorage.setItem("gpe_darkCSS",
   "a.label{color:#fff$}a.text-muted{color:#999$}a.wrong-order{color:#F99$}div.comment-holder:target{~#454$}" +
   ".popover{~#777$}.popover-title{~#666$;border-bottom:1px solid #444$}.popover.top .arrow:after{border-top-color:#777$}.popover.right .arrow:after{border-right-color:#777$}.popover.bottom .arrow:after{border-bottom-color:#777$}.popover.left .arrow:after{border-left-color:#777$}" +
   ".bg-lifesupport{~#444$}body{~#555$}.snap-content{~#333$}" +
-  "select,textarea{color:#000$}.help-block{color:#ddd$}" +
+  "select,textarea{color:#000$}.help-block{color:#ddd$}.jumbotron{~#444$}" +
   ".likebutton.btn-success{color:#050$;~#5A5$}.likebutton.btn-success:hover{~#494$}" +
   ".gsc-control-cse{~#444$;border-color:#333$}.gsc-above-wrapper-area,.gsc-result{border:none$}.gs-snippet{color:#AAA$}.gs-visibleUrl{color:#8A8$}a.gs-title b,.gs-visibleUrl b{color:#EEE$}.gsc-adBlock{display:none$}" +
   "#jappix_mini a{color:#000$}" +
-  "a:visited.thumbnail{border-color:#555$}" +
   // We have entered specificity hell...
   "a.anbt_replaypanel:hover{color:#8af$}" +
   // Some lamey compression method!

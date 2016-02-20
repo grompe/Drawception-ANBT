@@ -1,0 +1,53 @@
+/* "Retro" style */
+#colors {
+  padding: 10px;
+  float: right;
+}
+.panel {
+  background: #666;
+}
+#colors b {
+  line-height: 30px;
+  margin: 4px 7px;
+  width: 32px;
+  height: 32px;
+  border: 2px solid #333;
+  border-radius: 100px;
+}
+#colors #eraser:before {
+  content: '';
+}
+#colors b:before {
+  opacity: 0;
+}
+#colors #eraser {
+  background: #fff url(http://drawception.com/img/draw_eraser.png) center no-repeat;
+  background-size: 50%;
+}
+#timer {
+  font-size: 26pt;
+  color: #aaa;
+  width: 120px;
+  float: right;
+}
+#tools {
+  width: 500px;
+  position: absolute;
+  left: 300px;
+  bottom: -70px;
+}
+#tools hr {
+  display: inline;
+  border: none;
+  margin: 5px;
+}
+#seekbar {
+  position: absolute;
+  bottom: -110px;
+}
+button, #play {
+  background-color: #FFFB8D;
+}
+button:hover, #play:hover {
+  background-color: #F6F166;
+}

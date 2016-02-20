@@ -196,7 +196,6 @@ hr {
   background: #744;
 }
 #timeplus {
-  display: none;
   background: url("/img/icon-time_plus_60.png") center no-repeat;
   width: 16px;
   height: 16px;
@@ -205,9 +204,6 @@ hr {
   margin-left: 3px;
   border-radius: 3px;
   cursor: pointer;
-}
-#timeplus.show {
-  display: inline;
 }
 #timeplus:hover {
   background-color: #222;
@@ -655,7 +651,7 @@ button:disabled {
     <div id="headercont">
       <div class="headerleft">
         <a href="/" title="Home"><img src="/img/logo-d.png"></a>
-        <span id="headerinfo" class="hideonsmall">New Canvas v21</span>
+        <span id="headerinfo" class="hideonsmall">New Canvas v25</span>
       </div>
       <div class="headerright">
         <a id="start" title="Play Drawception!" class="headerbutton active onlysandbox">Play</a>
@@ -769,9 +765,7 @@ button:disabled {
       </div>
     </div>
   </div>
-  <div id="wacomContainer">
-    <object id="wacom" type="application/x-wacomtabletplugin" width="1" height="1"></object>
-  </div>
+  <div id="wacomContainer"></div>
 <script>
 /* pako 0.2.5 nodeca/pako */
 !function(t){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=t();else if("function"==typeof define&&define.amd)define([],t);else{var e;"undefined"!=typeof window?e=window:"undefined"!=typeof global?e=global:"undefined"!=typeof self&&(e=self),e.pako=t()}}(function(){return function t(e,a,i){function n(s,o){if(!a[s]){if(!e[s]){var l="function"==typeof require&&require;if(!o&&l)return l(s,!0);if(r)return r(s,!0);throw new Error("Cannot find module '"+s+"'")}var h=a[s]={exports:{}};e[s][0].call(h.exports,function(t){var a=e[s][1][t];return n(a?a:t)},h,h.exports,t,e,a,i)}return a[s].exports}for(var r="function"==typeof require&&require,s=0;s<i.length;s++)n(i[s]);return n}({1:[function(t,e){"use strict";var a=t("./lib/utils/common").assign,i=t("./lib/deflate"),n=t("./lib/inflate"),r=t("./lib/zlib/constants"),s={};a(s,i,n,r),e.exports=s},{"./lib/deflate":2,"./lib/inflate":3,"./lib/utils/common":4,"./lib/zlib/constants":7}],2:[function(t,e,a){"use strict";function
@@ -820,6 +814,182 @@ t.last_lit=t.matches=0}function c(t){t.bi_valid>8?r(t,t.bi_buf):t.bi_valid>0&&(t
 }else 0!==n?(n!==r&&(o(t,n,t.bl_tree),h--),o(t,J,t.bl_tree),s(t,h-3,2)):10>=h?(o(t,Q,t.bl_tree),s(t,h-3,3)):(o(t,V,t.bl_tree),s(t,h-11,7));h=0,r=n,0===l?(d=138,f=3):n===l?(d=6,f=3):(d=7,f=4)}}function x(t){var e;for(v(t,t.dyn_ltree,t.l_desc.max_code),v(t,t.dyn_dtree,t.d_desc.max_code),p(t,t.bl_desc),e=P-1;e>=3&&0===t.bl_tree[2*ae[e]+1];e--);return t.opt_len+=3*(e+1)+5+5+4,e}function y(t,e,a,i){var n;for(s(t,e-257,5),s(t,a-1,5),s(t,i-4,4),n=0;i>n;n++)s(t,t.bl_tree[2*ae[n]+1],3);k(t,t.dyn_ltree,e-1),k(t,t.dyn_dtree,a-1)}function z(t){var e,a=4093624447;for(e=0;31>=e;e++,a>>>=1)if(1&a&&0!==t.dyn_ltree[2*e])return I;if(0!==t.dyn_ltree[18]||0!==t.dyn_ltree[20]||0!==t.dyn_ltree[26])return N;for(e=32;j>e;e++)if(0!==t.dyn_ltree[2*e])return N;return I}function B(t){be||(_(),be=!0),t.l_desc=new ce(t.dyn_ltree,de),t.d_desc=new ce(t.dyn_dtree,fe),t.bl_desc=new ce(t.bl_tree,_e),t.bi_buf=0,t.bi_valid=0,u(t)}function S(t,e,a,i){s(t,(T<<1)+(i?1:0),3),b(t,e,a,!0)}function E(t){s(t,D<<1,3),o(t,W,ne),
 h(t)}function A(t,e,a,i){var n,r,o=0;t.level>0?(t.strm.data_type===O&&(t.strm.data_type=z(t)),p(t,t.l_desc),p(t,t.d_desc),o=x(t),n=t.opt_len+3+7>>>3,r=t.static_len+3+7>>>3,n>=r&&(n=r)):n=r=a+5,n>=a+4&&-1!==e?S(t,e,a,i):t.strategy===C||r===n?(s(t,(D<<1)+(i?1:0),3),w(t,ne,re)):(s(t,(F<<1)+(i?1:0),3),y(t,t.l_desc.max_code+1,t.d_desc.max_code+1,o+1),w(t,t.dyn_ltree,t.dyn_dtree)),u(t),i&&c(t)}function Z(t,e,a){return t.pending_buf[t.d_buf+2*t.last_lit]=e>>>8&255,t.pending_buf[t.d_buf+2*t.last_lit+1]=255&e,t.pending_buf[t.l_buf+t.last_lit]=255&a,t.last_lit++,0===e?t.dyn_ltree[2*a]++:(t.matches++,e--,t.dyn_ltree[2*(oe[a]+j+1)]++,t.dyn_dtree[2*n(e)]++),t.last_lit===t.lit_bufsize-1}var R=t("../utils/common"),C=4,I=0,N=1,O=2,T=0,D=1,F=2,L=3,U=258,H=29,j=256,M=j+1+H,K=30,P=19,q=2*M+1,Y=15,G=16,X=7,W=256,J=16,Q=17,V=18,$=[0,0,0,0,0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,0],te=[0,0,0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13],ee=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,3,7],
 ae=[16,17,18,0,8,7,9,6,10,5,11,4,12,3,13,2,14,1,15],ie=512,ne=new Array(2*(M+2));i(ne);var re=new Array(2*K);i(re);var se=new Array(ie);i(se);var oe=new Array(U-L+1);i(oe);var le=new Array(H);i(le);var he=new Array(K);i(he);var de,fe,_e,ue=function(t,e,a,i,n){this.static_tree=t,this.extra_bits=e,this.extra_base=a,this.elems=i,this.max_length=n,this.has_stree=t&&t.length},ce=function(t,e){this.dyn_tree=t,this.max_code=0,this.stat_desc=e},be=!1;a._tr_init=B,a._tr_stored_block=S,a._tr_flush_block=A,a._tr_tally=Z,a._tr_align=E},{"../utils/common":4}],16:[function(t,e){"use strict";function a(){this.input=null,this.next_in=0,this.avail_in=0,this.total_in=0,this.output=null,this.next_out=0,this.avail_out=0,this.total_out=0,this.msg="",this.state=null,this.data_type=2,this.adler=0}e.exports=a},{}]},{},[1])(1)});
+</script>
+<script>
+// SVGPathSeg API polyfill
+// https://github.com/progers/pathseg
+//
+// This is a drop-in replacement for the SVGPathSeg and SVGPathSegList APIs that were removed from
+// SVG2 (https://lists.w3.org/Archives/Public/www-svg/2015Jun/0044.html), including the latest spec
+// changes which were implemented in Firefox 43 and Chrome 46.
+if(!("SVGPathSeg"in window)){
+(function(){"use strict";window.SVGPathSeg=function(type,typeAsLetter,owningPathSegList){this.pathSegType=type;this.pathSegTypeAsLetter=typeAsLetter;this._owningPathSegList=owningPathSegList;}
+SVGPathSeg.PATHSEG_UNKNOWN=0;SVGPathSeg.PATHSEG_CLOSEPATH=1;SVGPathSeg.PATHSEG_MOVETO_ABS=2;SVGPathSeg.PATHSEG_MOVETO_REL=3;SVGPathSeg.PATHSEG_LINETO_ABS=4;SVGPathSeg.PATHSEG_LINETO_REL=5;SVGPathSeg.PATHSEG_CURVETO_CUBIC_ABS=6;SVGPathSeg.PATHSEG_CURVETO_CUBIC_REL=7;SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_ABS=8;SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_REL=9;SVGPathSeg.PATHSEG_ARC_ABS=10;SVGPathSeg.PATHSEG_ARC_REL=11;SVGPathSeg.PATHSEG_LINETO_HORIZONTAL_ABS=12;SVGPathSeg.PATHSEG_LINETO_HORIZONTAL_REL=13;SVGPathSeg.PATHSEG_LINETO_VERTICAL_ABS=14;SVGPathSeg.PATHSEG_LINETO_VERTICAL_REL=15;SVGPathSeg.PATHSEG_CURVETO_CUBIC_SMOOTH_ABS=16;SVGPathSeg.PATHSEG_CURVETO_CUBIC_SMOOTH_REL=17;SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_SMOOTH_ABS=18;SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_SMOOTH_REL=19;SVGPathSeg.prototype._segmentChanged=function(){if(this._owningPathSegList)
+this._owningPathSegList.segmentChanged(this);}
+window.SVGPathSegClosePath=function(owningPathSegList){SVGPathSeg.call(this,SVGPathSeg.PATHSEG_CLOSEPATH,"z",owningPathSegList);}
+SVGPathSegClosePath.prototype=Object.create(SVGPathSeg.prototype);SVGPathSegClosePath.prototype.toString=function(){return"[object SVGPathSegClosePath]";}
+SVGPathSegClosePath.prototype._asPathString=function(){return this.pathSegTypeAsLetter;}
+SVGPathSegClosePath.prototype.clone=function(){return new SVGPathSegClosePath(undefined);}
+window.SVGPathSegMovetoAbs=function(owningPathSegList,x,y){SVGPathSeg.call(this,SVGPathSeg.PATHSEG_MOVETO_ABS,"M",owningPathSegList);this._x=x;this._y=y;}
+SVGPathSegMovetoAbs.prototype=Object.create(SVGPathSeg.prototype);SVGPathSegMovetoAbs.prototype.toString=function(){return"[object SVGPathSegMovetoAbs]";}
+SVGPathSegMovetoAbs.prototype._asPathString=function(){return this.pathSegTypeAsLetter+" "+this._x+" "+this._y;}
+SVGPathSegMovetoAbs.prototype.clone=function(){return new SVGPathSegMovetoAbs(undefined,this._x,this._y);}
+Object.defineProperty(SVGPathSegMovetoAbs.prototype,"x",{get:function(){return this._x;},set:function(x){this._x=x;this._segmentChanged();},enumerable:true});Object.defineProperty(SVGPathSegMovetoAbs.prototype,"y",{get:function(){return this._y;},set:function(y){this._y=y;this._segmentChanged();},enumerable:true});window.SVGPathSegMovetoRel=function(owningPathSegList,x,y){SVGPathSeg.call(this,SVGPathSeg.PATHSEG_MOVETO_REL,"m",owningPathSegList);this._x=x;this._y=y;}
+SVGPathSegMovetoRel.prototype=Object.create(SVGPathSeg.prototype);SVGPathSegMovetoRel.prototype.toString=function(){return"[object SVGPathSegMovetoRel]";}
+SVGPathSegMovetoRel.prototype._asPathString=function(){return this.pathSegTypeAsLetter+" "+this._x+" "+this._y;}
+SVGPathSegMovetoRel.prototype.clone=function(){return new SVGPathSegMovetoRel(undefined,this._x,this._y);}
+Object.defineProperty(SVGPathSegMovetoRel.prototype,"x",{get:function(){return this._x;},set:function(x){this._x=x;this._segmentChanged();},enumerable:true});Object.defineProperty(SVGPathSegMovetoRel.prototype,"y",{get:function(){return this._y;},set:function(y){this._y=y;this._segmentChanged();},enumerable:true});window.SVGPathSegLinetoAbs=function(owningPathSegList,x,y){SVGPathSeg.call(this,SVGPathSeg.PATHSEG_LINETO_ABS,"L",owningPathSegList);this._x=x;this._y=y;}
+SVGPathSegLinetoAbs.prototype=Object.create(SVGPathSeg.prototype);SVGPathSegLinetoAbs.prototype.toString=function(){return"[object SVGPathSegLinetoAbs]";}
+SVGPathSegLinetoAbs.prototype._asPathString=function(){return this.pathSegTypeAsLetter+" "+this._x+" "+this._y;}
+SVGPathSegLinetoAbs.prototype.clone=function(){return new SVGPathSegLinetoAbs(undefined,this._x,this._y);}
+Object.defineProperty(SVGPathSegLinetoAbs.prototype,"x",{get:function(){return this._x;},set:function(x){this._x=x;this._segmentChanged();},enumerable:true});Object.defineProperty(SVGPathSegLinetoAbs.prototype,"y",{get:function(){return this._y;},set:function(y){this._y=y;this._segmentChanged();},enumerable:true});window.SVGPathSegLinetoRel=function(owningPathSegList,x,y){SVGPathSeg.call(this,SVGPathSeg.PATHSEG_LINETO_REL,"l",owningPathSegList);this._x=x;this._y=y;}
+SVGPathSegLinetoRel.prototype=Object.create(SVGPathSeg.prototype);SVGPathSegLinetoRel.prototype.toString=function(){return"[object SVGPathSegLinetoRel]";}
+SVGPathSegLinetoRel.prototype._asPathString=function(){return this.pathSegTypeAsLetter+" "+this._x+" "+this._y;}
+SVGPathSegLinetoRel.prototype.clone=function(){return new SVGPathSegLinetoRel(undefined,this._x,this._y);}
+Object.defineProperty(SVGPathSegLinetoRel.prototype,"x",{get:function(){return this._x;},set:function(x){this._x=x;this._segmentChanged();},enumerable:true});Object.defineProperty(SVGPathSegLinetoRel.prototype,"y",{get:function(){return this._y;},set:function(y){this._y=y;this._segmentChanged();},enumerable:true});window.SVGPathSegCurvetoCubicAbs=function(owningPathSegList,x,y,x1,y1,x2,y2){SVGPathSeg.call(this,SVGPathSeg.PATHSEG_CURVETO_CUBIC_ABS,"C",owningPathSegList);this._x=x;this._y=y;this._x1=x1;this._y1=y1;this._x2=x2;this._y2=y2;}
+SVGPathSegCurvetoCubicAbs.prototype=Object.create(SVGPathSeg.prototype);SVGPathSegCurvetoCubicAbs.prototype.toString=function(){return"[object SVGPathSegCurvetoCubicAbs]";}
+SVGPathSegCurvetoCubicAbs.prototype._asPathString=function(){return this.pathSegTypeAsLetter+" "+this._x1+" "+this._y1+" "+this._x2+" "+this._y2+" "+this._x+" "+this._y;}
+SVGPathSegCurvetoCubicAbs.prototype.clone=function(){return new SVGPathSegCurvetoCubicAbs(undefined,this._x,this._y,this._x1,this._y1,this._x2,this._y2);}
+Object.defineProperty(SVGPathSegCurvetoCubicAbs.prototype,"x",{get:function(){return this._x;},set:function(x){this._x=x;this._segmentChanged();},enumerable:true});Object.defineProperty(SVGPathSegCurvetoCubicAbs.prototype,"y",{get:function(){return this._y;},set:function(y){this._y=y;this._segmentChanged();},enumerable:true});Object.defineProperty(SVGPathSegCurvetoCubicAbs.prototype,"x1",{get:function(){return this._x1;},set:function(x1){this._x1=x1;this._segmentChanged();},enumerable:true});Object.defineProperty(SVGPathSegCurvetoCubicAbs.prototype,"y1",{get:function(){return this._y1;},set:function(y1){this._y1=y1;this._segmentChanged();},enumerable:true});Object.defineProperty(SVGPathSegCurvetoCubicAbs.prototype,"x2",{get:function(){return this._x2;},set:function(x2){this._x2=x2;this._segmentChanged();},enumerable:true});Object.defineProperty(SVGPathSegCurvetoCubicAbs.prototype,"y2",{get:function(){return this._y2;},set:function(y2){this._y2=y2;this._segmentChanged();},enumerable:true});window.SVGPathSegCurvetoCubicRel=function(owningPathSegList,x,y,x1,y1,x2,y2){SVGPathSeg.call(this,SVGPathSeg.PATHSEG_CURVETO_CUBIC_REL,"c",owningPathSegList);this._x=x;this._y=y;this._x1=x1;this._y1=y1;this._x2=x2;this._y2=y2;}
+SVGPathSegCurvetoCubicRel.prototype=Object.create(SVGPathSeg.prototype);SVGPathSegCurvetoCubicRel.prototype.toString=function(){return"[object SVGPathSegCurvetoCubicRel]";}
+SVGPathSegCurvetoCubicRel.prototype._asPathString=function(){return this.pathSegTypeAsLetter+" "+this._x1+" "+this._y1+" "+this._x2+" "+this._y2+" "+this._x+" "+this._y;}
+SVGPathSegCurvetoCubicRel.prototype.clone=function(){return new SVGPathSegCurvetoCubicRel(undefined,this._x,this._y,this._x1,this._y1,this._x2,this._y2);}
+Object.defineProperty(SVGPathSegCurvetoCubicRel.prototype,"x",{get:function(){return this._x;},set:function(x){this._x=x;this._segmentChanged();},enumerable:true});Object.defineProperty(SVGPathSegCurvetoCubicRel.prototype,"y",{get:function(){return this._y;},set:function(y){this._y=y;this._segmentChanged();},enumerable:true});Object.defineProperty(SVGPathSegCurvetoCubicRel.prototype,"x1",{get:function(){return this._x1;},set:function(x1){this._x1=x1;this._segmentChanged();},enumerable:true});Object.defineProperty(SVGPathSegCurvetoCubicRel.prototype,"y1",{get:function(){return this._y1;},set:function(y1){this._y1=y1;this._segmentChanged();},enumerable:true});Object.defineProperty(SVGPathSegCurvetoCubicRel.prototype,"x2",{get:function(){return this._x2;},set:function(x2){this._x2=x2;this._segmentChanged();},enumerable:true});Object.defineProperty(SVGPathSegCurvetoCubicRel.prototype,"y2",{get:function(){return this._y2;},set:function(y2){this._y2=y2;this._segmentChanged();},enumerable:true});window.SVGPathSegCurvetoQuadraticAbs=function(owningPathSegList,x,y,x1,y1){SVGPathSeg.call(this,SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_ABS,"Q",owningPathSegList);this._x=x;this._y=y;this._x1=x1;this._y1=y1;}
+SVGPathSegCurvetoQuadraticAbs.prototype=Object.create(SVGPathSeg.prototype);SVGPathSegCurvetoQuadraticAbs.prototype.toString=function(){return"[object SVGPathSegCurvetoQuadraticAbs]";}
+SVGPathSegCurvetoQuadraticAbs.prototype._asPathString=function(){return this.pathSegTypeAsLetter+" "+this._x1+" "+this._y1+" "+this._x+" "+this._y;}
+SVGPathSegCurvetoQuadraticAbs.prototype.clone=function(){return new SVGPathSegCurvetoQuadraticAbs(undefined,this._x,this._y,this._x1,this._y1);}
+Object.defineProperty(SVGPathSegCurvetoQuadraticAbs.prototype,"x",{get:function(){return this._x;},set:function(x){this._x=x;this._segmentChanged();},enumerable:true});Object.defineProperty(SVGPathSegCurvetoQuadraticAbs.prototype,"y",{get:function(){return this._y;},set:function(y){this._y=y;this._segmentChanged();},enumerable:true});Object.defineProperty(SVGPathSegCurvetoQuadraticAbs.prototype,"x1",{get:function(){return this._x1;},set:function(x1){this._x1=x1;this._segmentChanged();},enumerable:true});Object.defineProperty(SVGPathSegCurvetoQuadraticAbs.prototype,"y1",{get:function(){return this._y1;},set:function(y1){this._y1=y1;this._segmentChanged();},enumerable:true});window.SVGPathSegCurvetoQuadraticRel=function(owningPathSegList,x,y,x1,y1){SVGPathSeg.call(this,SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_REL,"q",owningPathSegList);this._x=x;this._y=y;this._x1=x1;this._y1=y1;}
+SVGPathSegCurvetoQuadraticRel.prototype=Object.create(SVGPathSeg.prototype);SVGPathSegCurvetoQuadraticRel.prototype.toString=function(){return"[object SVGPathSegCurvetoQuadraticRel]";}
+SVGPathSegCurvetoQuadraticRel.prototype._asPathString=function(){return this.pathSegTypeAsLetter+" "+this._x1+" "+this._y1+" "+this._x+" "+this._y;}
+SVGPathSegCurvetoQuadraticRel.prototype.clone=function(){return new SVGPathSegCurvetoQuadraticRel(undefined,this._x,this._y,this._x1,this._y1);}
+Object.defineProperty(SVGPathSegCurvetoQuadraticRel.prototype,"x",{get:function(){return this._x;},set:function(x){this._x=x;this._segmentChanged();},enumerable:true});Object.defineProperty(SVGPathSegCurvetoQuadraticRel.prototype,"y",{get:function(){return this._y;},set:function(y){this._y=y;this._segmentChanged();},enumerable:true});Object.defineProperty(SVGPathSegCurvetoQuadraticRel.prototype,"x1",{get:function(){return this._x1;},set:function(x1){this._x1=x1;this._segmentChanged();},enumerable:true});Object.defineProperty(SVGPathSegCurvetoQuadraticRel.prototype,"y1",{get:function(){return this._y1;},set:function(y1){this._y1=y1;this._segmentChanged();},enumerable:true});window.SVGPathSegArcAbs=function(owningPathSegList,x,y,r1,r2,angle,largeArcFlag,sweepFlag){SVGPathSeg.call(this,SVGPathSeg.PATHSEG_ARC_ABS,"A",owningPathSegList);this._x=x;this._y=y;this._r1=r1;this._r2=r2;this._angle=angle;this._largeArcFlag=largeArcFlag;this._sweepFlag=sweepFlag;}
+SVGPathSegArcAbs.prototype=Object.create(SVGPathSeg.prototype);SVGPathSegArcAbs.prototype.toString=function(){return"[object SVGPathSegArcAbs]";}
+SVGPathSegArcAbs.prototype._asPathString=function(){return this.pathSegTypeAsLetter+" "+this._r1+" "+this._r2+" "+this._angle+" "+(this._largeArcFlag?"1":"0")+" "+(this._sweepFlag?"1":"0")+" "+this._x+" "+this._y;}
+SVGPathSegArcAbs.prototype.clone=function(){return new SVGPathSegArcAbs(undefined,this._x,this._y,this._r1,this._r2,this._angle,this._largeArcFlag,this._sweepFlag);}
+Object.defineProperty(SVGPathSegArcAbs.prototype,"x",{get:function(){return this._x;},set:function(x){this._x=x;this._segmentChanged();},enumerable:true});Object.defineProperty(SVGPathSegArcAbs.prototype,"y",{get:function(){return this._y;},set:function(y){this._y=y;this._segmentChanged();},enumerable:true});Object.defineProperty(SVGPathSegArcAbs.prototype,"r1",{get:function(){return this._r1;},set:function(r1){this._r1=r1;this._segmentChanged();},enumerable:true});Object.defineProperty(SVGPathSegArcAbs.prototype,"r2",{get:function(){return this._r2;},set:function(r2){this._r2=r2;this._segmentChanged();},enumerable:true});Object.defineProperty(SVGPathSegArcAbs.prototype,"angle",{get:function(){return this._angle;},set:function(angle){this._angle=angle;this._segmentChanged();},enumerable:true});Object.defineProperty(SVGPathSegArcAbs.prototype,"largeArcFlag",{get:function(){return this._largeArcFlag;},set:function(largeArcFlag){this._largeArcFlag=largeArcFlag;this._segmentChanged();},enumerable:true});Object.defineProperty(SVGPathSegArcAbs.prototype,"sweepFlag",{get:function(){return this._sweepFlag;},set:function(sweepFlag){this._sweepFlag=sweepFlag;this._segmentChanged();},enumerable:true});window.SVGPathSegArcRel=function(owningPathSegList,x,y,r1,r2,angle,largeArcFlag,sweepFlag){SVGPathSeg.call(this,SVGPathSeg.PATHSEG_ARC_REL,"a",owningPathSegList);this._x=x;this._y=y;this._r1=r1;this._r2=r2;this._angle=angle;this._largeArcFlag=largeArcFlag;this._sweepFlag=sweepFlag;}
+SVGPathSegArcRel.prototype=Object.create(SVGPathSeg.prototype);SVGPathSegArcRel.prototype.toString=function(){return"[object SVGPathSegArcRel]";}
+SVGPathSegArcRel.prototype._asPathString=function(){return this.pathSegTypeAsLetter+" "+this._r1+" "+this._r2+" "+this._angle+" "+(this._largeArcFlag?"1":"0")+" "+(this._sweepFlag?"1":"0")+" "+this._x+" "+this._y;}
+SVGPathSegArcRel.prototype.clone=function(){return new SVGPathSegArcRel(undefined,this._x,this._y,this._r1,this._r2,this._angle,this._largeArcFlag,this._sweepFlag);}
+Object.defineProperty(SVGPathSegArcRel.prototype,"x",{get:function(){return this._x;},set:function(x){this._x=x;this._segmentChanged();},enumerable:true});Object.defineProperty(SVGPathSegArcRel.prototype,"y",{get:function(){return this._y;},set:function(y){this._y=y;this._segmentChanged();},enumerable:true});Object.defineProperty(SVGPathSegArcRel.prototype,"r1",{get:function(){return this._r1;},set:function(r1){this._r1=r1;this._segmentChanged();},enumerable:true});Object.defineProperty(SVGPathSegArcRel.prototype,"r2",{get:function(){return this._r2;},set:function(r2){this._r2=r2;this._segmentChanged();},enumerable:true});Object.defineProperty(SVGPathSegArcRel.prototype,"angle",{get:function(){return this._angle;},set:function(angle){this._angle=angle;this._segmentChanged();},enumerable:true});Object.defineProperty(SVGPathSegArcRel.prototype,"largeArcFlag",{get:function(){return this._largeArcFlag;},set:function(largeArcFlag){this._largeArcFlag=largeArcFlag;this._segmentChanged();},enumerable:true});Object.defineProperty(SVGPathSegArcRel.prototype,"sweepFlag",{get:function(){return this._sweepFlag;},set:function(sweepFlag){this._sweepFlag=sweepFlag;this._segmentChanged();},enumerable:true});window.SVGPathSegLinetoHorizontalAbs=function(owningPathSegList,x){SVGPathSeg.call(this,SVGPathSeg.PATHSEG_LINETO_HORIZONTAL_ABS,"H",owningPathSegList);this._x=x;}
+SVGPathSegLinetoHorizontalAbs.prototype=Object.create(SVGPathSeg.prototype);SVGPathSegLinetoHorizontalAbs.prototype.toString=function(){return"[object SVGPathSegLinetoHorizontalAbs]";}
+SVGPathSegLinetoHorizontalAbs.prototype._asPathString=function(){return this.pathSegTypeAsLetter+" "+this._x;}
+SVGPathSegLinetoHorizontalAbs.prototype.clone=function(){return new SVGPathSegLinetoHorizontalAbs(undefined,this._x);}
+Object.defineProperty(SVGPathSegLinetoHorizontalAbs.prototype,"x",{get:function(){return this._x;},set:function(x){this._x=x;this._segmentChanged();},enumerable:true});window.SVGPathSegLinetoHorizontalRel=function(owningPathSegList,x){SVGPathSeg.call(this,SVGPathSeg.PATHSEG_LINETO_HORIZONTAL_REL,"h",owningPathSegList);this._x=x;}
+SVGPathSegLinetoHorizontalRel.prototype=Object.create(SVGPathSeg.prototype);SVGPathSegLinetoHorizontalRel.prototype.toString=function(){return"[object SVGPathSegLinetoHorizontalRel]";}
+SVGPathSegLinetoHorizontalRel.prototype._asPathString=function(){return this.pathSegTypeAsLetter+" "+this._x;}
+SVGPathSegLinetoHorizontalRel.prototype.clone=function(){return new SVGPathSegLinetoHorizontalRel(undefined,this._x);}
+Object.defineProperty(SVGPathSegLinetoHorizontalRel.prototype,"x",{get:function(){return this._x;},set:function(x){this._x=x;this._segmentChanged();},enumerable:true});window.SVGPathSegLinetoVerticalAbs=function(owningPathSegList,y){SVGPathSeg.call(this,SVGPathSeg.PATHSEG_LINETO_VERTICAL_ABS,"V",owningPathSegList);this._y=y;}
+SVGPathSegLinetoVerticalAbs.prototype=Object.create(SVGPathSeg.prototype);SVGPathSegLinetoVerticalAbs.prototype.toString=function(){return"[object SVGPathSegLinetoVerticalAbs]";}
+SVGPathSegLinetoVerticalAbs.prototype._asPathString=function(){return this.pathSegTypeAsLetter+" "+this._y;}
+SVGPathSegLinetoVerticalAbs.prototype.clone=function(){return new SVGPathSegLinetoVerticalAbs(undefined,this._y);}
+Object.defineProperty(SVGPathSegLinetoVerticalAbs.prototype,"y",{get:function(){return this._y;},set:function(y){this._y=y;this._segmentChanged();},enumerable:true});window.SVGPathSegLinetoVerticalRel=function(owningPathSegList,y){SVGPathSeg.call(this,SVGPathSeg.PATHSEG_LINETO_VERTICAL_REL,"v",owningPathSegList);this._y=y;}
+SVGPathSegLinetoVerticalRel.prototype=Object.create(SVGPathSeg.prototype);SVGPathSegLinetoVerticalRel.prototype.toString=function(){return"[object SVGPathSegLinetoVerticalRel]";}
+SVGPathSegLinetoVerticalRel.prototype._asPathString=function(){return this.pathSegTypeAsLetter+" "+this._y;}
+SVGPathSegLinetoVerticalRel.prototype.clone=function(){return new SVGPathSegLinetoVerticalRel(undefined,this._y);}
+Object.defineProperty(SVGPathSegLinetoVerticalRel.prototype,"y",{get:function(){return this._y;},set:function(y){this._y=y;this._segmentChanged();},enumerable:true});window.SVGPathSegCurvetoCubicSmoothAbs=function(owningPathSegList,x,y,x2,y2){SVGPathSeg.call(this,SVGPathSeg.PATHSEG_CURVETO_CUBIC_SMOOTH_ABS,"S",owningPathSegList);this._x=x;this._y=y;this._x2=x2;this._y2=y2;}
+SVGPathSegCurvetoCubicSmoothAbs.prototype=Object.create(SVGPathSeg.prototype);SVGPathSegCurvetoCubicSmoothAbs.prototype.toString=function(){return"[object SVGPathSegCurvetoCubicSmoothAbs]";}
+SVGPathSegCurvetoCubicSmoothAbs.prototype._asPathString=function(){return this.pathSegTypeAsLetter+" "+this._x2+" "+this._y2+" "+this._x+" "+this._y;}
+SVGPathSegCurvetoCubicSmoothAbs.prototype.clone=function(){return new SVGPathSegCurvetoCubicSmoothAbs(undefined,this._x,this._y,this._x2,this._y2);}
+Object.defineProperty(SVGPathSegCurvetoCubicSmoothAbs.prototype,"x",{get:function(){return this._x;},set:function(x){this._x=x;this._segmentChanged();},enumerable:true});Object.defineProperty(SVGPathSegCurvetoCubicSmoothAbs.prototype,"y",{get:function(){return this._y;},set:function(y){this._y=y;this._segmentChanged();},enumerable:true});Object.defineProperty(SVGPathSegCurvetoCubicSmoothAbs.prototype,"x2",{get:function(){return this._x2;},set:function(x2){this._x2=x2;this._segmentChanged();},enumerable:true});Object.defineProperty(SVGPathSegCurvetoCubicSmoothAbs.prototype,"y2",{get:function(){return this._y2;},set:function(y2){this._y2=y2;this._segmentChanged();},enumerable:true});window.SVGPathSegCurvetoCubicSmoothRel=function(owningPathSegList,x,y,x2,y2){SVGPathSeg.call(this,SVGPathSeg.PATHSEG_CURVETO_CUBIC_SMOOTH_REL,"s",owningPathSegList);this._x=x;this._y=y;this._x2=x2;this._y2=y2;}
+SVGPathSegCurvetoCubicSmoothRel.prototype=Object.create(SVGPathSeg.prototype);SVGPathSegCurvetoCubicSmoothRel.prototype.toString=function(){return"[object SVGPathSegCurvetoCubicSmoothRel]";}
+SVGPathSegCurvetoCubicSmoothRel.prototype._asPathString=function(){return this.pathSegTypeAsLetter+" "+this._x2+" "+this._y2+" "+this._x+" "+this._y;}
+SVGPathSegCurvetoCubicSmoothRel.prototype.clone=function(){return new SVGPathSegCurvetoCubicSmoothRel(undefined,this._x,this._y,this._x2,this._y2);}
+Object.defineProperty(SVGPathSegCurvetoCubicSmoothRel.prototype,"x",{get:function(){return this._x;},set:function(x){this._x=x;this._segmentChanged();},enumerable:true});Object.defineProperty(SVGPathSegCurvetoCubicSmoothRel.prototype,"y",{get:function(){return this._y;},set:function(y){this._y=y;this._segmentChanged();},enumerable:true});Object.defineProperty(SVGPathSegCurvetoCubicSmoothRel.prototype,"x2",{get:function(){return this._x2;},set:function(x2){this._x2=x2;this._segmentChanged();},enumerable:true});Object.defineProperty(SVGPathSegCurvetoCubicSmoothRel.prototype,"y2",{get:function(){return this._y2;},set:function(y2){this._y2=y2;this._segmentChanged();},enumerable:true});window.SVGPathSegCurvetoQuadraticSmoothAbs=function(owningPathSegList,x,y){SVGPathSeg.call(this,SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_SMOOTH_ABS,"T",owningPathSegList);this._x=x;this._y=y;}
+SVGPathSegCurvetoQuadraticSmoothAbs.prototype=Object.create(SVGPathSeg.prototype);SVGPathSegCurvetoQuadraticSmoothAbs.prototype.toString=function(){return"[object SVGPathSegCurvetoQuadraticSmoothAbs]";}
+SVGPathSegCurvetoQuadraticSmoothAbs.prototype._asPathString=function(){return this.pathSegTypeAsLetter+" "+this._x+" "+this._y;}
+SVGPathSegCurvetoQuadraticSmoothAbs.prototype.clone=function(){return new SVGPathSegCurvetoQuadraticSmoothAbs(undefined,this._x,this._y);}
+Object.defineProperty(SVGPathSegCurvetoQuadraticSmoothAbs.prototype,"x",{get:function(){return this._x;},set:function(x){this._x=x;this._segmentChanged();},enumerable:true});Object.defineProperty(SVGPathSegCurvetoQuadraticSmoothAbs.prototype,"y",{get:function(){return this._y;},set:function(y){this._y=y;this._segmentChanged();},enumerable:true});window.SVGPathSegCurvetoQuadraticSmoothRel=function(owningPathSegList,x,y){SVGPathSeg.call(this,SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_SMOOTH_REL,"t",owningPathSegList);this._x=x;this._y=y;}
+SVGPathSegCurvetoQuadraticSmoothRel.prototype=Object.create(SVGPathSeg.prototype);SVGPathSegCurvetoQuadraticSmoothRel.prototype.toString=function(){return"[object SVGPathSegCurvetoQuadraticSmoothRel]";}
+SVGPathSegCurvetoQuadraticSmoothRel.prototype._asPathString=function(){return this.pathSegTypeAsLetter+" "+this._x+" "+this._y;}
+SVGPathSegCurvetoQuadraticSmoothRel.prototype.clone=function(){return new SVGPathSegCurvetoQuadraticSmoothRel(undefined,this._x,this._y);}
+Object.defineProperty(SVGPathSegCurvetoQuadraticSmoothRel.prototype,"x",{get:function(){return this._x;},set:function(x){this._x=x;this._segmentChanged();},enumerable:true});Object.defineProperty(SVGPathSegCurvetoQuadraticSmoothRel.prototype,"y",{get:function(){return this._y;},set:function(y){this._y=y;this._segmentChanged();},enumerable:true});SVGPathElement.prototype.createSVGPathSegClosePath=function(){return new SVGPathSegClosePath(undefined);}
+SVGPathElement.prototype.createSVGPathSegMovetoAbs=function(x,y){return new SVGPathSegMovetoAbs(undefined,x,y);}
+SVGPathElement.prototype.createSVGPathSegMovetoRel=function(x,y){return new SVGPathSegMovetoRel(undefined,x,y);}
+SVGPathElement.prototype.createSVGPathSegLinetoAbs=function(x,y){return new SVGPathSegLinetoAbs(undefined,x,y);}
+SVGPathElement.prototype.createSVGPathSegLinetoRel=function(x,y){return new SVGPathSegLinetoRel(undefined,x,y);}
+SVGPathElement.prototype.createSVGPathSegCurvetoCubicAbs=function(x,y,x1,y1,x2,y2){return new SVGPathSegCurvetoCubicAbs(undefined,x,y,x1,y1,x2,y2);}
+SVGPathElement.prototype.createSVGPathSegCurvetoCubicRel=function(x,y,x1,y1,x2,y2){return new SVGPathSegCurvetoCubicRel(undefined,x,y,x1,y1,x2,y2);}
+SVGPathElement.prototype.createSVGPathSegCurvetoQuadraticAbs=function(x,y,x1,y1){return new SVGPathSegCurvetoQuadraticAbs(undefined,x,y,x1,y1);}
+SVGPathElement.prototype.createSVGPathSegCurvetoQuadraticRel=function(x,y,x1,y1){return new SVGPathSegCurvetoQuadraticRel(undefined,x,y,x1,y1);}
+SVGPathElement.prototype.createSVGPathSegArcAbs=function(x,y,r1,r2,angle,largeArcFlag,sweepFlag){return new SVGPathSegArcAbs(undefined,x,y,r1,r2,angle,largeArcFlag,sweepFlag);}
+SVGPathElement.prototype.createSVGPathSegArcRel=function(x,y,r1,r2,angle,largeArcFlag,sweepFlag){return new SVGPathSegArcRel(undefined,x,y,r1,r2,angle,largeArcFlag,sweepFlag);}
+SVGPathElement.prototype.createSVGPathSegLinetoHorizontalAbs=function(x){return new SVGPathSegLinetoHorizontalAbs(undefined,x);}
+SVGPathElement.prototype.createSVGPathSegLinetoHorizontalRel=function(x){return new SVGPathSegLinetoHorizontalRel(undefined,x);}
+SVGPathElement.prototype.createSVGPathSegLinetoVerticalAbs=function(y){return new SVGPathSegLinetoVerticalAbs(undefined,y);}
+SVGPathElement.prototype.createSVGPathSegLinetoVerticalRel=function(y){return new SVGPathSegLinetoVerticalRel(undefined,y);}
+SVGPathElement.prototype.createSVGPathSegCurvetoCubicSmoothAbs=function(x,y,x2,y2){return new SVGPathSegCurvetoCubicSmoothAbs(undefined,x,y,x2,y2);}
+SVGPathElement.prototype.createSVGPathSegCurvetoCubicSmoothRel=function(x,y,x2,y2){return new SVGPathSegCurvetoCubicSmoothRel(undefined,x,y,x2,y2);}
+SVGPathElement.prototype.createSVGPathSegCurvetoQuadraticSmoothAbs=function(x,y){return new SVGPathSegCurvetoQuadraticSmoothAbs(undefined,x,y);}
+SVGPathElement.prototype.createSVGPathSegCurvetoQuadraticSmoothRel=function(x,y){return new SVGPathSegCurvetoQuadraticSmoothRel(undefined,x,y);}
+if(!("SVGPathSegList"in window)){window.SVGPathSegList=function(pathElement){this._pathElement=pathElement;this._list=this._parsePath(this._pathElement.getAttribute("d"));this._mutationObserverConfig={"attributes":true,"attributeFilter":["d"]};this._pathElementMutationObserver=new MutationObserver(this._updateListFromPathMutations.bind(this));this._pathElementMutationObserver.observe(this._pathElement,this._mutationObserverConfig);}
+Object.defineProperty(SVGPathSegList.prototype,"numberOfItems",{get:function(){this._checkPathSynchronizedToList();return this._list.length;},enumerable:true});Object.defineProperty(SVGPathElement.prototype,"pathSegList",{get:function(){if(!this._pathSegList)
+this._pathSegList=new SVGPathSegList(this);return this._pathSegList;},enumerable:true});Object.defineProperty(SVGPathElement.prototype,"normalizedPathSegList",{get:function(){return this.pathSegList;},enumerable:true});Object.defineProperty(SVGPathElement.prototype,"animatedPathSegList",{get:function(){return this.pathSegList;},enumerable:true});Object.defineProperty(SVGPathElement.prototype,"animatedNormalizedPathSegList",{get:function(){return this.pathSegList;},enumerable:true});SVGPathSegList.prototype._checkPathSynchronizedToList=function(){this._updateListFromPathMutations(this._pathElementMutationObserver.takeRecords());}
+SVGPathSegList.prototype._updateListFromPathMutations=function(mutationRecords){if(!this._pathElement)
+return;var hasPathMutations=false;mutationRecords.forEach(function(record){if(record.attributeName=="d")
+hasPathMutations=true;});if(hasPathMutations)
+this._list=this._parsePath(this._pathElement.getAttribute("d"));}
+SVGPathSegList.prototype._writeListToPath=function(){this._pathElementMutationObserver.disconnect();this._pathElement.setAttribute("d",SVGPathSegList._pathSegArrayAsString(this._list));this._pathElementMutationObserver.observe(this._pathElement,this._mutationObserverConfig);}
+SVGPathSegList.prototype.segmentChanged=function(pathSeg){this._writeListToPath();}
+SVGPathSegList.prototype.clear=function(){this._checkPathSynchronizedToList();this._list.forEach(function(pathSeg){pathSeg._owningPathSegList=null;});this._list=[];this._writeListToPath();}
+SVGPathSegList.prototype.initialize=function(newItem){this._checkPathSynchronizedToList();this._list=[newItem];newItem._owningPathSegList=this;this._writeListToPath();return newItem;}
+SVGPathSegList.prototype._checkValidIndex=function(index){if(isNaN(index)||index<0||index>=this.numberOfItems)
+throw"INDEX_SIZE_ERR";}
+SVGPathSegList.prototype.getItem=function(index){this._checkPathSynchronizedToList();this._checkValidIndex(index);return this._list[index];}
+SVGPathSegList.prototype.insertItemBefore=function(newItem,index){this._checkPathSynchronizedToList();if(index>this.numberOfItems)
+index=this.numberOfItems;if(newItem._owningPathSegList){newItem=newItem.clone();}
+this._list.splice(index,0,newItem);newItem._owningPathSegList=this;this._writeListToPath();return newItem;}
+SVGPathSegList.prototype.replaceItem=function(newItem,index){this._checkPathSynchronizedToList();if(newItem._owningPathSegList){newItem=newItem.clone();}
+this._checkValidIndex(index);this._list[index]=newItem;newItem._owningPathSegList=this;this._writeListToPath();return newItem;}
+SVGPathSegList.prototype.removeItem=function(index){this._checkPathSynchronizedToList();this._checkValidIndex(index);var item=this._list[index];this._list.splice(index,1);this._writeListToPath();return item;}
+SVGPathSegList.prototype.appendItem=function(newItem){this._checkPathSynchronizedToList();if(newItem._owningPathSegList){newItem=newItem.clone();}
+this._list.push(newItem);newItem._owningPathSegList=this;this._writeListToPath();return newItem;}
+SVGPathSegList._pathSegArrayAsString=function(pathSegArray){var string="";var first=true;pathSegArray.forEach(function(pathSeg){if(first){first=false;string+=pathSeg._asPathString();}else{string+=" "+pathSeg._asPathString();}});return string;}
+SVGPathSegList.prototype._parsePath=function(string){if(!string||string.length==0)
+return[];var owningPathSegList=this;var Builder=function(){this.pathSegList=[];}
+Builder.prototype.appendSegment=function(pathSeg){this.pathSegList.push(pathSeg);}
+var Source=function(string){this._string=string;this._currentIndex=0;this._endIndex=this._string.length;this._previousCommand=SVGPathSeg.PATHSEG_UNKNOWN;this._skipOptionalSpaces();}
+Source.prototype._isCurrentSpace=function(){var character=this._string[this._currentIndex];return character<=" "&&(character==" "||character=="\n"||character=="\t"||character=="\r"||character=="\f");}
+Source.prototype._skipOptionalSpaces=function(){while(this._currentIndex<this._endIndex&&this._isCurrentSpace())
+this._currentIndex++;return this._currentIndex<this._endIndex;}
+Source.prototype._skipOptionalSpacesOrDelimiter=function(){if(this._currentIndex<this._endIndex&&!this._isCurrentSpace()&&this._string.charAt(this._currentIndex)!=",")
+return false;if(this._skipOptionalSpaces()){if(this._currentIndex<this._endIndex&&this._string.charAt(this._currentIndex)==","){this._currentIndex++;this._skipOptionalSpaces();}}
+return this._currentIndex<this._endIndex;}
+Source.prototype.hasMoreData=function(){return this._currentIndex<this._endIndex;}
+Source.prototype.peekSegmentType=function(){var lookahead=this._string[this._currentIndex];return this._pathSegTypeFromChar(lookahead);}
+Source.prototype._pathSegTypeFromChar=function(lookahead){switch(lookahead){case"Z":case"z":return SVGPathSeg.PATHSEG_CLOSEPATH;case"M":return SVGPathSeg.PATHSEG_MOVETO_ABS;case"m":return SVGPathSeg.PATHSEG_MOVETO_REL;case"L":return SVGPathSeg.PATHSEG_LINETO_ABS;case"l":return SVGPathSeg.PATHSEG_LINETO_REL;case"C":return SVGPathSeg.PATHSEG_CURVETO_CUBIC_ABS;case"c":return SVGPathSeg.PATHSEG_CURVETO_CUBIC_REL;case"Q":return SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_ABS;case"q":return SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_REL;case"A":return SVGPathSeg.PATHSEG_ARC_ABS;case"a":return SVGPathSeg.PATHSEG_ARC_REL;case"H":return SVGPathSeg.PATHSEG_LINETO_HORIZONTAL_ABS;case"h":return SVGPathSeg.PATHSEG_LINETO_HORIZONTAL_REL;case"V":return SVGPathSeg.PATHSEG_LINETO_VERTICAL_ABS;case"v":return SVGPathSeg.PATHSEG_LINETO_VERTICAL_REL;case"S":return SVGPathSeg.PATHSEG_CURVETO_CUBIC_SMOOTH_ABS;case"s":return SVGPathSeg.PATHSEG_CURVETO_CUBIC_SMOOTH_REL;case"T":return SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_SMOOTH_ABS;case"t":return SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_SMOOTH_REL;default:return SVGPathSeg.PATHSEG_UNKNOWN;}}
+Source.prototype._nextCommandHelper=function(lookahead,previousCommand){if((lookahead=="+"||lookahead=="-"||lookahead=="."||(lookahead>="0"&&lookahead<="9"))&&previousCommand!=SVGPathSeg.PATHSEG_CLOSEPATH){if(previousCommand==SVGPathSeg.PATHSEG_MOVETO_ABS)
+return SVGPathSeg.PATHSEG_LINETO_ABS;if(previousCommand==SVGPathSeg.PATHSEG_MOVETO_REL)
+return SVGPathSeg.PATHSEG_LINETO_REL;return previousCommand;}
+return SVGPathSeg.PATHSEG_UNKNOWN;}
+Source.prototype.initialCommandIsMoveTo=function(){if(!this.hasMoreData())
+return true;var command=this.peekSegmentType();return command==SVGPathSeg.PATHSEG_MOVETO_ABS||command==SVGPathSeg.PATHSEG_MOVETO_REL;}
+Source.prototype._parseNumber=function(){var exponent=0;var integer=0;var frac=1;var decimal=0;var sign=1;var expsign=1;var startIndex=this._currentIndex;this._skipOptionalSpaces();if(this._currentIndex<this._endIndex&&this._string.charAt(this._currentIndex)=="+")
+this._currentIndex++;else if(this._currentIndex<this._endIndex&&this._string.charAt(this._currentIndex)=="-"){this._currentIndex++;sign=-1;}
+if(this._currentIndex==this._endIndex||((this._string.charAt(this._currentIndex)<"0"||this._string.charAt(this._currentIndex)>"9")&&this._string.charAt(this._currentIndex)!="."))
+return undefined;var startIntPartIndex=this._currentIndex;while(this._currentIndex<this._endIndex&&this._string.charAt(this._currentIndex)>="0"&&this._string.charAt(this._currentIndex)<="9")
+this._currentIndex++;if(this._currentIndex!=startIntPartIndex){var scanIntPartIndex=this._currentIndex-1;var multiplier=1;while(scanIntPartIndex>=startIntPartIndex){integer+=multiplier*(this._string.charAt(scanIntPartIndex--)-"0");multiplier*=10;}}
+if(this._currentIndex<this._endIndex&&this._string.charAt(this._currentIndex)=="."){this._currentIndex++;if(this._currentIndex>=this._endIndex||this._string.charAt(this._currentIndex)<"0"||this._string.charAt(this._currentIndex)>"9")
+return undefined;while(this._currentIndex<this._endIndex&&this._string.charAt(this._currentIndex)>="0"&&this._string.charAt(this._currentIndex)<="9")
+decimal+=(this._string.charAt(this._currentIndex++)-"0")*(frac*=0.1);}
+if(this._currentIndex!=startIndex&&this._currentIndex+1<this._endIndex&&(this._string.charAt(this._currentIndex)=="e"||this._string.charAt(this._currentIndex)=="E")&&(this._string.charAt(this._currentIndex+1)!="x"&&this._string.charAt(this._currentIndex+1)!="m")){this._currentIndex++;if(this._string.charAt(this._currentIndex)=="+"){this._currentIndex++;}else if(this._string.charAt(this._currentIndex)=="-"){this._currentIndex++;expsign=-1;}
+if(this._currentIndex>=this._endIndex||this._string.charAt(this._currentIndex)<"0"||this._string.charAt(this._currentIndex)>"9")
+return undefined;while(this._currentIndex<this._endIndex&&this._string.charAt(this._currentIndex)>="0"&&this._string.charAt(this._currentIndex)<="9"){exponent*=10;exponent+=(this._string.charAt(this._currentIndex)-"0");this._currentIndex++;}}
+var number=integer+decimal;number*=sign;if(exponent)
+number*=Math.pow(10,expsign*exponent);if(startIndex==this._currentIndex)
+return undefined;this._skipOptionalSpacesOrDelimiter();return number;}
+Source.prototype._parseArcFlag=function(){if(this._currentIndex>=this._endIndex)
+return undefined;var flag=false;var flagChar=this._string.charAt(this._currentIndex++);if(flagChar=="0")
+flag=false;else if(flagChar=="1")
+flag=true;else
+return undefined;this._skipOptionalSpacesOrDelimiter();return flag;}
+Source.prototype.parseSegment=function(){var lookahead=this._string[this._currentIndex];var command=this._pathSegTypeFromChar(lookahead);if(command==SVGPathSeg.PATHSEG_UNKNOWN){if(this._previousCommand==SVGPathSeg.PATHSEG_UNKNOWN)
+return null;command=this._nextCommandHelper(lookahead,this._previousCommand);if(command==SVGPathSeg.PATHSEG_UNKNOWN)
+return null;}else{this._currentIndex++;}
+this._previousCommand=command;switch(command){case SVGPathSeg.PATHSEG_MOVETO_REL:return new SVGPathSegMovetoRel(owningPathSegList,this._parseNumber(),this._parseNumber());case SVGPathSeg.PATHSEG_MOVETO_ABS:return new SVGPathSegMovetoAbs(owningPathSegList,this._parseNumber(),this._parseNumber());case SVGPathSeg.PATHSEG_LINETO_REL:return new SVGPathSegLinetoRel(owningPathSegList,this._parseNumber(),this._parseNumber());case SVGPathSeg.PATHSEG_LINETO_ABS:return new SVGPathSegLinetoAbs(owningPathSegList,this._parseNumber(),this._parseNumber());case SVGPathSeg.PATHSEG_LINETO_HORIZONTAL_REL:return new SVGPathSegLinetoHorizontalRel(owningPathSegList,this._parseNumber());case SVGPathSeg.PATHSEG_LINETO_HORIZONTAL_ABS:return new SVGPathSegLinetoHorizontalAbs(owningPathSegList,this._parseNumber());case SVGPathSeg.PATHSEG_LINETO_VERTICAL_REL:return new SVGPathSegLinetoVerticalRel(owningPathSegList,this._parseNumber());case SVGPathSeg.PATHSEG_LINETO_VERTICAL_ABS:return new SVGPathSegLinetoVerticalAbs(owningPathSegList,this._parseNumber());case SVGPathSeg.PATHSEG_CLOSEPATH:this._skipOptionalSpaces();return new SVGPathSegClosePath(owningPathSegList);case SVGPathSeg.PATHSEG_CURVETO_CUBIC_REL:var points={x1:this._parseNumber(),y1:this._parseNumber(),x2:this._parseNumber(),y2:this._parseNumber(),x:this._parseNumber(),y:this._parseNumber()};return new SVGPathSegCurvetoCubicRel(owningPathSegList,points.x,points.y,points.x1,points.y1,points.x2,points.y2);case SVGPathSeg.PATHSEG_CURVETO_CUBIC_ABS:var points={x1:this._parseNumber(),y1:this._parseNumber(),x2:this._parseNumber(),y2:this._parseNumber(),x:this._parseNumber(),y:this._parseNumber()};return new SVGPathSegCurvetoCubicAbs(owningPathSegList,points.x,points.y,points.x1,points.y1,points.x2,points.y2);case SVGPathSeg.PATHSEG_CURVETO_CUBIC_SMOOTH_REL:var points={x2:this._parseNumber(),y2:this._parseNumber(),x:this._parseNumber(),y:this._parseNumber()};return new SVGPathSegCurvetoCubicSmoothRel(owningPathSegList,points.x,points.y,points.x2,points.y2);case SVGPathSeg.PATHSEG_CURVETO_CUBIC_SMOOTH_ABS:var points={x2:this._parseNumber(),y2:this._parseNumber(),x:this._parseNumber(),y:this._parseNumber()};return new SVGPathSegCurvetoCubicSmoothAbs(owningPathSegList,points.x,points.y,points.x2,points.y2);case SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_REL:var points={x1:this._parseNumber(),y1:this._parseNumber(),x:this._parseNumber(),y:this._parseNumber()};return new SVGPathSegCurvetoQuadraticRel(owningPathSegList,points.x,points.y,points.x1,points.y1);case SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_ABS:var points={x1:this._parseNumber(),y1:this._parseNumber(),x:this._parseNumber(),y:this._parseNumber()};return new SVGPathSegCurvetoQuadraticAbs(owningPathSegList,points.x,points.y,points.x1,points.y1);case SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_SMOOTH_REL:return new SVGPathSegCurvetoQuadraticSmoothRel(owningPathSegList,this._parseNumber(),this._parseNumber());case SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_SMOOTH_ABS:return new SVGPathSegCurvetoQuadraticSmoothAbs(owningPathSegList,this._parseNumber(),this._parseNumber());case SVGPathSeg.PATHSEG_ARC_REL:var points={x1:this._parseNumber(),y1:this._parseNumber(),arcAngle:this._parseNumber(),arcLarge:this._parseArcFlag(),arcSweep:this._parseArcFlag(),x:this._parseNumber(),y:this._parseNumber()};return new SVGPathSegArcRel(owningPathSegList,points.x,points.y,points.x1,points.y1,points.arcAngle,points.arcLarge,points.arcSweep);case SVGPathSeg.PATHSEG_ARC_ABS:var points={x1:this._parseNumber(),y1:this._parseNumber(),arcAngle:this._parseNumber(),arcLarge:this._parseArcFlag(),arcSweep:this._parseArcFlag(),x:this._parseNumber(),y:this._parseNumber()};return new SVGPathSegArcAbs(owningPathSegList,points.x,points.y,points.x1,points.y1,points.arcAngle,points.arcLarge,points.arcSweep);default:throw"Unknown path seg type."}}
+var builder=new Builder();var source=new Source(string);if(!source.initialCommandIsMoveTo())
+return[];while(source.hasMoreData()){var pathSeg=source.parseSegment();if(!pathSeg)
+return[];builder.appendSegment(pathSeg);}
+return builder.pathSegList;}}}());}
 </script>
 <script>
 // Utilities
@@ -2304,7 +2474,7 @@ function bindEvents()
   var wacom = ID("wacom");
   var getPointerType = function()
   {
-    return wacom.penAPI && wacom.penAPI.isWacom ? wacom.penAPI.pointerType : 0;
+    return wacom && wacom.penAPI && wacom.penAPI.isWacom ? wacom.penAPI.pointerType : 0;
   };
 
   var checkPlayingAndStop = function()
@@ -2333,7 +2503,7 @@ function bindEvents()
     if (e.button === 0 || e.button === 2)
     {
       e.preventDefault();
-      anbt.StrokeEnd();
+      if (anbt.isStroking) anbt.StrokeEnd();
       if (options.hideCross) ID("svgContainer").classList.remove("hidecursor");
       window.removeEventListener('mouseup', mouseUp);
       window.removeEventListener('mousemove', mouseMove);
@@ -2870,13 +3040,18 @@ function bindEvents()
       };
       ID("svgContainer").addEventListener('mousemove', removeEyedropper);
     }
-    else if (e.keyCode == "Z".charCodeAt(0) && e.ctrlKey)
+    else if (e.keyCode == "Q".charCodeAt(0))
+    {
+      e.preventDefault();
+      options.colorDoublePress = !options.colorDoublePress;
+    }
+    else if (e.keyCode == "Z".charCodeAt(0) || ((e.keyCode == 8) && anbt.unsaved))
     {
       e.preventDefault();
       ID("play").classList.remove("pause");
       anbt.Undo();
     }
-    else if (e.keyCode == "Y".charCodeAt(0) && e.ctrlKey)
+    else if (e.keyCode == "Y".charCodeAt(0))
     {
       e.preventDefault();
       ID("play").classList.remove("pause");
@@ -2907,7 +3082,13 @@ function bindEvents()
     {
       e.preventDefault();
       var i = (e.keyCode == 48) ? 9 : e.keyCode - 49;
-      if (e.shiftKey) i += 8;
+      if (e.shiftKey || (options.colorDoublePress && (anbt.prevColorKey == i))) i += 8;
+      anbt.prevColorKey = i;
+      if (options.colorDoublePress)
+      {
+        if (anbt.prevColorKeyTimer) clearTimeout(anbt.prevColorKeyTimer);
+        anbt.prevColorKeyTimer = setTimeout(function() {anbt.prevColorKey = -1}, 500);
+      }
       var els = ID("colors").querySelectorAll("b");
       if (i < els.length)
       {
@@ -2925,6 +3106,12 @@ function bindEvents()
           updateColorIndicators();
         }
       }
+      if (anbt.isStroking)
+      {
+        anbt.StrokeEnd();
+        var p = anbt.points[anbt.points.length - 1];
+        anbt.StrokeBegin(p.x, p.y);
+    }
     }
     else if ((e.keyCode == 189 || e.keyCode == 219 || e.keyCode == 188) && !e.ctrlKey) // - or [ or ,
     {

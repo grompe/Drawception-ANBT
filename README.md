@@ -89,10 +89,53 @@ Forum:
 
 ## CHANGELOG
 
-1.67.2015.9
+1.75.2016.2
 - Fixed captions of created games not being registered for progress tracking
 - Added tracking of changes in your level progress
 - Added an option to set smoothing threshold
+
+1.74.2016.2
+- New canvas: ability to apply custom CSS, experimental
+
+1.73.2016.1
+- New canvas: make Time+ button always visible
+- New canvas: add pathseg polyfill for Chrome 48. No thanks to Google!
+
+1.72.2015.12
+- Necropost detection feature
+- New canvas: try silence the useless 'Script Error' message
+
+1.71.2015.11
+- Fix timestamps by detecting Florida DST
+- Add a button to panel page of your own panels to add panels to cover creator
+- Add a subpage on your own profile page to remove panels from cover creator
+
+1.70.2015.10
+- Change ANBT script link in the footer to link to the last page
+- Dark style: panel thumbnails cleaner look
+- Dark style: fix login page
+- Dark style: slightly more pleasing blue and cyan button colors
+- Make http:// links in "location" field on player pages clickable
+- Extend "location" field length to 65 characters on settings page
+
+1.69.2015.9
+- Update site version detection
+- Remove https search fix (fixed onsite)
+- Fix forum timestamps, handle edited post timestamps
+- New canvas: on replay, add shareable links in header
+- New canvas: don't bug about the wacom plugin if not enabled
+
+1.68.2015.9
+- New canvas: add timeout to double press color choose feature
+- New canvas: backspace for undo if canvas is drawn on
+- New canvas: fix regression introduced with play limit handling
+
+1.67.2015.9
+- New canvas: fix stroking while skipping leaving the stroke on a fresh canvas
+- New canvas: allow undo/redo with simple Z and Y
+- New canvas: handle color changing mid-stroke
+- New canvas: option to select colors with double press of 0-9 instead of shift
+- New canvas: handle play limit
 
 1.66.2015.9
 - New canvas: silence the "periodsToSeconds" bogus error
