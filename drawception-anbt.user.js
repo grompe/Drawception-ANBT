@@ -958,6 +958,8 @@ function deeper_main()
     if (e.toString().indexOf("periodsToSeconds") != -1) return;
     // Silence the useless error message
     if (e.toString().match(/script error/i)) return;
+    // Silence another useless error message
+    if(e.toString().indexOf("NS_ERROR_FAILURE" != 1)) return;
     alert(e);
   };
 
