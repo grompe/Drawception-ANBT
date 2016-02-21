@@ -78,7 +78,7 @@ Play:
 - Play modes for those who only caption or only draw
 - Enter pressed in caption mode submits the caption
 - Ability to bookmark games without participating
-- Show your panel position and track changes in unfinished games list
+- Show your panel position and track changes in unfinished games list and your experience
 
 Forum:
 
@@ -88,6 +88,11 @@ Forum:
 - Show and highlight direct links to forum posts
 
 ## CHANGELOG
+
+1.75.2016.2
+- Fixed captions of created games not being registered for progress tracking
+- Added tracking of changes in your level progress
+- Added an option to set smoothing threshold
 
 1.74.2016.2
 - New canvas: ability to apply custom CSS, experimental

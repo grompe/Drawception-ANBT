@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      1.74.2016.2
+// @version      1.75.2016.2
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,8 +14,8 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.74.2016.2";
-var NEWCANVAS_VERSION = 24; // Increase to update the cached canvas
+var SCRIPT_VERSION = "1.75.2016.2";
+var NEWCANVAS_VERSION = 25; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
 
@@ -98,7 +98,7 @@ Play
 - Play modes for those who only caption or only draw
 - Enter pressed in caption mode submits the caption
 - Ability to bookmark games without participating
-- Show your panel position and track changes in unfinished games list
+- Show your panel position and track changes in unfinished games list and your experience
 Forum
 - Better-looking timestamps with correct timezone
 - Clickable drawing panels
@@ -981,7 +981,7 @@ function deeper_main()
     stupidPlugin.setAttribute("width", "1");
     stupidPlugin.setAttribute("height", "1");
     container.appendChild(stupidPlugin);
-    if (options.fixTabletPluginGoingAWOL) fixPluginGoingAWOL();
+  if (options.fixTabletPluginGoingAWOL) fixPluginGoingAWOL();
   }
   bindCanvasEvents();
   if (window.insandbox)
@@ -2093,6 +2093,11 @@ function betterCreateGame()
       }
     });
   }
+  
+  if (options.rememberPosition && $(".page-header h1").text().match(/Game Created/))
+  {
+    panelPositions.registerPanel();
+  }
 }
 
 function betterView()
@@ -2403,23 +2408,10 @@ function betterPanel()
 
   if (options.rememberPosition && $(".regForm > .lead").text().match(/public game/)) // your own panel
   {
-    panelPositions.load();
-    if (!panelPositions.player[panelId])
+    panelPositions.registerPanel(panelId, function(position)
     {
-      var profileUrl = $(".btn").has(".avatar").attr("href");
-      $.get(profileUrl, function(html)
-      {
-        html = html.replace(/<img\b[^>]*>/ig, ''); // prevent image preload
-        var profilePage = $.parseHTML(html);
-        var panelProgressText = $(profilePage).find("a[href='" + location.pathname + "']").next().find(".progress-bar-text").text();
-        var panelPosition = parseInt(panelProgressText.match(/\d+/)[0]);
-        panelPositions.player[panelId] = panelPosition;
-        panelPositions.clear(profilePage);
-        panelPositions.save();
-
-        $(".regForm > .lead").append("<br>").append($("<span>").text(panelProgressText));
-      });
-    }
+      $(".regForm > .lead").append("<br>").append($("<span>").text(position.join(" of ")));
+    });
   }
 }
 
@@ -2427,21 +2419,27 @@ var panelPositions =
 {
   player: null,
   last: null,
+  level: null,
+  experience: null,
   load: function ()
   {
-    function loadObj(key)
+    function loadObj(key, fallback)
     {
       var val = localStorage.getItem(key);
-      return val && JSON.parse(val) || {};
+      return val && JSON.parse(val) || fallback;
     }
 
-    panelPositions.player = loadObj("gpe_panelPositions");
-    panelPositions.last = loadObj("gpe_lastGamePositions");
+    panelPositions.player = loadObj("gpe_panelPositions", {});
+    panelPositions.last = loadObj("gpe_lastGamePositions", {});
+    panelPositions.level = loadObj("gpe_lastLevel", null);
+    panelPositions.experience = loadObj("gpe_lastExperience", null);
   },
   save: function ()
   {
     localStorage.setItem("gpe_panelPositions", JSON.stringify(panelPositions.player));
     localStorage.setItem("gpe_lastGamePositions", JSON.stringify(panelPositions.last));
+    localStorage.setItem("gpe_lastLevel", JSON.stringify(panelPositions.level));
+    localStorage.setItem("gpe_lastExperience", JSON.stringify(panelPositions.experience));
   },
   clear: function (page)
   {
@@ -2456,6 +2454,42 @@ var panelPositions =
     }).get();
     clearKeys(panelPositions.player, existingIds);
     clearKeys(panelPositions.last, existingIds);
+  },
+  registerPanel: function (panelId, callback)
+  {
+    function getPanelPosition (link)
+    {
+      var panelProgressText = link.next().find(".progress-bar-text").text();
+      return [parseInt(panelProgressText.match(/\d+/)[0]), parseInt(panelProgressText.match(/\d+/g)[1])];
+    }
+    
+    panelPositions.load();
+    // panelId is undefined when the game is just created
+    if (!panelId || !panelPositions.player[panelId])
+    {
+      var profileUrl = $(".btn").has(".avatar").attr("href");
+      $.get(profileUrl, function(html)
+      {
+        html = html.replace(/<img\b[^>]*>/ig, ''); // prevent image preload
+        var profilePage = $.parseHTML(html);
+        
+        // Panel panelId is just created, record its position
+        if (panelId)
+        {
+          var position = getPanelPosition($(profilePage).find("a[href='" + location.pathname + "']"));
+          panelPositions.player[panelId] = position[0];
+          callback && callback(position);
+        }
+        
+        // Panels with position 1 are always ours
+        $(profilePage).find("a")
+          .filter(function() { return $(this).next().hasClass("progress-striped") && getPanelPosition($(this))[0] == 1; })
+          .each(function() { panelPositions.player[getPanelId(this.href)] = 1; });
+        
+        panelPositions.clear(profilePage);
+        panelPositions.save();
+      });
+    }
   }
 };
 
@@ -2790,12 +2824,12 @@ function betterPlayer()
         var panelId = getPanelId($(this).prev().attr("href"));
         var playerPanelPosition = panelPositions.player[panelId];
         var lastSeenPanelPosition = panelPositions.last[panelId];
-        var panelProgress = $(this).find(".progress-bar-text");
-        var panelProgressText = panelProgress.text();
+        var panelProgressLabel = $(this).find(".progress-bar-text");
+        var panelProgressText = panelProgressLabel.text();
         var panelPosition = parseInt(panelProgressText.match(/\d+/)[0]);
         var totalPanelCount = parseInt(panelProgressText.match(/\d+/g)[1]);
 
-        panelProgress.css("pointer-events", "none"); // to make tooltips work under label
+        panelProgressLabel.css("pointer-events", "none"); // to make tooltips work under label
         if ((playerPanelPosition || lastSeenPanelPosition || panelPosition) < panelPosition)
         {
           $(this).find(".progress-bar")
@@ -2805,21 +2839,21 @@ function betterPlayer()
         {
           $('<div class="progress-bar progress-bar-info" title="Panels added after yours">')
             .width((Math.min(lastSeenPanelPosition || panelPosition, panelPosition) - playerPanelPosition) / totalPanelCount * 100 + "%")
-            .insertBefore(panelProgress)
+            .insertBefore(panelProgressLabel)
             .tooltip();
         }
         if (lastSeenPanelPosition && panelPosition > lastSeenPanelPosition)
         {
           $('<div class="progress-bar progress-bar-success" title="Panels added recently">')
             .width((panelPosition - lastSeenPanelPosition) / totalPanelCount * 100 + "%")
-            .insertBefore(panelProgress)
+            .insertBefore(panelProgressLabel)
             .tooltip();
         }
         if (lastSeenPanelPosition && panelPosition < lastSeenPanelPosition)
         {
           $('<div class="progress-bar progress-bar-danger" title="Panel was removed recently">')
             .width(1 / totalPanelCount * 100 + "%")
-            .insertBefore(panelProgress)
+            .insertBefore(panelProgressLabel)
             .tooltip();
         }
         if (playerPanelPosition)
@@ -2832,6 +2866,46 @@ function betterPlayer()
 
         panelPositions.last[panelId] = panelPosition;
       });
+      
+      var levelProgress = $(".progress-bar-profile .progress-bar");
+      var levelProgressLabel = $(".progress-bar-profile-text");
+      var profileHeaderLabel = $(".profile-user-header p:last");
+      var currentLevel = parseInt(profileHeaderLabel.text().match(/\d+/)[0]);
+      var currentExperience = parseInt(levelProgressLabel.text().match(/\d+/)[0]);
+      if (panelPositions.level && panelPositions.experience)
+      {
+        if (currentLevel != panelPositions.level)
+        {
+            levelProgress
+              .removeClass("progress-bar-info")
+              .addClass(currentLevel > panelPositions.level ? "progress-bar-success" : "progress-bar-danger");
+            profileHeaderLabel.text(profileHeaderLabel.text().replace(/\d+/, 
+              currentLevel + " (" + (currentLevel > panelPositions.level ? "+" : "") + (currentLevel - panelPositions.level) + ")"));
+        }
+        else
+        {
+            var experienceChange = currentExperience - panelPositions.experience;
+            if (experienceChange != 0)
+            {
+              var levelProgressBarWidth = parseFloat(levelProgress.attr("aria-valuenow")) / 100;
+              var experienceToLevelUp = parseInt(levelProgressLabel.text().match(/\d+/g)[1]);
+              var experiencePointWidth = (1 - levelProgressBarWidth) / experienceToLevelUp;
+              var experienceSinceLevelUp = Math.round(levelProgressBarWidth / experiencePointWidth);
+              var experienceAbsChange = Math.abs(experienceChange);
+              $(".progress-bar-profile .progress-bar")
+                .width((experienceSinceLevelUp - experienceAbsChange) * experiencePointWidth * 100 + "%");
+              $('<div class="progress-bar">')
+                .width(experienceAbsChange * experiencePointWidth * 100 + "%")
+                .addClass(experienceChange > 0 ? "progress-bar-success" : "progress-bar-danger")
+                .insertBefore(levelProgressLabel);
+              levelProgressLabel.text(
+                currentExperience + " XP (" + experienceToLevelUp + " to next level, "
+                  + experienceAbsChange + " " + (experienceChange > 0 ? "gained" : "lost") + " recently)");
+            }
+        }
+      }
+      panelPositions.level = currentLevel;
+      panelPositions.experience = currentExperience;
 
       panelPositions.save();
     }
@@ -2971,7 +3045,7 @@ function betterForum()
         day = parseInt(m[5], 10);
         year = parseInt(m[6], 10) + 2000;
         t.text("edited: " + convertForumTime(year, month, day, hours, minutes));
-      }
+    }
     }
   );
 
@@ -3154,6 +3228,8 @@ function updateScriptSettings(theForm)
   var result = {};
   $(theForm).find("input,textarea").each(function()
     {
+      if (this.type == "radio" && !this.checked) return;
+      
       if (this.type == "checkbox")
       {
         result[this.name] = this.checked ? 1 : 0;
@@ -3194,7 +3270,7 @@ function addScriptSettings()
     div.append('<label class="control-label" for="">' + name + '</label>');
     settings.forEach(function(id)
       {
-        var v = options[id[0]], name = id[0], t = id[1], desc = id[2];
+        var v = options[id[0]], name = id[0], t = id[1], desc = id[2], opt = id[3];
         var c = $('<div class="controls"></div>');
         if (t == "boolean")
         {
@@ -3208,6 +3284,22 @@ function addScriptSettings()
         else if (t == "longstr")
         {
           c.append('<b>' + desc + ':</b><textarea class="form-control" name="' + name + '">' + escapeHTML(v) + '</textarea>');
+        }
+        else if (t == "radio")
+        {
+          c.append('<b>' + desc + ':</b>');
+          for (var key in opt) if (opt.hasOwnProperty(key))
+          {
+            var id = "anbt_" + name + "_" + key;
+            $('<input class="form-control" type="radio">')
+              .attr({id: id, name: name, value: key, "data-subtype": ($.isArray(opt) ? "number" : "string")})
+              .prop("checked", key == v)
+              .appendTo(c);
+            $('<label style="margin-left: 16px">')
+              .attr({"for": id})
+              .html(opt[key])
+              .appendTo(c);
+          }
         }
         else
         {
@@ -3229,14 +3321,14 @@ function addScriptSettings()
     [
       ["newCanvas", "boolean", 'New drawing canvas (also allows <a href="http://grompe.org.ru/replayable-drawception/">watching playback</a>)'],
       ["submitConfirm", "boolean", "Confirm submitting if more than a minute is left (New canvas only)"],
-      ["smoothening", "boolean", "Smoothening of strokes (New canvas only)"],
+      ["smoothening", "radio", "Smoothing of strokes (New canvas only)", ["Disabled", "1px", "2px", "3px", "4px"]],
       ["asyncSkip", "boolean", "Fast Async Skip (experimental, applies to old canvas only)"],
       ["hideCross", "boolean", "Hide the cross when drawing"],
       ["enterToCaption", "boolean", "Submit captions (and start games) by pressing Enter"],
       ["backup", "boolean", "Save the drawing in case of error and restore it in sandbox"],
       ["timeoutSound", "boolean", "Warning sound when only a minute is left (normal games)"],
       ["timeoutSoundBlitz", "boolean", "Warning sound when only 5 seconds left (blitz)"],
-      ["rememberPosition", "boolean", "Show your panel position and track changes in unfinished games list"],
+      ["rememberPosition", "boolean", "Show your panel position and track changes in unfinished games list and your experience"],
       ['colorNumberShortcuts', 'boolean', "Use 0-9 keys to select the color"],
       ['colorUnderCursorHint', 'boolean', "Show the color under the cursor in the palette (New canvas only)"],
       ['colorDoublePress', 'boolean', 'Double press 0-9 keys to select color without pressing shift (New canvas only)'],
