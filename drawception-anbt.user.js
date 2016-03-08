@@ -2118,11 +2118,13 @@ function betterView()
   }
 
   var drawings = $('img[src^="/pub/panels/"]');
-
-  // Show approximate creation time from the first drawing panel
-  var startDate = panelUrlToDate(drawings.attr("src"));
-  var lead = $("#main .lead").first();
-  lead.text(lead.text().replace("game completed", "game started on " + startDate + " and completed"));
+  if (drawings.length)
+  {
+    // Show approximate creation time from the first drawing panel
+    var startDate = panelUrlToDate(drawings.attr("src"));
+    var lead = $("#main .lead").first();
+    lead.text(lead.text().replace("game completed", "game started on " + startDate + " and completed"));
+  }
 
   // Show each drawing make date
   drawings.each(function()
