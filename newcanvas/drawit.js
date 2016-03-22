@@ -2536,7 +2536,7 @@ function bindEvents()
       e.preventDefault();
       options.colorDoublePress = !options.colorDoublePress;
     }
-    else if (e.keyCode == "C".charCodeAt(0) && !e.ctrlKey)
+    else if (e.keyCode == "C".charCodeAt(0) && !e.ctrlKey && !e.metaKey)
     {
       e.preventDefault();
       options.hideCross = !options.hideCross;
@@ -2567,13 +2567,13 @@ function bindEvents()
       e.preventDefault();
       updateChooseBackground(!chooseBackground);
     }
-    else if (e.keyCode == "E".charCodeAt(0) && !e.ctrlKey)
+    else if (e.keyCode == "E".charCodeAt(0) && !e.ctrlKey && !e.metaKey)
     {
       e.preventDefault();
       anbt.SetColor(0, "eraser");
       updateColorIndicators();
     }
-    else if (e.keyCode >= 48 && e.keyCode <= 57 && !e.ctrlKey && options.colorNumberShortcuts)
+    else if (e.keyCode >= 48 && e.keyCode <= 57 && !e.ctrlKey && !e.metaKey && options.colorNumberShortcuts)
     {
       e.preventDefault();
       var i = (e.keyCode == 48) ? 9 : e.keyCode - 49;
@@ -2608,7 +2608,7 @@ function bindEvents()
         anbt.StrokeBegin(p.x, p.y);
       }
     }
-    else if (e.keyCode == "T".charCodeAt(0) && !e.ctrlKey && !e.altKey && !e.shiftKey)
+    else if (e.keyCode == "T".charCodeAt(0) && !e.ctrlKey && !e.metaKey && !e.altKey && !e.shiftKey)
     {
       e.preventDefault();
 
@@ -2630,7 +2630,7 @@ function bindEvents()
       e.preventDefault();
       anbt.ClearWithColor(anbt.color[0]);
     }
-    else if ((e.keyCode == 189 || e.keyCode == 219 || e.keyCode == 188) && !e.ctrlKey) // - or [ or ,
+    else if ((e.keyCode == 189 || e.keyCode == 219 || e.keyCode == 188) && !e.ctrlKey && !e.metaKey) // - or [ or ,
     {
       e.preventDefault();
       for (var i = 1; i < brushSizes.length; i++)
@@ -2642,7 +2642,7 @@ function bindEvents()
         }
       }
     }
-    else if ((e.keyCode == 187 || e.keyCode == 221 || e.keyCode == 190) && !e.ctrlKey) // = or ] or .
+    else if ((e.keyCode == 187 || e.keyCode == 221 || e.keyCode == 190) && !e.ctrlKey && !e.metaKey) // = or ] or .
     {
       e.preventDefault();
       for (var i = 0; i < brushSizes.length - 1; i++)
@@ -2654,12 +2654,12 @@ function bindEvents()
         }
       }
     }
-    else if (e.keyCode >= 49 && e.keyCode <= 52 && e.ctrlKey) // Ctrl+1,2,3,4
+    else if (e.keyCode >= 49 && e.keyCode <= 52 && (e.ctrlKey || e.metaKey)) // Ctrl+1,2,3,4
     {
       e.preventDefault();
       ID("brush" + (e.keyCode - 49)).click();
     }
-    else if (e.keyCode == 32 && !e.ctrlKey && !e.altKey && !e.shiftKey)
+    else if (e.keyCode == 32 && !e.ctrlKey && !e.altKey && !e.shiftKey && !e.metaKey)
     {
       playCommonDown(e);
     }
