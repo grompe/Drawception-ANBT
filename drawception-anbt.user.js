@@ -2033,7 +2033,7 @@ function reversePanels()
 window.likePanelById = likePanelById;
 function likePanelById(id)
 {
-  $.ajax({url: '/viewgame/like/panel.json?panelid=' + id + '&action=Like'});
+  $.ajax({url: '/game/like/panel.json?panelid=' + id + '&action=Like'});
 }
 
 window.likeAll = likeAll;
@@ -2108,7 +2108,7 @@ function betterView()
 
   // Automatically fix URL to a more canonical one
   var ogurl = $('meta[property="og:url"]').attr("content");
-  if (ogurl && ogurl.match("/viewgame/"))
+  if (ogurl && ogurl.match("/game/"))
   {
     ogurl = ogurl.replace("http://drawception.com", "");
     try
@@ -2231,7 +2231,7 @@ function betterView()
   // Highlight new comments and remember seen comments
   var seenComments = localStorage.getItem("gpe_seenComments");
   seenComments = (seenComments === null) ? {} : JSON.parse(seenComments);
-  var gameid = document.location.href.match(/viewgame\/([^\/]+)\//)[1];
+  var gameid = document.location.href.match(/game\/([^\/]+)\//)[1];
   var comments = $("#comments").parent();
   var holders = comments.find(".comment-holder");
   if (!holders.length) return;
@@ -2474,13 +2474,13 @@ function initAjaxRetry()
 
     if (options.retryEnabled) return;
 
-    var isComment = options.url === "/viewgame/comments/add.json";
+    var isComment = options.url === "/game/comments/add.json";
     var retryCount = 0;
 
     options.retryEnabled = true;
     options.success = function (data, textStatus, jqXHR)
     {
-      if (options.url === "/viewgame/like/panel.json" && data && data.error === "Invalid request. You already liked this?")
+      if (options.url === "/game/like/panel.json" && data && data.error === "Invalid request. You already liked this?")
       {
         data = { callJS: "updateLikeDisplay", data: { panelid: originalOptions.data.panelid, setstatus: originalOptions.data.action === "Like" ? "on" : "off"} };
       }
@@ -2656,7 +2656,7 @@ function viewMyGameBookmarks()
                   return;
                 }
                 var title = e.match(/<title>(.+)<\/title>/)[1];
-                m = e.match(/\/viewgame\/([^\/]+)\/[^\/]+\//);
+                m = e.match(/\/game\/([^\/]+)\/[^\/]+\//);
                 var url = m[0];
                 var gameid = m[1];
                 delete games[id];
@@ -3025,7 +3025,7 @@ function betterForum()
       if (!t.parent().is("a"))
       {
         var gameid = t.attr("src").match(/\/([^-]+)-\d+.png/)[1];
-        var gameurl = "/viewgame/" + gameid + "/-/";
+        var gameurl = "/game/" + gameid + "/-/";
         t.wrap('<a href="' + gameurl +'"></a>');
       }
     }
@@ -3452,7 +3452,7 @@ function pageEnhancements()
       empowerPlay();
     }
   }
-  if (loc.match(/drawception\.com\/viewgame\//))
+  if (loc.match(/drawception\.com\/game\//))
   {
     betterView();
   }
