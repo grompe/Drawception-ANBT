@@ -89,6 +89,11 @@ Forum:
 
 ## CHANGELOG
 
+1.75.2016.3
+- Fix for the case when no drawings are left in the game (all flagged) o_O
+- New canvas: Support Macintosh Command key just as Ctrl
+- Adjust /viewgame/ to /game/ URL as changed with the site update
+
 1.74.2016.2
 - New canvas: ability to apply custom CSS, experimental
 
