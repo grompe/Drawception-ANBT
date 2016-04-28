@@ -914,6 +914,14 @@ function bindCanvasEvents()
     });
   }
 
+  var updateUsedChars = function(e)
+  {
+    ID("usedchars").textContent = 46 - ID("caption").value.length;
+  };
+  ID("caption").addEventListener('change', updateUsedChars);
+  ID("caption").addEventListener('keydown', updateUsedChars);
+  ID("caption").addEventListener('input', updateUsedChars);
+
   ID("timeplus").addEventListener('click', function()
   {
     ID("timeplus").disabled = true;
