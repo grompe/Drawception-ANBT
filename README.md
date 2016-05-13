@@ -89,6 +89,10 @@ Forum:
 
 ## CHANGELOG
 
+1.76.2016.5
+- New canvas: show number of characters left in a caption
+- Fix making page address canonical and prevent eating anchor links in the process
+
 1.75.2016.3
 - Fix for the case when no drawings are left in the game (all flagged) o_O
 - New canvas: Support Macintosh Command key just as Ctrl
