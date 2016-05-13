@@ -2089,6 +2089,22 @@ function panelUrlToDate(url)
   return monthNames[parseInt(m[2], 10) - 1] + " " + day + ", " + m[1];
 }
 
+function fixLocationToCanonical(m)
+{
+  var ogurl = $('meta[property="og:url"]').attr("content");
+  if (ogurl && ogurl.match(m))
+  {
+    ogurl = ogurl.replace("https://drawception.com", "");
+    try
+    {
+      if (location.pathname != ogurl)
+      {
+        history.replaceState({}, null, ogurl + location.hash);
+      }
+    } catch(e) {};
+  }
+}
+
 function betterCreateGame()
 {
   if (!options.enterToCaption)
@@ -2114,16 +2130,7 @@ function betterView()
     return;
   }
 
-  // Automatically fix URL to a more canonical one
-  var ogurl = $('meta[property="og:url"]').attr("content");
-  if (ogurl && ogurl.match("/game/"))
-  {
-    ogurl = ogurl.replace("http://drawception.com", "");
-    try
-    {
-      if (location.pathname != ogurl) history.replaceState({}, null, ogurl);
-    } catch(e) {};
-  }
+  fixLocationToCanonical("/game/");
 
   var drawings = $('img[src^="/pub/panels/"]');
   if (drawings.length)
@@ -2312,16 +2319,7 @@ function betterPanel()
     location.pathname = "/panel/-/" + scrambleID(id) + "/-/";
   }
 
-  // Automatically fix URL to a more canonical one
-  var ogurl = $('meta[property="og:url"]').attr("content");
-  if (ogurl && ogurl.match("/panel/"))
-  {
-    ogurl = ogurl.replace("http://drawception.com", "");
-    try
-    {
-      if (location.pathname != ogurl) history.replaceState({}, null, ogurl);
-    } catch(e) {};
-  }
+  fixLocationToCanonical("/panel/");
 
   var favButton = $('<button class="btn btn-info" style="margin-top: 20px"><span class="glyphicon glyphicon-heart"></span> <b>Favorite</b></button>');
   favButton.click(function(e)
