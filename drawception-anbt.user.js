@@ -630,6 +630,7 @@ function handlePlayParameters()
     }
     ID("caption").value = "";
     ID("caption").focus();
+    ID("usedchars").textContent = "46";
   }
 
   if (!info.timeleft && info.timeleft2)
