@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      1.76.2016.5
+// @version      1.77.2016.6
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.76.2016.5";
+var SCRIPT_VERSION = "1.77.2016.6";
 var NEWCANVAS_VERSION = 26; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
@@ -2217,6 +2217,11 @@ function betterView()
       if (this.replayAdded) return;
       this.replayAdded = true;
       var panel = $(this).parent();
+      // FIXME: Temporary solution
+      var id = scrambleID(panel.attr("id").slice(6));
+      var replayButton = $('<a href="http://grompe.org.ru/drawit/#drawception/' + id + '" class="panel-number anbt_replaypanel glyphicon glyphicon-asterisk text-muted" title="Replay if possible"></span>');
+      panel.before(replayButton);
+      /*
       checkForRecording(this.src, function()
       {
         var id = scrambleID(panel.attr("id").slice(6));
@@ -2229,6 +2234,7 @@ function betterView()
         });
         panel.before(replayButton);
       });
+      */
     };
     drawings.on("load", addReplayButton);
     drawings.each(function()
@@ -2361,6 +2367,10 @@ function betterPanel()
     var img = $(".gamepanel img");
     if (img.length)
     {
+      // FIXME: Temporary solution
+      var replayLink = $('<a class="btn btn-primary" style="margin-top: 20px" href="http://grompe.org.ru/drawit/#drawception/' + panelId + '"><span class="glyphicon glyphicon-asterisk"></span> <b>Replay (if possible)</b></a> ');
+      $(".gamepanel").after(replayLink);
+      /*
       checkForRecording(img.attr("src"), function()
       {
         var replayLink = $('<a class="btn btn-primary" style="margin-top: 20px" href="/sandbox/#' + panelId + '"><span class="glyphicon glyphicon-repeat"></span> <b>Replay</b></a> ');
@@ -2372,6 +2382,7 @@ function betterPanel()
         });
         $(".gamepanel").after(replayLink);
       });
+      */
     }
   }
 

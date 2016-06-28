@@ -89,6 +89,11 @@ Forum:
 
 ## CHANGELOG
 
+1.77.2016.6
+- New canvas: fix for characters remaining not being reset
+- Adjust Adjust image URLs as changed with the site update
+- New canvas: temporary solution for replaying panels
+
 1.76.2016.5
 - New canvas: show number of characters left in a caption
 - Fix making page address canonical and prevent eating anchor links in the process
