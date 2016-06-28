@@ -419,7 +419,7 @@ function extractInfoFromHTML(html)
     playerid: extract(/<a href="\/player\/(\d+)\//),
     playername: extract(/<span class="glyphicon glyphicon-user"><\/span> (.+)\n/),
     playerurl: extract(/<a href="(\/player\/\d+\/[^\/]+\/)"/),
-    avatar: extract(/<img src="(\/pub\/avatars\/[^"]+)"/),
+    avatar: extract(/<img src="(https:\/\/cdn\.drawception\.com\/images\/avatars\/[^"]+)"/),
     coins: extract(/<span id="user-coins-value">(\d+)<\/span>/),
     pubgames: extract(/alt="pubgames"[^>]*> (\d+\/\d+)/),
     friendgames: extract(/alt="friendgames"[^>]*> (\d+)/),
@@ -515,7 +515,7 @@ function handleSandboxParameters()
   {
     var playerid = gameinfo.drawingbylink.match(/\d+/);
     var playername = gameinfo.drawingbylink.match(/>([^<]+)</);
-    var avatar = '<img src="/pub/avatars/' + playerid + '.jpg" width="25" height="25">';
+    var avatar = '<img src="https://cdn.drawception.com/images/avatars/' + playerid + '.jpg" width="25" height="25">';
     var replaylink = '<a href="http://grompe.org.ru/drawit/#drawception/' +
       location.hash.substr(1) + '" title="Public replay link for sharing">Drawing</a>';
     ID("headerinfo").innerHTML = replaylink + ' by ' + avatar + " " + gameinfo.drawingbylink;
@@ -2082,7 +2082,7 @@ function toggleLight()
 
 function panelUrlToDate(url)
 {
-  var m = url.match(/\/pub\/panels\/(\d+)\/(\d+)-(\d+)\//);
+  var m = url.match(/\/images\/panels\/(\d+)\/(\d+)-(\d+)\//);
   if (!m) return;
   var monthNames = ["January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"];
@@ -2133,7 +2133,7 @@ function betterView()
 
   fixLocationToCanonical("/game/");
 
-  var drawings = $('img[src^="/pub/panels/"]');
+  var drawings = $('img[src^="https://cdn.drawception.com/images/panels/"]');
   if (drawings.length)
   {
     // Show approximate creation time from the first drawing panel
@@ -2857,7 +2857,7 @@ function betterPlayer()
     }
 
   } else { // Not the current user's profile or not profile homepage
-    var drawings = $('img[src^="/pub/panels/"]');
+    var drawings = $('img[src^="https://cdn.drawception.com/images/images/panels/"]');
     // Show replayable panels; links are not straightforward to make since there's no panel ID
     if (options.newCanvas)
     {
@@ -3026,7 +3026,7 @@ function betterForum()
   );
 
   // Linkify drawing panels
-  $('img[src*="/pub/panels/"]').each(function()
+  $('img[src*="/images/panels/"], img[src*="/pub/panels/"]').each(function()
     {
       var t = $(this);
       if (!t.parent().is("a"))
