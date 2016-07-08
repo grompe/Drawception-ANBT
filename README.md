@@ -89,6 +89,11 @@ Forum:
 
 ## CHANGELOG
 
+1.78.2016.7
+- New canvas: support Roulette item (if it gives zero colors due to Drawception bug, random palette will be chosen)
+- Restore replay and replay detection
+- Script errors now report line numbers
+
 1.77.2016.6
 - New canvas: fix for characters remaining not being reset
 - Adjust Adjust image URLs as changed with the site update
