@@ -403,6 +403,17 @@ function extractInfoFromHTML(html)
     var m = html.match(r);
     return m && m[1] || !!m;
   };
+  var extractAll = function(r)
+  {
+    if (!r.global) return extract(r);
+    var m, res = [];
+    do
+    {
+      m = r.exec(html);
+      if (m) res.push(m[1]);
+    } while (m)
+    return res;
+  };
   return {
     error: extract(/<div class="error">\s+([^<]+)\s+<\/div>/),
     gameid: extract(/name="which_game" value="([^"]+)"/),
@@ -414,7 +425,8 @@ function extractInfoFromHTML(html)
     timeleft2: extract(/<span id="timeleft" class="hasCountdown">[^:]+>(\d+:\d+)/) || extract(/<span class="hasCountdown" id="timeleft">[^:]+>(\d+:\d+)/),
     caption: extract(/<p class="play-phrase">\s+([^<]+)\s+<\/p>/),
     image: extract(/<img src="(data:image\/png;base64,[^"]*)"/),
-    palette: extract(/heme item was applied to this game"[^>]*>([^<]+)<\/span>/),
+    palette: extract(/item was applied to this game"[^>]*>([^<]+)<\/span>/),
+    colors: extractAll(/data-color=['"](#[0-9a-f]{3,6})['"]/gi),
     bgbutton: extract(/<img src="\/img\/draw_bglayer.png"/),
     playerid: extract(/<a href="\/player\/(\d+)\//),
     playername: extract(/<span class="glyphicon glyphicon-user"><\/span> (.+)\n/),
@@ -543,6 +555,7 @@ function handlePlayParameters()
   ID("bookmark").disabled = info.drawfirst;
   ID("options").disabled = true; // Not implemented yet!
   ID("timeplus").disabled = false;
+  ID("submit").disabled = false;
 
   ID("headerinfo").innerHTML = 'Playing with ' + vertitle;
   ID("drawthis").classList.add("onlyplay");
@@ -605,17 +618,41 @@ function handlePlayParameters()
     beach: ["Beach", "#f7dca2"],
   };
   var pal = info.palette || "normal";
-  var paldata = palettemap[pal.toLowerCase()];
+  var paldata;
+  if (pal == "roulette")
+  {
+    if (info.colors.length)
+    {
+      // Normalize colors to #xxxxxx, in case of #xxx
+      palettes.Roulette = info.colors.map(function(c)
+      {
+        var v = color2rgba(c);
+        return rgb2hex(v[0], v[1], v[2]);
+      });
+      paldata = ["Roulette", info.colors[info.colors.length - 1]];
+    } else {
+      alert("Warning: Drawception error, roulette has zero colors. ANBT will choose a random palette.");
+      delete palettes.Roulette;
+      var k = Object.keys(palettemap);
+      var n = k[k.length * Math.random() << 0];
+      palettes.Roulette = palettes[palettemap[n][0]];
+      paldata = ["Roulette", palettemap[n][1]];
+    }
+  } else {
+    paldata = palettemap[pal.toLowerCase()];
+  }
   if (!paldata)
   {
     alert("Error, please report! Unknown palette: '" + pal + "'.\nAre you using the latest ANBT version?");
     // Prevent from drawing with a wrong palette
     anbt.Lock();
+    ID("submit").disabled = true;
+  } else {
+    setPaletteByName(paldata[0]);
+    anbt.SetBackground(paldata[1]);
+    anbt.color = [palettes[paldata[0]][0], "eraser"];
+    updateColorIndicators();
   }
-  setPaletteByName(paldata[0]);
-  anbt.SetBackground(paldata[1]);
-  anbt.color = [palettes[paldata[0]][0], "eraser"];
-  updateColorIndicators();
 
   ID("setbackground").hidden = !info.bgbutton;
 
@@ -961,13 +998,18 @@ function bindCanvasEvents()
 
 function deeper_main()
 {
-  window.onerror = function(e)
+  window.onerror = function(e, file, line)
   {
     // Silence the bogus error message from the overwritten page's timer
     if (e.toString().indexOf("periodsToSeconds") != -1) return;
     // Silence the useless error message
     if (e.toString().match(/script error/i)) return;
-    alert(e);
+    if (line)
+    {
+      alert(e + "\nline: " + line);
+    } else {
+      alert(e);
+    }
   };
 
   if (options.newCanvasCSS)
@@ -2217,11 +2259,6 @@ function betterView()
       if (this.replayAdded) return;
       this.replayAdded = true;
       var panel = $(this).parent();
-      // FIXME: Temporary solution
-      var id = scrambleID(panel.attr("id").slice(6));
-      var replayButton = $('<a href="http://grompe.org.ru/drawit/#drawception/' + id + '" class="panel-number anbt_replaypanel glyphicon glyphicon-asterisk text-muted" title="Replay if possible"></span>');
-      panel.before(replayButton);
-      /*
       checkForRecording(this.src, function()
       {
         var id = scrambleID(panel.attr("id").slice(6));
@@ -2234,7 +2271,6 @@ function betterView()
         });
         panel.before(replayButton);
       });
-      */
     };
     drawings.on("load", addReplayButton);
     drawings.each(function()
@@ -2288,7 +2324,7 @@ function betterView()
   localStorage.setItem("gpe_seenComments", JSON.stringify(seenComments));
 }
 
-function checkForRecording(url, yesfunc)
+function checkForRecording(url, yesfunc, retrying)
 {
   var xhr = new XMLHttpRequest();
   xhr.open('GET', url, true);
@@ -2313,6 +2349,11 @@ function checkForRecording(url, yesfunc)
         i += chunklen;
       }
     }
+  };
+  xhr.onerror = function(e)
+  {
+    console.log("checkForRecording fail (likely due to cache without CORS), retrying");
+    if (!retrying) checkForRecording(url + "?anbt", yesfunc, true);
   };
   xhr.send();
 }
@@ -2367,10 +2408,6 @@ function betterPanel()
     var img = $(".gamepanel img");
     if (img.length)
     {
-      // FIXME: Temporary solution
-      var replayLink = $('<a class="btn btn-primary" style="margin-top: 20px" href="http://grompe.org.ru/drawit/#drawception/' + panelId + '"><span class="glyphicon glyphicon-asterisk"></span> <b>Replay (if possible)</b></a> ');
-      $(".gamepanel").after(replayLink);
-      /*
       checkForRecording(img.attr("src"), function()
       {
         var replayLink = $('<a class="btn btn-primary" style="margin-top: 20px" href="/sandbox/#' + panelId + '"><span class="glyphicon glyphicon-repeat"></span> <b>Replay</b></a> ');
@@ -2382,7 +2419,6 @@ function betterPanel()
         });
         $(".gamepanel").after(replayLink);
       });
-      */
     }
   }
 
@@ -2868,7 +2904,7 @@ function betterPlayer()
     }
 
   } else { // Not the current user's profile or not profile homepage
-    var drawings = $('img[src^="https://cdn.drawception.com/images/images/panels/"]');
+    var drawings = $('img[src^="https://cdn.drawception.com/images/panels/"]');
     // Show replayable panels; links are not straightforward to make since there's no panel ID
     if (options.newCanvas)
     {
