@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      1.78.2016.7
+// @version      1.79.2016.7
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,8 +14,8 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.78.2016.7";
-var NEWCANVAS_VERSION = 26; // Increase to update the cached canvas
+var SCRIPT_VERSION = "1.79.2016.7";
+var NEWCANVAS_VERSION = 27; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
 
@@ -261,6 +261,15 @@ var palettes =
     [
       '#1ca4d2', '#65bbe2', '#6ab7bf', '#94cbda', '#9cbf80',
       '#d2e1ab', '#b8a593', '#d7cfb9', '#dc863e', '#f7dca2'
+    ],
+  },
+  {
+    name: "The Colors of the Year 2016",
+    class: "label-theme_coty_2016",
+    colors:
+    [
+      '#91a7d0', '#f6cac9', '#eb9587', '#776a5f',
+      '#d1c2ab', '#a39d9d', '#648589'
     ],
   },
   {
@@ -616,6 +625,7 @@ function handlePlayParameters()
     "the blues": ["the blues", "#295c6f"],
     spring: ["Spring", "#ffffff"],
     beach: ["Beach", "#f7dca2"],
+    "coty 2016": ["Colors of 2016", "#648589"],
   };
   var pal = info.palette || "normal";
   var paldata;

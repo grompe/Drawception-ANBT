@@ -655,7 +655,7 @@ button:disabled {
     <div id="headercont">
       <div class="headerleft">
         <a href="/" title="Home"><img src="/img/logo-d.png"></a>
-        <span id="headerinfo" class="hideonsmall">New Canvas v26</span>
+        <span id="headerinfo" class="hideonsmall">New Canvas v27</span>
       </div>
       <div class="headerright">
         <a id="start" title="Play Drawception!" class="headerbutton active onlysandbox">Play</a>
@@ -1419,6 +1419,8 @@ var palettes = {
                       '#3e2409', '#a66621', '#a67e21', '#ebbb49', '#ffc0cb', '#ffffff'],
   "Beach":           ['#1ca4d2', '#65bbe2', '#6ab7bf', '#94cbda', '#9cbf80', '#d2e1ab',
                       '#b8a593', '#d7cfb9', '#dc863e', '#f7dca2'],
+  "Colors of 2016":  ['#91a7d0', '#f6cac9', '#eb9587', '#776a5f',
+                      '#d1c2ab', '#a39d9d', '#648589'],
   "DawnBringer 16":  ['#140c1c', '#442434', '#30346d', '#4e4a4e', '#854c30', '#346524',
                       '#d04648', '#757161', '#597dce', '#d27d2c', '#8595a1', '#6daa2c',
                       '#d2aa99', '#6dc2ca', '#dad45e', '#deeed6'],
@@ -3199,7 +3201,7 @@ anbt.BindContainer(ID("svgContainer"));
 bindEvents();
 timerStart = Date.now();
 setInterval(updateTimer, 500);
-window.anbtReady();
+if (window.anbtReady) window.anbtReady();
 
 </script>
 </body>

@@ -89,6 +89,9 @@ Forum:
 
 ## CHANGELOG
 
+1.79.2016.7
+- Add support for the new palette: Colors of the Year 2016
+
 1.78.2016.7
 - New canvas: support Roulette item (if it gives zero colors due to Drawception bug, random palette will be chosen)
 - Restore replay and replay detection
