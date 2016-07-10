@@ -3568,6 +3568,7 @@ function pageEnhancements()
     ".anbt_showt .anbt_unhidet:after {content: ' threads hidden. Hide'}" +
     ".anbt_hft:after {content: '[hide]'}" +
     ".forum-thread.anbt_hidden .anbt_hft:after {content: '[show]'}" +
+    ".avatar {box-sizing: content-box}" +
     ""
   );
   // Enhance menu for higher resolutions
