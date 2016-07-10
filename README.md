@@ -89,6 +89,9 @@ Forum:
 
 ## CHANGELOG
 
+1.80.2016.7
+- New canvas: fix palette detection
+
 1.79.2016.7
 - Add support for the new palette: Colors of the Year 2016
 

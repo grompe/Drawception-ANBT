@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      1.79.2016.7
+// @version      1.80.2016.7
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.79.2016.7";
+var SCRIPT_VERSION = "1.80.2016.7";
 var NEWCANVAS_VERSION = 27; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
@@ -434,7 +434,7 @@ function extractInfoFromHTML(html)
     timeleft2: extract(/<span id="timeleft" class="hasCountdown">[^:]+>(\d+:\d+)/) || extract(/<span class="hasCountdown" id="timeleft">[^:]+>(\d+:\d+)/),
     caption: extract(/<p class="play-phrase">\s+([^<]+)\s+<\/p>/),
     image: extract(/<img src="(data:image\/png;base64,[^"]*)"/),
-    palette: extract(/item was applied to this game"[^>]*>([^<]+)<\/span>/),
+    palette: extract(/was applied to this game"[^>]*>([^<]+)<\/span>/),
     colors: extractAll(/data-color=['"](#[0-9a-f]{3,6})['"]/gi),
     bgbutton: extract(/<img src="\/img\/draw_bglayer.png"/),
     playerid: extract(/<a href="\/player\/(\d+)\//),
@@ -487,7 +487,7 @@ function getParametersFromPlay()
 
 function exitToSandbox()
 {
-  if (window.gameinfo.drawfirst)
+  if (window.gameinfo.drawfirst && !window.drawfirst_aborted)
   {
     sendGet("/play/abort-start.json?game_token=" + window.gameinfo.gameid, function()
     {
@@ -571,6 +571,7 @@ function handlePlayParameters()
   ID("emptytitle").classList.remove("onlyplay");
 
   window.submitting = false;
+  window.drawfirst_aborted = false;
 
   if (info.error)
   {
@@ -768,6 +769,7 @@ function bindCanvasEvents()
       sendGet("/play/abort-start.json?game_token=" + window.gameinfo.gameid, function()
       {
         ID("exit").disabled = false;
+        window.drawfirst_aborted = true;
         exitToSandbox();
         document.location.pathname = "/create/";
       }, function()
