@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      1.80.2016.7
+// @version      1.81.2016.7
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.80.2016.7";
+var SCRIPT_VERSION = "1.81.2016.7";
 var NEWCANVAS_VERSION = 27; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
@@ -2474,7 +2474,7 @@ function betterPanel()
     panelPositions.load();
     if (!panelPositions.player[panelId])
     {
-      var profileUrl = $(".btn").has(".avatar").attr("href");
+      var profileUrl = $(".btn").has(".avatar-sm").attr("href");
       $.get(profileUrl, function(html)
       {
         html = html.replace(/<img\b[^>]*>/ig, ''); // prevent image preload
@@ -3678,7 +3678,7 @@ function pageEnhancements()
     // JS and CSS update simultaneously now
     jsVersion = $('script[src^="/js/"]').attr("src").match(/\/js\/\w+\.js\?(.+)$/)[1];
     versionDisplay = "ANBT v" + SCRIPT_VERSION + " | site " + jsVersion;
-    if (jsVersion != "v2.1.1") versionDisplay += "*";
+    if (jsVersion != "v2.1.7") versionDisplay += "*";
   } catch(e)
   {
     versionDisplay = "ANBT v" + SCRIPT_VERSION + " | js/css unknown";

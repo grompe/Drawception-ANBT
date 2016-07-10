@@ -89,6 +89,9 @@ Forum:
 
 ## CHANGELOG
 
+1.81.2016.7
+- Fix panel position broken with the site update
+
 1.80.2016.7
 - New canvas: fix palette detection
 
