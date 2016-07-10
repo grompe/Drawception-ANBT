@@ -2815,7 +2815,7 @@ function betterPlayer()
   if (options.removeFlagging) $('a.btn:contains("Report")').remove();
 
   // Linkify the links in location
-  var pubinfo = $(".profile-user-header>div.row>div>h1+p");
+  var pubinfo = $('.profile-user-header div>b:contains("Location")').parent();
   if (pubinfo.length)
   {
     linkifyNodeText(pubinfo);
