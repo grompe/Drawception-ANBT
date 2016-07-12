@@ -655,7 +655,7 @@ button:disabled {
     <div id="headercont">
       <div class="headerleft">
         <a href="/" title="Home"><img src="/img/logo-d.png"></a>
-        <span id="headerinfo" class="hideonsmall">New Canvas v27</span>
+        <span id="headerinfo" class="hideonsmall">New Canvas v28</span>
       </div>
       <div class="headerright">
         <a id="start" title="Play Drawception!" class="headerbutton active onlysandbox">Play</a>
@@ -3150,7 +3150,7 @@ function bindEvents()
       e.preventDefault();
       ID("brush" + (e.keyCode - 49)).click();
     }
-    else if (e.keyCode == 32 && !e.ctrlKey && !e.altKey && !e.shiftKey && !e.metaKey)
+    else if (e.keyCode == 32 && (e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey)
     {
       playCommonDown(e);
     }

@@ -15,7 +15,7 @@
 function wrapped() {
 
 var SCRIPT_VERSION = "1.81.2016.7";
-var NEWCANVAS_VERSION = 27; // Increase to update the cached canvas
+var NEWCANVAS_VERSION = 28; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
 
