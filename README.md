@@ -89,6 +89,13 @@ Forum:
 
 ## CHANGELOG
 
+1.82.2016.7
+- Dark style: avatar borders
+- Dark style: softer comment separator
+- Make avatar size not include the borders
+- Fix linkifying in 'Location' field broken with the site update
+- New canvas: change playback shortcut from Space to Ctrl+Space
+
 1.81.2016.7
 - Fix panel position broken with the site update
 
