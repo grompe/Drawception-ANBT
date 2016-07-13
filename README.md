@@ -89,6 +89,11 @@ Forum:
 
 ## CHANGELOG
 
+1.83.2016.7
+- New canvas: support contests, finally!
+- New canvas: smaller undo cache for iPad/iPhone to avoid crashing on low memory devices
+- Old canvas: small fixes for contests
+
 1.82.2016.7
 - Dark style: avatar borders
 - Dark style: softer comment separator

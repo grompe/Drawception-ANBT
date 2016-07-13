@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      1.82.2016.7
+// @version      1.83.2016.7
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.82.2016.7";
+var SCRIPT_VERSION = "1.83.2016.7";
 var NEWCANVAS_VERSION = 28; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
@@ -340,6 +340,11 @@ function setupNewCanvas(insandbox, url, origpage)
 
   var panelid = url.match(/sandbox\/#?([^\/]+)/);
 
+  // Handle drawing contests only
+  var incontest = url.match(/contests\/play\//) && document.getElementById("drawingCanvas");
+  // Disable built-in safety warning
+  if (incontest) window.onbeforeunload = function(){};
+
   var sound = alarmSoundOgg;
   var vertitle = "ANBT v" + SCRIPT_VERSION;
 
@@ -349,6 +354,8 @@ function setupNewCanvas(insandbox, url, origpage)
   {
     normalurl = "/sandbox/";
     if (panelid) normalurl += "#" + panelid[1];
+  } else if (incontest) {
+    normalurl = "/contests/play/";
   } else {
     normalurl = "/play/";
     if (friendgameid) normalurl += friendgameid[1] + "/";
@@ -364,6 +371,7 @@ function setupNewCanvas(insandbox, url, origpage)
     if (friendgameid) window.friendgameid = friendgameid[1];
     if (panelid) window.panelid = panelid[1];
     window.insandbox = insandbox;
+    window.incontest = incontest;
     window.options = options;
     window.alarmSoundOgg = sound;
     window.vertitle = vertitle;
@@ -455,7 +463,7 @@ function extractInfoFromHTML(html)
 
 function getParametersFromPlay()
 {
-  var url = "/play/";
+  var url = window.incontest ? "/contests/play/" : "/play/";
   if (window.friendgameid)
   {
     url += window.friendgameid + "/";
@@ -487,7 +495,14 @@ function getParametersFromPlay()
 
 function exitToSandbox()
 {
-  if (window.gameinfo.drawfirst && !window.drawfirst_aborted)
+  if (window.incontext && !window.drawing_aborted)
+  {
+    sendGet("/contests/exit.json", function()
+    {
+      alert("You have missed your contest.");
+    });
+  }
+  if (window.gameinfo.drawfirst && !window.drawing_aborted)
   {
     sendGet("/play/abort-start.json?game_token=" + window.gameinfo.gameid, function()
     {
@@ -557,13 +572,13 @@ function handlePlayParameters()
 {
   var info = window.gameinfo;
 
-  ID("skip").disabled = info.drawfirst;
-  ID("report").disabled = info.drawfirst;
+  ID("skip").disabled = info.drawfirst || window.incontest;
+  ID("report").disabled = info.drawfirst || window.incontest;
   ID("exit").disabled = false;
   ID("start").disabled = false;
-  ID("bookmark").disabled = info.drawfirst;
+  ID("bookmark").disabled = info.drawfirst || window.incontest;
   ID("options").disabled = true; // Not implemented yet!
-  ID("timeplus").disabled = false;
+  ID("timeplus").disabled = window.incontest;
   ID("submit").disabled = false;
 
   ID("headerinfo").innerHTML = 'Playing with ' + vertitle;
@@ -571,7 +586,7 @@ function handlePlayParameters()
   ID("emptytitle").classList.remove("onlyplay");
 
   window.submitting = false;
-  window.drawfirst_aborted = false;
+  window.drawing_aborted = false;
 
   if (info.error)
   {
@@ -584,10 +599,15 @@ function handlePlayParameters()
     return exitToSandbox();
   }
 
-  ID("gamemode").innerHTML = (info.friend ? "Friend " : "Public ") +
-    (info.nsfw ? "Not Safe For Work (18+) " : "safe for work ") +
-    (info.blitz ? "BLITZ " : "") +
-    "Game";
+  if (window.incontest)
+  {
+    ID("gamemode").innerHTML = "Contest";
+  } else {
+    ID("gamemode").innerHTML = (info.friend ? "Friend " : "Public ") +
+      (info.nsfw ? "Not Safe For Work (18+) " : "safe for work ") +
+      (info.blitz ? "BLITZ " : "") +
+      "Game";
+  }
   ID("drawthis").innerHTML = info.caption || info.drawfirst && "(Start your game!)" || "";
   ID("tocaption").src = "";
 
@@ -762,6 +782,27 @@ function bindCanvasEvents()
 
   ID("exit").addEventListener('click', function()
   {
+    if (window.incontest)
+    {
+      if (!confirm("Quit the contest? Entry coins will be lost!")) return;
+      ID("exit").disabled = true;
+      sendGet("/contests/exit.json", function()
+      {
+        ID("exit").disabled = false;
+        window.drawing_aborted = true;
+        exitToSandbox();
+        document.location.pathname = "/contests/";
+      }, function()
+      {
+        ID("exit").disabled = false;
+        alert("Server error. :( Try again?");
+      }, function()
+      {
+        ID("exit").disabled = false;
+        alert("Server didn't respond in time. :( Try again?");
+      });
+      return;
+    }
     if (window.gameinfo.drawfirst)
     {
       if (!confirm("Abort creating a draw first game?")) return;
@@ -769,7 +810,7 @@ function bindCanvasEvents()
       sendGet("/play/abort-start.json?game_token=" + window.gameinfo.gameid, function()
       {
         ID("exit").disabled = false;
-        window.drawfirst_aborted = true;
+        window.drawing_aborted = true;
         exitToSandbox();
         document.location.pathname = "/create/";
       }, function()
@@ -845,8 +886,19 @@ function bindCanvasEvents()
       localStorage.setItem("anbt_drawingbackup_newcanvas", anbt.pngBase64);
     }
     window.submitting = true;
-    var params = "game_token=" + window.gameinfo.gameid + "&panel=" + encodeURIComponent(anbt.pngBase64);
-    sendPost('/play/draw.json', params, function()
+
+    var params, url, complete;
+    if (window.incontest)
+    {
+      params = "img=" + encodeURIComponent(anbt.pngBase64);
+      url = "/contests/submit-drawing.json";
+      complete = "contestDrawingComplete";
+    } else {
+      params = "game_token=" + window.gameinfo.gameid + "&panel=" + encodeURIComponent(anbt.pngBase64);
+      url = '/play/draw.json';
+      complete = "drawingComplete";
+    }
+    sendPost(url, params, function()
     {
       var o;
       try
@@ -867,7 +919,7 @@ function bindCanvasEvents()
         } else {
           alert(o.error);
         }
-      } else if (o.callJS == "drawingComplete")
+      } else if (o.callJS == complete)
       {
         window.onbeforeunload = function(){};
         location.replace(o.data.url);
@@ -1130,6 +1182,9 @@ function deeper_main()
     });
   }
 
+  // Poor poor memory devices, let's save on memory to avoid them "crashing"...
+  if (/iPad|iPhone/.test(navigator.userAgent)) anbt.fastUndoLevels = 3;
+  
   window.$ = function()
   {
     alert("Some additional script conflicts with ANBT new canvas, please disable it.");
@@ -1160,6 +1215,12 @@ function enhanceCanvas(insandbox)
   if (!canvas) return;
 
   var drawCursor = document.getElementById("drawCursor");
+  if (!drawCursor)
+  {
+    drawCursor = document.createElement("span");
+    drawCursor.id = "drawCursor";
+    document.getElementById("main").appendChild(drawCursor);
+  }
 
   $("#gameForm").after('<b>ANBT Note: you are using the old canvas! New canvas can be enabled on the <a href="/settings/"><span class="glyphicon glyphicon-cog" /> settings page</a>.</b>');
   $(document.body).append('<object id="wtPlugin" type="application/x-wacomtabletplugin" width="1" height="1"></object>');
@@ -1276,7 +1337,7 @@ function enhanceCanvas(insandbox)
   function saveBackup()
   {
     if (!options.backup) return;
-    var o = {game: null, image: drawApp.toDataURL(), timeleft: timeleft};
+    var o = {game: null, image: drawApp.toDataURL()};
     var which_game = $('input[name=which_game]');
     if (which_game.length) o.game = which_game.val();
     localStorage.setItem("anbt_drawingbackup", JSON.stringify(o));
@@ -3496,11 +3557,11 @@ function pageEnhancements()
   catch(e){}
 
   var insandbox = loc.match(/drawception\.com\/sandbox\/#?(.*)/);
-  var inplay = loc.match(/drawception\.com\/play\/(.*)/);
+  var inplay = loc.match(/drawception\.com\/(:?contests\/)?play\/(.*)/);
   if (options.newCanvas)
   {
-    // If created a friend game, the link won't present playable form
-    if (insandbox || (inplay && document.getElementById("gameForm")) || __DEBUG__)
+    // If created a friend game, the link won't present playable canvas
+    if (insandbox || (inplay && document.getElementById("drawingCanvas")) || __DEBUG__)
     {
       setTimeout(function()
       {
