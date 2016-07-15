@@ -3561,7 +3561,8 @@ function pageEnhancements()
   if (options.newCanvas)
   {
     // If created a friend game, the link won't present playable canvas
-    if (insandbox || (inplay && document.getElementById("drawingCanvas")) || __DEBUG__)
+    var hasCanvasOrGameForm = document.getElementById("gameForm") || document.getElementById("drawingCanvas");
+    if (insandbox || (inplay && hasCanvasOrGameForm) || __DEBUG__)
     {
       setTimeout(function()
       {
