@@ -264,7 +264,8 @@ var palettes =
     ],
   },
   {
-    name: "The Colors of the Year 2016",
+    name: "Coty 2016",
+    longname: "The Colors of the Year 2016",
     class: "label-theme_coty_2016",
     colors:
     [
