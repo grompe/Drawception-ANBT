@@ -445,7 +445,7 @@ function extractInfoFromHTML(html)
     image: extract(/<img src="(data:image\/png;base64,[^"]*)"/),
     palette: extract(/was applied to this game"[^>]*>([^<]+)<\/span>/),
     colors: extractAll(/data-color=['"](#[0-9a-f]{3,6})['"]/gi),
-    bgbutton: extract(/<img src="\/img\/draw_bglayer.png"/),
+    bgbutton: extract(/id=['"]btn-bglayer['"]/),
     playerid: extract(/<a href="\/player\/(\d+)\//),
     playername: extract(/<span class="glyphicon glyphicon-user"><\/span> (.+)\n/),
     playerurl: extract(/<a href="(\/player\/\d+\/[^\/]+\/)"/),
@@ -1223,19 +1223,38 @@ function enhanceCanvas(insandbox)
     document.getElementById("main").appendChild(drawCursor);
   }
 
-  $("#gameForm").after('<b>ANBT Note: you are using the old canvas! New canvas can be enabled on the <a href="/settings/"><span class="glyphicon glyphicon-cog" /> settings page</a>.</b>');
+  $("#gameForm").after('<b>ANBT Note: old canvas is no longer actively supported. New canvas can be enabled on the <a href="/settings/"><span class="glyphicon glyphicon-cog" /> settings page</a>.</b>');
   $(document.body).append('<object id="wtPlugin" type="application/x-wacomtabletplugin" width="1" height="1"></object>');
   var wtPlugin = document.getElementById("wtPlugin");
   var penAPI, strokeSize, dynSize, pressureUpdater, backupTimer;
   var lastColor;
+  var operaLastPalette;
 
   GM_addStyle(
     "#primaryColor, #secondaryColor {width: 49px; height: 20px; float: left; border: 1px solid #AAA}" +
+    "#pscolorContainer {width: 98px; margin: auto}" +
     ".label-normalpal {background: #888}" +
     ".selectable {-webkit-user-select: text; -moz-user-select: text; user-select: text}"
   );
-  if (!prestoOpera)
+  if (prestoOpera)
   {
+    var el = $("#colorOptions");
+    var recreateColors = function()
+    {
+      //var colorPickerVueInstance = el.parent().get(0).childNodes[1].__vue__;
+      var colorPickerVueInstance = document.body.__vue__.$children[0];
+      if (!colorPickerVueInstance) return;
+      var colors = colorPickerVueInstance.colors;
+      if (colors == operaLastPalette) return;
+      operaLastPalette = colors;
+      el.empty();
+      for (i = 0; i < colors.length; i++)
+      {
+        el.append('<button class="btn-color" data-color="#' + colors[i] + '" style="background: #' + colors[i] + '">');
+      }
+    };
+    recreateColors();
+  } else {
     GM_addStyle(
       (options.hideCross ? "#drawingCanvas.active {cursor: none !important}" : "") +
       "#drawCursor {display: block; z-index: 10; border: 1px solid #FFFFFF }"
@@ -1437,6 +1456,7 @@ function enhanceCanvas(insandbox)
       };
       drawApp.setColor = function(color, bypass)
       {
+        if (prestoOpera) recreateColors()
         if (!bypass) this.setPrimaryColor(color);
         var disp = (color === null) ? defaultFill : color;
         updateCursorColor(disp);
@@ -1448,7 +1468,7 @@ function enhanceCanvas(insandbox)
         }
         return this.old_setColor(color);
       };
-      defaultColor = $('#colorOptions').find('.selected').attr('data-color');
+      var defaultColor = drawApp.context.strokeStyle;
       drawApp.primary_color = defaultColor;
       drawApp.secondary_color = null;
       lastColor = defaultColor;
@@ -1686,43 +1706,55 @@ function enhanceCanvas(insandbox)
       // Add primary and secondary color indicators
       var pr = $('<div id="primaryColor" title="Primary color (left click)" style="background: ' + defaultColor +'">');
       var se = $('<div id="secondaryColor" title="Secondary color (right click)" style="background: url(/img/draw_eraser.png)">');
-      $(".btn-drawtool").first().before(pr).before(se);
+      var cont = $('<div id="pscolorContainer">');
+      cont.append(pr).append(se);
+      $(".btn-drawtool").first().before(cont);
+      $("#colorOptions").before(cont);
 
       // Adjust palette buttons to handle left and right clicks
       drawApp.eraser = function(){};
-      $(".eraserPicker").parent().mousedown(function(e)
+      var newEraser = function(e)
+      {
+        e.preventDefault();
+        var rightButton = (e.which === 3 || e.button === 2);
+        var leftButton = !rightButton;
+        if (leftButton)
         {
-          e.preventDefault();
-          var rightButton = (e.which === 3 || e.button === 2);
-          var leftButton = !rightButton;
-          if (leftButton)
-          {
-            drawApp.setPrimaryColor(null);
-          } else {
-            drawApp.setSecondaryColor(null);
-          }
+          drawApp.setPrimaryColor(null);
+        } else {
+          drawApp.setSecondaryColor(null);
         }
-      );
+      };
+      var colorPickerMousedown = function(e)
+      {
+        e.preventDefault();
+        var rightButton = (e.which === 3 || e.button === 2);
+        var leftButton = !rightButton;
+        var color;
+        if (this instanceof HTMLLabelElement)
+        {
+          // Old Drawception canvas
+          color = $(this).find(".colorPicker").attr("data-color");
+        } else {
+          color = e.target.getAttribute("data-color");
+          if (!color) return false;
+        }
+        if (leftButton)
+        {
+          drawApp.setPrimaryColor(color);
+        } else {
+          drawApp.setSecondaryColor(color);
+        }
+        return false;
+      };
+      $(".eraserPicker").parent().mousedown(newEraser);
       $(".eraserPicker").parent().contextmenu(function(e){ return false; });
       $(".colorPicker").parent().mousedown(colorPickerMousedown);
       $(".colorPicker").parent().contextmenu(function(e){ return false; });
-
-      // Fix sandbox background layer because we re-add the button
-      drawApp.exportImage = function()
-      {
-        var t = new Image();
-        t.src = this.toDataURL();
-        t.onload = function()
-        {
-          var e = document.getElementById("tempCanvas"),
-              n = e.getContext("2d");
-          n.fillStyle = bglayer ? bglayer : "#fffdc9";
-          n.fillRect(0, 0, 300, 250);
-          n.drawImage(t, 0, 0, 300, 250);
-          var r = e.toDataURL("image/png");
-          $("#newimg").html($("<img src=" + r + " width=300 height=250 />"));
-        };
-      };
+      // New Drawception canvas
+      $("#tool-eraser").mousedown(newEraser);
+      $("#colorOptions").mousedown(colorPickerMousedown);
+      $("#tool-eraser,#colorOptions").contextmenu(function(e){ return false; });
     }, 100
   );
 
@@ -1743,35 +1775,8 @@ function enhanceCanvas(insandbox)
       }, 1000
     );
 
-    // Allow to choose a palette to test
-    var paloptions = $('<ul style="list-style: none; padding: 0; line-height: 200%">');
-    for (var i = 0; i < palettes.length; i++)
-    {
-      paloptions.append('<li><a class="label ' + palettes[i].class +
-        '" href="#" onclick="return setPalette(' + i + ');">' +
-        (palettes[i].longname || palettes[i].name) +'</a></li>');
-    }
-    var pallabel = $('<a id="paletteChooser" class="label label-normalpal" href="#" title="Choose the palette">Normal &#x25BC;</a>');
-    pallabel.popover({container: "body", placement: "bottom", html: 1, content: paloptions});
-    pallabel.attr("title", "Click to choose the palette");
-    $("#colorOptions").prepend($('<p style="text-align: center"></p>').append(pallabel));
-
-    // Re-add missing background color selection in sandbox
-    bgoptions = $('<div id="bgOptions">');
-    $(".colorPicker").each(
-      function()
-      {
-        var c = $(this).attr("data-color");
-        bgoptions.append('<a class="bglayerPicker" onclick="drawApp.setBglayer(\'' + c + '\')" data-color="' + c + '" style="background:' + c + '">');
-      }
-    );
-    var newbutton = $('<button onclick="return false;" id="btn-bglayer" class="btn btn-yellow btn-drawtool" title="Background Layer"><span class="glyphicon glyphicon-bold"></span></button>');
-    newbutton.popover({container: "body", placement: "top", html: 1, content: bgoptions});
-    newbutton.attr("title", "Background Layer");
-    $(".drawingForm .btn-group").slice(2, 3).before($('<div class="btn-group">').append(newbutton).after(" "));
-
     // Add upload to imgur button
-    $(".drawingForm .btn-info").after(
+    $(".drawingForm").append(
       '&nbsp;' +
       '<a id="imgurup" href="#" onclick="return uploadCanvasToImgur();" class="btn btn-info"><span class="glyphicon glyphicon-upload"></span> <b>Upload to imgur</b></a>' +
       '<br><br><a id="imgurimgurl" class="selectable lead" href="#" style="display:none"></a>' +
@@ -2052,51 +2057,6 @@ function playModeClick()
   return false;
 }
 
-window.setPalette = setPalette;
-function setPalette(num)
-{
-  var pc = $("#paletteChooser");
-  pc.popover("toggle");
-  pc.text(palettes[num].name + " \u25BC");
-  pc.removeClass().addClass("label").addClass(palettes[num].class);
-
-  $(".colorPicker").parent().remove();
-  var c, l, p = $("#tool-eraser").parent();
-  bgoptions.empty();
-  var falsefunc = function(){ return false; };
-  for (var i = 0; i < palettes[num].colors.length; i++)
-  {
-    c = palettes[num].colors[i];
-    l = $(
-      '<label class="btn btn-default btn-sm btn-drawtool" style="margin-left: -1px;">' +
-        '<input type="radio" name="options" id="color-' + (i+1) + '"/>' +
-        '<button class="colorPicker" data-color="' + c + '" style="background:' + c + ';"/>' +
-      '</label>'
-    );
-    l.mousedown(colorPickerMousedown);
-    l.contextmenu(falsefunc);
-    bgoptions.append('<a class="bglayerPicker" onclick="drawApp.setBglayer(\'' + c + '\')" data-color="' + c + '" style="background:' + c + '">');
-    p.before(l);
-  }
-  return false;
-}
-
-window.colorPickerMousedown = colorPickerMousedown;
-function colorPickerMousedown(e)
-{
-  e.preventDefault();
-  var rightButton = (e.which === 3 || e.button === 2);
-  var leftButton = !rightButton;
-  var color = $(this).find(".colorPicker").attr("data-color");
-  if (leftButton)
-  {
-    drawApp.setPrimaryColor(color);
-  } else {
-    drawApp.setSecondaryColor(color);
-  }
-  return false;
-}
-
 window.uploadCanvasToImgur = uploadCanvasToImgur;
 function uploadCanvasToImgur()
 {
@@ -2107,11 +2067,8 @@ function uploadCanvasToImgur()
   var data, t = new Image();
   t.onload = function()
   {
-    var e = document.getElementById("tempCanvas"),
-        n = e.getContext("2d");
-    n.fillStyle = bglayer ? bglayer : "#fffdc9";
-    n.fillRect(0, 0, 300, 250);
-    n.drawImage(t, 0, 0, 300, 250);
+    var e = document.getElementById('drawingCanvas');
+    // TODO: add background handling when official sandbox canvas adds it
     data = e.toDataURL("image/png").split(',')[1];
     $.ajax(
       {
