@@ -59,9 +59,7 @@ Canvas:
 
 Sandbox:
 
-- Re-add background button
 - Add drawing time indicator
-- Add palettes
 - Upload directly to imgur
 
 View game:
@@ -88,6 +86,10 @@ Forum:
 - Show and highlight direct links to forum posts
 
 ## CHANGELOG
+
+1.84.2016.7
+- New canvas: fix not activating when on caption (broken in 1.83.2016.7)
+- Fixes for the site's drawing page changes (restores new canvas background button and old canvas function in sandbox)
 
 1.83.2016.7
 - New canvas: support contests, finally!

@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      1.83.2016.7
+// @version      1.84.2016.7
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.83.2016.7";
+var SCRIPT_VERSION = "1.84.2016.7";
 var NEWCANVAS_VERSION = 28; // Increase to update the cached canvas
 
 // == DEFAULT OPTIONS ==
@@ -83,9 +83,7 @@ Canvas:
 - Confirm closing a page if it has a canvas and is painted on
 - Don't confirm clearing, but allow to undo it
 Sandbox
-- Re-add background button
 - Add drawing time indicator
-- Add palettes
 - Upload directly to imgur
 View game
 - Add reverse panels button
