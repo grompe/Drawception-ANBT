@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      1.84.2016.7
+// @version      1.85.2016.8
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,8 +14,9 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.84.2016.7";
+var SCRIPT_VERSION = "1.85.2016.8";
 var NEWCANVAS_VERSION = 28; // Increase to update the cached canvas
+var SITE_VERSION = "2.1.9"; // Last seen site version
 
 // == DEFAULT OPTIONS ==
 
@@ -208,7 +209,8 @@ function setupNewCanvas(insandbox, url, origpage)
     window.options = options;
     window.alarmSoundOgg = sound;
     window.vertitle = vertitle;
-    if (origpage) window.origpage = origpage;
+    // Vue.js makes current page too different to reuse
+    //if (origpage) window.origpage = origpage;
 
     var script = document.createElement("script");
     script.textContent = "(" + needToGoDeeper.toString() + ")();";
@@ -268,14 +270,14 @@ function extractInfoFromHTML(html)
     error: extract(/<div class="error">\s+([^<]+)\s+<\/div>/),
     gameid: extract(/name="which_game" value="([^"]+)"/),
     blitz: extract(/BLITZ MODE<br ?\/?>/),
-    nsfw: extract(/>This game Not Safe For Work \(18\+\)<\/span>/),
+    nsfw: extract(/<span[^>]+title="This is a Not Safe For Work/),
     friend: extract(/<legend>\s+Friend Game/),
     drawfirst: extract(/value="Abort" onclick="DrawceptionPlay\.abortDrawFirst\(\)/),
-    timeleft: extract(/<span id="timeleft">\s+(\d+)\s+<\/span>/),
-    timeleft2: extract(/<span id="timeleft" class="hasCountdown">[^:]+>(\d+:\d+)/) || extract(/<span class="hasCountdown" id="timeleft">[^:]+>(\d+:\d+)/),
+    timeleft: extract(/<span[^>]+id="timeleft"[^>]*>\s+(\d+)\s+<\/span>/),
+    timeleft2: extract(/<span[^>]+id="timeleft"[^>]+>[^:]+>(\d+:\d+)/),
     caption: extract(/<p class="play-phrase">\s+([^<]+)\s+<\/p>/),
     image: extract(/<img src="(data:image\/png;base64,[^"]*)"/),
-    palette: extract(/was applied to this game"[^>]*>([^<]+)<\/span>/),
+    palette: extract(/<color-picker[^>]+theme="([^"]+)"/),
     colors: extractAll(/data-color=['"](#[0-9a-f]{3,6})['"]/gi),
     bgbutton: extract(/id=['"]btn-bglayer['"]/),
     playerid: extract(/<a href="\/player\/(\d+)\//),
@@ -465,26 +467,27 @@ function handlePlayParameters()
   anbt.unsaved = false;
 
   var palettemap = {
-    normal: ["Normal", "#fffdc9"],
-    sepia: ["Sepia", "#ffe2c4"],
-    grayscale: ["Grayscale", "#eeeeee"],
-    "b&amp;w": ["Black and white", "#ffffff"],
-    cga: ["CGA", "#ffff55"],
-    gameboy: ["Gameboy", "#9bbc0f"],
-    neon: ["Neon", "#00abff"],
-    thanksgiving: ["Thanksgiving", "#f5e9ce"],
-    holiday: ["Holiday", "#ffffff"],
-    valentines: ["Valentine's", "#ffccdf"],
+    "default": ["Normal", "#fffdc9"],
+    theme_holiday: ["Holiday", "#ffffff"],
+    theme_thanksgiving: ["Thanksgiving", "#f5e9ce"],
     halloween: ["Halloween", "#444444"],
-    "the blues": ["the blues", "#295c6f"],
-    spring: ["Spring", "#ffffff"],
-    beach: ["Beach", "#f7dca2"],
-    "coty 2016": ["Colors of 2016", "#648589"],
+    theme_cga: ["CGA", "#ffff55"],
+    shades_of_grey: ["Grayscale", "#eeeeee"],
+    theme_bw: ["Black and white", "#ffffff"],
+    theme_gameboy: ["Gameboy", "#9bbc0f"],
+    theme_neon: ["Neon", "#00abff"],
+    theme_sepia: ["Sepia", "#ffe2c4"],
+    theme_valentines: ["Valentine's", "#ffccdf"],
+    theme_blues: ["the blues", "#295c6f"],
+    theme_spring: ["Spring", "#ffffff"],
+    theme_beach: ["Beach", "#f7dca2"],
+    theme_coty_2016: ["Colors of 2016", "#648589"],
   };
-  var pal = info.palette || "normal";
+  var pal = info.palette || "default";
   var paldata;
   if (pal == "roulette")
   {
+    // Since site update, this never happens, the game reports already chosen palette
     if (info.colors.length)
     {
       // Normalize colors to #xxxxxx, in case of #xxx
@@ -1065,7 +1068,6 @@ function enhanceCanvas(insandbox)
   GM_addStyle(
     "#primaryColor, #secondaryColor {width: 49px; height: 20px; float: left; border: 1px solid #AAA}" +
     "#pscolorContainer {width: 98px; margin: auto}" +
-    ".label-normalpal {background: #888}" +
     ".selectable {-webkit-user-select: text; -moz-user-select: text; user-select: text}"
   );
   if (prestoOpera)
@@ -1083,6 +1085,16 @@ function enhanceCanvas(insandbox)
       for (i = 0; i < colors.length; i++)
       {
         el.append('<button class="btn-color" data-color="#' + colors[i] + '" style="background: #' + colors[i] + '">');
+      }
+      if (!insandbox)
+      {
+        var theme = colorPickerVueInstance.theme;
+        var title = colorPickerVueInstance.title;
+        var el2 = $(".select-theme");
+        el2.hide();
+        el2.before('<span class="label-theme label-' + theme +
+          '" rel="tooltip" title="The ' + title + ' theme was applied to this game">' +
+          '<span class="glyphicon glyphicon-tint"></span>' + title + '</span>');
       }
     };
     recreateColors();
@@ -1794,8 +1806,8 @@ function empowerPlay(noReload)
     window.playedWarningSound = false;
   }
 
-  // Remake skip function to async
-  if (options.asyncSkip)
+  // Remake skip function to async (disabled as it is broken by site update)
+  if (options.asyncSkip == 2)
   {
     DrawceptionPlay.skipPanel = function()
     {
@@ -3149,7 +3161,7 @@ function addScriptSettings()
       ["newCanvas", "boolean", 'New drawing canvas (also allows <a href="http://grompe.org.ru/replayable-drawception/">watching playback</a>)'],
       ["submitConfirm", "boolean", "Confirm submitting if more than a minute is left (New canvas only)"],
       ["smoothening", "boolean", "Smoothening of strokes (New canvas only)"],
-      ["asyncSkip", "boolean", "Fast Async Skip (experimental, applies to old canvas only)"],
+      //["asyncSkip", "boolean", "Fast Async Skip (experimental, applies to old canvas only)"],
       ["hideCross", "boolean", "Hide the cross when drawing"],
       ["enterToCaption", "boolean", "Submit captions (and start games) by pressing Enter"],
       ["backup", "boolean", "Save the drawing in case of error and restore it in sandbox"],
@@ -3531,7 +3543,7 @@ function pageEnhancements()
     // JS and CSS update simultaneously now
     jsVersion = $('script[src^="/js/"]').attr("src").match(/\/js\/\w+\.js\?(.+)$/)[1];
     versionDisplay = "ANBT v" + SCRIPT_VERSION + " | site " + jsVersion;
-    if (jsVersion != "v2.1.7") versionDisplay += "*";
+    if (jsVersion != "v" + SITE_VERSION) versionDisplay += "*";
   } catch(e)
   {
     versionDisplay = "ANBT v" + SCRIPT_VERSION + " | js/css unknown";
