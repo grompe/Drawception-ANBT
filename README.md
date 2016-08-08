@@ -87,6 +87,9 @@ Forum:
 
 ## CHANGELOG
 
+1.86.2016.8
+- Old canvas: re-add bookmark and options buttons missing with the site update
+
 1.85.2016.8
 - New canvas: fix play broken with the site update
 - New canvas: don't reuse currently loaded page as Vue makes it too different from the original HTML
