@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      1.86.2016.8
+// @version      1.87.2016.8
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,9 +14,9 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.86.2016.8";
-var NEWCANVAS_VERSION = 28; // Increase to update the cached canvas
-var SITE_VERSION = "2.1.9"; // Last seen site version
+var SCRIPT_VERSION = "1.87.2016.8";
+var NEWCANVAS_VERSION = 29; // Increase to update the cached canvas
+var SITE_VERSION = "2.2.0"; // Last seen site version
 
 // == DEFAULT OPTIONS ==
 
@@ -482,6 +482,7 @@ function handlePlayParameters()
     theme_spring: ["Spring", "#ffffff"],
     theme_beach: ["Beach", "#f7dca2"],
     theme_coty_2016: ["Colors of 2016", "#648589"],
+    theme_bee: ["Bee", "#ffffff"],
   };
   var pal = info.palette || "default";
   var paldata;

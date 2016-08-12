@@ -87,6 +87,9 @@ Forum:
 
 ## CHANGELOG
 
+1.87.2016.8
+- Add support for the new palette: Bee
+
 1.86.2016.8
 - Old canvas: re-add bookmark and options buttons missing with the site update
 
