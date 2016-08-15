@@ -655,7 +655,7 @@ button:disabled {
     <div id="headercont">
       <div class="headerleft">
         <a href="/" title="Home"><img src="/img/logo-d.png"></a>
-        <span id="headerinfo" class="hideonsmall">New Canvas v29</span>
+        <span id="headerinfo" class="hideonsmall">New Canvas v30</span>
       </div>
       <div class="headerright">
         <a id="start" title="Play Drawception!" class="headerbutton active onlysandbox">Play</a>
@@ -673,7 +673,7 @@ button:disabled {
   <div id="emptytitle" class="onlysandbox"></div>
   <div id="bl" class="noselect">
     <div id="toolpane">
-      <div id="timer" class="panel">00:00<button id="timeplus" class="onlyunlocked onlyplay onlydraw" title="Use Time+ item - add extra 60 seconds"></button></div>
+      <div id="timer" class="panel">00:00<button id="timeplus" class="onlyplay onlydraw" title="Use Time+ item - add extra 60 seconds"></button></div>
       <div id="colors" class="panel onlydraw">
         <div id="palettename">Normal</div>
         <div id="palettechooser" class="onlysandbox"></div>
@@ -3188,7 +3188,11 @@ function fixPluginGoingAWOL()
 function updateTimer()
 {
   var s = (timerStart - Date.now()) / 1000;
-  if (timerCallback) timerCallback(s);
+  try
+  {
+    if (timerCallback) timerCallback(s);
+  }
+  catch(e) {}
   s = Math.abs(s);
   var m = Math.floor(s / 60);
   s = Math.floor(s % 60);

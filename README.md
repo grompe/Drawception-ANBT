@@ -87,6 +87,11 @@ Forum:
 
 ## CHANGELOG
 
+1.88.2016.8
+- New canvas: fix support for 'roulette theme' that still appears somehow
+- New canvas: try to prevent timer being stuck
+- New canvas: allow using Time+ item after time runs out
+
 1.87.2016.8
 - Add support for the new palette: Bee
 
