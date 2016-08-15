@@ -278,7 +278,7 @@ function extractInfoFromHTML(html)
     caption: extract(/<p class="play-phrase">\s+([^<]+)\s+<\/p>/),
     image: extract(/<img src="(data:image\/png;base64,[^"]*)"/),
     palette: extract(/<color-picker[^>]+theme="([^"]+)"/),
-    colors: extractAll(/data-color=['"](#[0-9a-f]{3,6})['"]/gi),
+    //colors: extractAll(/data-color=['"](#[0-9a-f]{3,6})['"]/gi),
     bgbutton: extract(/id=['"]btn-bglayer['"]/),
     playerid: extract(/<a href="\/player\/(\d+)\//),
     playername: extract(/<span class="glyphicon glyphicon-user"><\/span> (.+)\n/),
@@ -486,26 +486,16 @@ function handlePlayParameters()
   };
   var pal = info.palette || "default";
   var paldata;
-  if (pal == "roulette")
+  if (pal == "theme_roulette")
   {
-    // Since site update, this never happens, the game reports already chosen palette
-    if (info.colors.length)
-    {
-      // Normalize colors to #xxxxxx, in case of #xxx
-      palettes.Roulette = info.colors.map(function(c)
-      {
-        var v = color2rgba(c);
-        return rgb2hex(v[0], v[1], v[2]);
-      });
-      paldata = ["Roulette", info.colors[info.colors.length - 1]];
-    } else {
-      alert("Warning: Drawception error, roulette has zero colors. ANBT will choose a random palette.");
-      delete palettes.Roulette;
-      var k = Object.keys(palettemap);
-      var n = k[k.length * Math.random() << 0];
-      palettes.Roulette = palettes[palettemap[n][0]];
-      paldata = ["Roulette", palettemap[n][1]];
-    }
+    // Since site update, the game reports already chosen palette,
+    // but apparently this still happens sometimes. ???
+    alert("Warning: Drawception roulette didn't give a theme. ANBT will choose a random palette.");
+    delete palettes.Roulette;
+    var k = Object.keys(palettemap);
+    var n = k[k.length * Math.random() << 0];
+    palettes.Roulette = palettes[palettemap[n][0]];
+    paldata = ["Roulette", palettemap[n][1]];
   } else {
     paldata = palettemap[pal.toLowerCase()];
   }
