@@ -52,6 +52,7 @@ var options =
   colorDoublePress: 0,
   markStalePosts: 1,
   newCanvasCSS: "",
+  forumHiddenUsers: "",
 };
 
 /*
@@ -2948,6 +2949,7 @@ function betterForum()
   // Show posts IDs and link
   if (document.location.pathname.match(/\/forums\/(\w+)\/.+/))
   {
+    var hideuserids = options.forumHiddenUsers ? options.forumHiddenUsers.split(",") : "";
     var lastid = 0;
     $("span.muted").each(function()
       {
@@ -2965,6 +2967,8 @@ function betterForum()
           } else {
             t.after(' <a class="text-muted wrong-order" href="#' + anch + '">#' + id + '</a>');
           }
+          var userid = t.parent().find('a[href^="/player/"]').attr('href').match(/\d+/)[0];
+          if (hideuserids.indexOf(userid) != -1) t.parent().parent().parent().parent().hide();
           lastid = id;
         }
       }
@@ -3162,6 +3166,7 @@ function addScriptSettings()
   addGroup("Advanced",
     [
       ["newCanvasCSS", "longstr", 'Custom CSS for new canvas (experimental, <a href="https://github.com/grompe/Drawception-ANBT/tree/master/newcanvas_styles">get styles here</a>)'],
+      ["forumHiddenUsers", "longstr", 'Comma-separated list of user IDs whose forum posts are hidden'],
     ]
   );
   theForm.append('<br><div class="control-group"><div class="controls"><input name="submit" type="submit" class="btn btn-primary" value="Apply"> <b id="anbtSettingsOK" class="label label-theme_holiday" style="display:none">Saved!</b></div></div>');
