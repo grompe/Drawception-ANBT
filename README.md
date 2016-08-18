@@ -87,6 +87,11 @@ Forum:
 
 ## CHANGELOG
 
+1.89.2016.8
+- Fix forum junk by trying process post IDs only in the actual topics
+- Old canvas: remove the Vue.js workaround for Presto Opera as no longer needed
+- Add an option to hide specified users' forum posts (from the settings page)
+
 1.88.2016.8
 - New canvas: fix support for 'roulette theme' that still appears somehow
 - New canvas: try to prevent timer being stuck
