@@ -1061,35 +1061,8 @@ function enhanceCanvas(insandbox)
     "#pscolorContainer {width: 98px; margin: auto}" +
     ".selectable {-webkit-user-select: text; -moz-user-select: text; user-select: text}"
   );
-  if (prestoOpera)
+  if (!prestoOpera)
   {
-    var el = $("#colorOptions");
-    var recreateColors = function()
-    {
-      //var colorPickerVueInstance = el.parent().get(0).childNodes[1].__vue__;
-      var colorPickerVueInstance = document.body.__vue__.$children[0];
-      if (!colorPickerVueInstance) return;
-      var colors = colorPickerVueInstance.colors;
-      if (colors == operaLastPalette) return;
-      operaLastPalette = colors;
-      el.empty();
-      for (i = 0; i < colors.length; i++)
-      {
-        el.append('<button class="btn-color" data-color="#' + colors[i] + '" style="background: #' + colors[i] + '">');
-      }
-      if (!insandbox)
-      {
-        var theme = colorPickerVueInstance.theme;
-        var title = colorPickerVueInstance.title;
-        var el2 = $(".select-theme");
-        el2.hide();
-        el2.before('<span class="label-theme label-' + theme +
-          '" rel="tooltip" title="The ' + title + ' theme was applied to this game">' +
-          '<span class="glyphicon glyphicon-tint"></span>' + title + '</span>');
-      }
-    };
-    recreateColors();
-  } else {
     GM_addStyle(
       (options.hideCross ? "#drawingCanvas.active {cursor: none !important}" : "") +
       "#drawCursor {display: block; z-index: 10; border: 1px solid #FFFFFF }"
@@ -1291,7 +1264,6 @@ function enhanceCanvas(insandbox)
       };
       drawApp.setColor = function(color, bypass)
       {
-        if (prestoOpera) recreateColors()
         if (!bypass) this.setPrimaryColor(color);
         var disp = (color === null) ? defaultFill : color;
         updateCursorColor(disp);
