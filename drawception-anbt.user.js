@@ -2974,27 +2974,30 @@ function betterForum()
   );
 
   // Show posts IDs and link
-  var lastid = 0;
-  $("span.muted").each(function()
-    {
-      var t = $(this), anch, id;
-      try
+  if (document.location.pathname.match(/\/forums\/(\w+)\/.+/))
+  {
+    var lastid = 0;
+    $("span.muted").each(function()
       {
-        anch = t.parent().parent().parent().parent().attr("id");
-      } catch(e) {}
-      if (anch)
-      {
-        id = parseInt(anch.substring(1), 10);
-        if (id > lastid)
+        var t = $(this), anch, id;
+        try
         {
-          t.after(' <a class="text-muted" href="#' + anch + '">#' + id + '</a>');
-        } else {
-          t.after(' <a class="text-muted wrong-order" href="#' + anch + '">#' + id + '</a>');
+          anch = t.parent().parent().parent().parent().attr("id");
+        } catch(e) {}
+        if (anch)
+        {
+          id = parseInt(anch.substring(1), 10);
+          if (id > lastid)
+          {
+            t.after(' <a class="text-muted" href="#' + anch + '">#' + id + '</a>');
+          } else {
+            t.after(' <a class="text-muted wrong-order" href="#' + anch + '">#' + id + '</a>');
+          }
+          lastid = id;
         }
-        lastid = id;
       }
-    }
-  );
+    );
+  }
 
   if (options.proxyImgur)
   {
