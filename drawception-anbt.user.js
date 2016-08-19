@@ -2953,8 +2953,8 @@ function betterForum()
     if (hideuserids != "")
     {
       GM_addStyle(
-        ".anbt_hideUserPost .comment-user {opacity: 0.5; content: '(hidden user post)'; margin-bottom: 10px}" +
-        ".anbt_hideUserPost .comment-body, .anbt_hideUserPost .avatar {display: none}" +
+        ".anbt_hideUserPost:not(:target) .comment-user {opacity: 0.4; margin-bottom: 10px}" +
+        ".anbt_hideUserPost:not(:target) .comment-body, .anbt_hideUserPost:not(:target) .avatar {display: none}" +
         ""
       );
     }
