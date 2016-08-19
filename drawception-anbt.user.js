@@ -2950,6 +2950,14 @@ function betterForum()
   if (document.location.pathname.match(/\/forums\/(\w+)\/.+/))
   {
     var hideuserids = options.forumHiddenUsers ? options.forumHiddenUsers.split(",") : "";
+    if (hideuserids != "")
+    {
+      GM_addStyle(
+        ".anbt_hideUserPost .comment-user {opacity: 0.5; content: '(hidden user post)'; margin-bottom: 10px}" +
+        ".anbt_hideUserPost .comment-body, .anbt_hideUserPost .avatar {display: none}" +
+        ""
+      );
+    }
     var lastid = 0;
     $("span.muted").each(function()
       {
@@ -2968,7 +2976,7 @@ function betterForum()
             t.after(' <a class="text-muted wrong-order" href="#' + anch + '">#' + id + '</a>');
           }
           var userid = t.parent().find('a[href^="/player/"]').attr('href').match(/\d+/)[0];
-          if (hideuserids.indexOf(userid) != -1) t.parent().parent().parent().parent().hide();
+          if (hideuserids.indexOf(userid) != -1) t.parent().parent().parent().parent().addClass('anbt_hideUserPost');
           lastid = id;
         }
       }
