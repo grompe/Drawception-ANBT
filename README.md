@@ -87,6 +87,9 @@ Forum:
 
 ## CHANGELOG
 
+1.90.2016.8
+- Add a small indication for hidden forum posts
+
 1.89.2016.8
 - Fix forum junk by trying process post IDs only in the actual topics
 - Old canvas: remove the Vue.js workaround for Presto Opera as no longer needed
