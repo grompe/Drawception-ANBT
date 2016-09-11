@@ -3390,7 +3390,7 @@ function pageEnhancements()
     ".gpe-wide {display: none}" +
     ".gpe-btn {padding: 5px 8px; height: 28px}" +
     ".gpe-spacer {margin-right: 7px; float:left}" +
-    "@media (min-width:992px) {#open-left {display: none} .gpe-wide {display: inline}}" +
+    "@media (min-width:992px) {.navbar-toggle {display: none} .gpe-wide {display: inline}}" +
     "@media (min-width:1200px) {.gpe-btn {padding: 5px 16px;} .gpe-spacer {margin-right: 20px;}}" +
     "#anbtver {font-size: 10px; position:absolute; opacity:0.3; right:10px; top:50px}" +
     ".anbt_paneldel {position:absolute; padding:1px 6px; color:#FFF; background:#d9534f; text-decoration: none !important; right: 18px; border-radius: 5px}" +
@@ -3413,7 +3413,7 @@ function pageEnhancements()
     ""
   );
   // Enhance menu for higher resolutions
-  var p = $("#open-left").parent();
+  var p = $(".navbar-toggle").parent();
   //p.prepend('<a href="/" class="gpe-wide" style="float:left; margin-right:8px"><img src="/img/logo-sm.png" width="166" height="43" alt="drawception" /></a>');
   p.append('<span class="gpe-wide gpe-spacer">&nbsp</span>');
   p.append('<a href="/sandbox/" title="Sandbox" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item" style="background:#5A5"><span class="glyphicon glyphicon-edit" style="color:#BFB" /></a>');
