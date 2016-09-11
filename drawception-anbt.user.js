@@ -3606,6 +3606,7 @@ localStorage.setItem("gpe_darkCSS",
   ".avatar,.profile-avatar{~#444$;border:1px solid #777$;}" +
   ".bg-lifesupport{~#444$}body{~#555$}.snap-content{~#333$}" +
   "select,textarea{color:#000$}.help-block{color:#ddd$}.jumbotron{~#444$}" +
+  ".navbar-dropdown{~#444$}a.list-group-item{~#444$;color:#fff$;border:1px solid #222$}a.list-group-item:hover,a.list-group-item:focus{~#222$}" +
   ".likebutton.btn-success{color:#050$;~#5A5$}.likebutton.btn-success:hover{~#494$}" +
   ".gsc-control-cse{~#444$;border-color:#333$}.gsc-above-wrapper-area,.gsc-result{border:none$}.gs-snippet{color:#AAA$}.gs-visibleUrl{color:#8A8$}a.gs-title b,.gs-visibleUrl b{color:#EEE$}.gsc-adBlock{display:none$}" +
   "#jappix_mini a{color:#000$}" +
