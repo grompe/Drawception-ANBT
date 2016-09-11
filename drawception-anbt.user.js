@@ -44,7 +44,6 @@ var options =
   autoplay: 1, // Whether to automatically start playback of a recorded drawing
   submitConfirm: 1,
   smoothening: 1,
-  killDrawers: 0,
   autoBypassNSFW: 0,
   colorNumberShortcuts: 1,
   colorUnderCursorHint: 1,
@@ -3166,7 +3165,6 @@ function addScriptSettings()
       ["proxyImgur", "boolean", "Replace imgur.com links to filmot.com to load, in case your ISP blocks them"],
       ["ajaxRetry", "boolean", "Retry failed AJAX requests"],
       ["autoplay", "boolean", "Automatically start replay when watching playback"],
-      ["killDrawers", "boolean", "Kill drawers and display notifications in a dialog"],
       ["autoBypassNSFW", "boolean", "Automatically bypass NSFW game warning"],
       ["markStalePosts", "boolean", "Mark stale forum posts"],
     ]
@@ -3458,35 +3456,6 @@ function pageEnhancements()
     ".comment-new .text-muted:after {content: 'New'; color: #2F5; font-weight: bold; background-color: #183; border-radius: 9px; display: inline-block; padding: 0px 6px; margin-left: 10px;}"
   );
 
-  // Fix usability in Opera and old Firefox browsers
-  if (prestoOpera || firefox4OrOlder || options.killDrawers)
-  {
-    $(".snap-drawers").remove();
-    GM_addStyle(
-      ".snap-content {position: static !important; transform: none !important}" +
-      "a.list-group-item:focus {background-color: #555 !important}" // CSS bug on the site
-    );
-    // Remake the notification list into a modal dialog
-    $("#user-notify-list").remove();
-    $(document.body).append(
-      '<div class="modal fade" id="myNotifications" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">' +
-        '<div class="modal-dialog">' +
-          '<div class="modal-content">' +
-            '<div class="modal-header">' +
-              '<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>' +
-              '<h4 class="modal-title">Notifications</h4>' +
-            '</div>' +
-            '<div id="user-notify-list" class="modal-body" style="background-color: #333">' + // Ugly hack to make background visible
-            '</div>' +
-            '<div class="modal-footer">' +
-              '<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>' +
-            '</div>' +
-          '</div>' +
-        '</div>' +
-      '</div>'
-    );
-    $("#open-right").attr({"data-toggle": "modal", "href": "#myNotifications"});
-  }
   // Restore scroll position
   $("html").scrollTop(scroll);
 
