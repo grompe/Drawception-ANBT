@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      1.90.2016.8
+// @version      1.91.2016.9
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,9 +14,9 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.90.2016.8";
+var SCRIPT_VERSION = "1.91.2016.9";
 var NEWCANVAS_VERSION = 30; // Increase to update the cached canvas
-var SITE_VERSION = "2.2.4"; // Last seen site version
+var SITE_VERSION = "2.2.5"; // Last seen site version
 
 // == DEFAULT OPTIONS ==
 
@@ -65,8 +65,6 @@ var options =
 == FEATURES ==
 General
 - Menu buttons in the header for easier access
-- Fix keyboard scrolling after pages load
-- Fix notifications showing in Opera and Firefox < 5
 - No temptation to judge
 - An embedded chat
 - Automatically retry failed requests to reduce annoying error messages
@@ -105,7 +103,7 @@ Forum
 - Show and highlight direct links to forum posts
 */
 
-var __DEBUG__, prestoOpera, firefox4OrOlder, username, userid;
+var __DEBUG__, prestoOpera, username, userid;
 var usingTablet, bgoptions, fileInput, sandboxDrawingStart;
 
 var playMode = localStorage.getItem("gpe_playMode");
@@ -3313,7 +3311,6 @@ function pageEnhancements()
 
   __DEBUG__ = document.getElementById("_debug_");
   prestoOpera = jQuery.browser.opera && (parseInt(jQuery.browser.version, 10) <= 12);
-  firefox4OrOlder = jQuery.browser.mozilla && (parseInt(jQuery.browser.version, 10) < 5);
 
   var scroll = $("#content").scrollTop();
 
@@ -3328,8 +3325,6 @@ function pageEnhancements()
     var tmpuserlink = $(".glyphicon-user").parent();
     username = tmpuserlink.text().trim();
     userid = tmpuserlink.attr("href").match(/\/player\/(\d+)\//)[1];
-    // Fix keyboard scrolling without clicking on the window
-    $("#content a[href='/play/']").get()[0].focus();
     localStorage.setItem("gpe_lastSeenName", username);
     localStorage.setItem("gpe_lastSeenId", userid);
   }

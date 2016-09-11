@@ -35,8 +35,6 @@ After installing script management add-on, just click on the [**Direct script li
 General:
 
 - Menu buttons in the header for easier access
-- Fix keyboard scrolling after pages load
-- Fix notifications showing in Opera and Firefox < 5
 - No temptation to judge
 - An embedded chat (http://chat.grompe.org.ru/#drawception)
 - Automatically retry failed requests to reduce annoying error messages
@@ -86,6 +84,13 @@ Forum:
 - Show and highlight direct links to forum posts
 
 ## CHANGELOG
+
+1.91.2016.9
+- Hidden forum posts: display when anchor is clicked
+- Kill the 'kill drawers' option as no longer needed
+- Fix navbar buttons missing with the site update
+- Dark style: dropdown menus
+- Remove keyboard navigation focus hack
 
 1.90.2016.8
 - Add a small indication for hidden forum posts
