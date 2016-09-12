@@ -3180,6 +3180,22 @@ function addScriptSettings()
   $('input[name="location"]').attr('maxlength', "65");
 }
 
+function getUsername()
+{
+  // Get all inline scripts, now the only place we can get username from
+  var scripts = $("script:not([src])");
+  var m;
+  for (var i = 0; i < scripts.length; i++)
+  {
+    m = scripts.get(i).innerText.match(/"\$username": "([^"]+)"/);
+    if (m)
+    {
+      return m[1];
+    }
+  }
+  return null;
+}
+
 function autoSkip(reason)
 {
   var autoSkipInfo = $('<div id="autoSkipInfo" class="text-warning" style="cursor: pointer">(CLICK TO CANCEL)<br>Auto-skipping in <span id="autoSkipCounter">3</span>...<br>Reason: ' +  reason + '</div>');
@@ -3323,7 +3339,7 @@ function pageEnhancements()
   try
   {
     var tmpuserlink = $(".glyphicon-user").parent();
-    username = tmpuserlink.text().trim();
+    username = getUsername();
     userid = tmpuserlink.attr("href").match(/\/player\/(\d+)\//)[1];
     localStorage.setItem("gpe_lastSeenName", username);
     localStorage.setItem("gpe_lastSeenId", userid);
