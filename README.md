@@ -85,6 +85,9 @@ Forum:
 
 ## CHANGELOG
 
+1.92.2016.9
+- Fix username detection - fixes 'like all' and chat login
+
 1.91.2016.9
 - Hidden forum posts: display when anchor is clicked
 - Kill the 'kill drawers' option as no longer needed
