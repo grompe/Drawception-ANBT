@@ -269,7 +269,7 @@ function extractInfoFromHTML(html)
     gameid: extract(/name="which_game" value="([^"]+)"/),
     blitz: extract(/BLITZ MODE<br ?\/?>/),
     nsfw: extract(/<span[^>]+title="This is a Not Safe For Work/),
-    friend: extract(/<legend>\s+Friend Game/),
+    friend: extract(/<strong>[F]riend Game/),
     drawfirst: extract(/value="Abort" onclick="DrawceptionPlay\.abortDrawFirst\(\)/),
     timeleft: extract(/<span[^>]+id="timeleft"[^>]*>\s+(\d+)\s+<\/span>/),
     timeleft2: extract(/<span[^>]+id="timeleft"[^>]+>[^:]+>(\d+:\d+)/),
