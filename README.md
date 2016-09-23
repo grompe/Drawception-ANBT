@@ -86,6 +86,9 @@ Forum:
 
 ## CHANGELOG
 
+1.94.2016.9
+- Add an option to set thicker font and bigger user posts for readability
+
 1.93.2016.9
 - Fix loading, change Opera Presto detection - jQuery.browser is gone with the site update
 - New canvas: fix friend game detection broken with the site update
