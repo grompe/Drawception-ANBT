@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      1.94.2016.9
+// @version      1.95.2016.9
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.94.2016.9";
+var SCRIPT_VERSION = "1.95.2016.9";
 var NEWCANVAS_VERSION = 30; // Increase to update the cached canvas
 var SITE_VERSION = "2.2.8"; // Last seen site version
 
@@ -52,7 +52,7 @@ var options =
   markStalePosts: 1,
   newCanvasCSS: "",
   forumHiddenUsers: "",
-  thickerFont: 0,
+  thickerFontFix: 1,
 };
 
 /*
@@ -3165,7 +3165,7 @@ function addScriptSettings()
       ["autoplay", "boolean", "Automatically start replay when watching playback"],
       ["autoBypassNSFW", "boolean", "Automatically bypass NSFW game warning"],
       ["markStalePosts", "boolean", "Mark stale forum posts"],
-      ["thickerFont", "boolean", "Thicker font and slightly bigger user posts"],
+      ["thickerFontFix", "boolean", "Thicker font fix"],
     ]
   );
   addGroup("Advanced",
@@ -3424,9 +3424,9 @@ function pageEnhancements()
     ".avatar {box-sizing: content-box}" +
     ""
   );
-  if (options.thickerFont)
+  if (options.thickerFontFix)
   {
-    GM_addStyle("body,blockquote,label {font-weight: 500} .comment-body {font-size: 1.2em}");
+    $("head").append('<link href="https://fonts.googleapis.com/css?family=Nunito:300,400,700" rel="stylesheet" type="text/css">');
   }
   // Enhance menu for higher resolutions
   var p = $(".navbar-toggle").parent();

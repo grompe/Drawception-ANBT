@@ -86,6 +86,9 @@ Forum:
 
 ## CHANGELOG
 
+1.95.2016.9
+- Make the font exactly what it used to be, with an option to turn it off
+
 1.94.2016.9
 - Add an option to set thicker font and bigger user posts for readability
 
