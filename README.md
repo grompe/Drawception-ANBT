@@ -86,6 +86,10 @@ Forum:
 
 ## CHANGELOG
 
+1.96.2016.9
+- Remove font fix as it was fixed on site
+- Old canvas: fix brush cursor
+
 1.95.2016.9
 - Make the font exactly what it used to be, with an option to turn it off
 
