@@ -1057,7 +1057,8 @@ function enhanceCanvas(insandbox)
   GM_addStyle(
     "#primaryColor, #secondaryColor {width: 49px; height: 20px; float: left; border: 1px solid #AAA}" +
     "#pscolorContainer {width: 98px; margin: auto}" +
-    ".selectable {-webkit-user-select: text; -moz-user-select: text; user-select: text}"
+    ".selectable {-webkit-user-select: text; -moz-user-select: text; user-select: text}" +
+    "#drawCursor {display: none; position: absolute; pointer-events: none; border-radius: 50%}"
   );
   if (!prestoOpera)
   {
