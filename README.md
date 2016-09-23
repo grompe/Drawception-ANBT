@@ -17,6 +17,7 @@ A userscript to make Drawception.com better: more drawing tools, tablet support,
   - add the script in [Tampermonkey extension](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo)
   - or open URL: chrome://extensions then drag and drop the .user.js file on it
 - Firefox: add the script in [Greasemonkey add-on](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/)
+- Firefox for Android: add the script in [User|Unified Script Injector](https://addons.mozilla.org/en-us/android/addon/userunified-script-injector/)
 - Opera 12: add the script in "site properties"
 - Opera 15+: add the script in [Violentmonkey add-on](https://addons.opera.com/en/extensions/details/violent-monkey/?display=en)
 - Maxthon: add the script in [Violentmonkey add-on](http://extension.maxthon.com/detail/index.php?view_id=1680)
@@ -84,6 +85,11 @@ Forum:
 - Show and highlight direct links to forum posts
 
 ## CHANGELOG
+
+1.93.2016.9
+- Fix loading, change Opera Presto detection - jQuery.browser is gone with the site update
+- New canvas: fix friend game detection broken with the site update
+- Fix up script settings page a bit
 
 1.92.2016.9
 - Fix username detection - fixes 'like all' and chat login
