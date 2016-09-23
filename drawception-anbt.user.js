@@ -3326,7 +3326,7 @@ function pageEnhancements()
   if (document.getElementById("newcanvasyo")) return; // Chrome, I'm looking at you too...
 
   __DEBUG__ = document.getElementById("_debug_");
-  prestoOpera = jQuery.browser.opera && (parseInt(jQuery.browser.version, 10) <= 12);
+  prestoOpera = navigator.userAgent.match(/\bPresto\b/);
 
   var scroll = $("#content").scrollTop();
 
