@@ -3097,15 +3097,14 @@ function addScriptSettings()
   var addGroup = function(name, settings)
   {
     var div = $('<div class="control-group"></div>');
-    div.append('<label class="control-label" for="">' + name + '</label>');
+    div.append('<label class="control-label">' + name + '</label>');
     settings.forEach(function(id)
       {
         var v = options[id[0]], name = id[0], t = id[1], desc = id[2];
         var c = $('<div class="controls"></div>');
         if (t == "boolean")
         {
-          c.append('<input type="checkbox" id="anbt_' + name + '" name="' + name + '" value="1" ' + (v ? 'checked="checked"' : '') + '">');
-          c.append('<label for="anbt_' + name + '">' + desc + '</label>');
+          c.append('<label><input type="checkbox" id="anbt_' + name + '" name="' + name + '" value="1" ' + (v ? 'checked="checked"' : '') + '"> ' + desc + '</label>');
         }
         else if (t == "number")
         {
