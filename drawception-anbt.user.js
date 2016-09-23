@@ -52,7 +52,6 @@ var options =
   markStalePosts: 1,
   newCanvasCSS: "",
   forumHiddenUsers: "",
-  thickerFontFix: 1,
 };
 
 /*
@@ -3165,7 +3164,6 @@ function addScriptSettings()
       ["autoplay", "boolean", "Automatically start replay when watching playback"],
       ["autoBypassNSFW", "boolean", "Automatically bypass NSFW game warning"],
       ["markStalePosts", "boolean", "Mark stale forum posts"],
-      ["thickerFontFix", "boolean", "Thicker font fix"],
     ]
   );
   addGroup("Advanced",
@@ -3424,10 +3422,6 @@ function pageEnhancements()
     ".avatar {box-sizing: content-box}" +
     ""
   );
-  if (options.thickerFontFix)
-  {
-    $("head").append('<link href="https://fonts.googleapis.com/css?family=Nunito:300,400,700" rel="stylesheet" type="text/css">');
-  }
   // Enhance menu for higher resolutions
   var p = $(".navbar-toggle").parent();
   //p.prepend('<a href="/" class="gpe-wide" style="float:left; margin-right:8px"><img src="/img/logo-sm.png" width="166" height="43" alt="drawception" /></a>');
