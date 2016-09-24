@@ -2957,7 +2957,7 @@ function betterForum()
       );
     }
     var lastid = 0;
-    $("span.muted").each(function()
+    $(".comment-holder span.text-muted").each(function()
       {
         var t = $(this), anch, id;
         try
