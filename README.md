@@ -86,6 +86,9 @@ Forum:
 
 ## CHANGELOG
 
+1.97.2016.9
+- Fix forum post anchors
+
 1.96.2016.9
 - Remove font fix as it was fixed on site
 - Old canvas: fix brush cursor
