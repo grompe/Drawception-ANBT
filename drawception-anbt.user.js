@@ -279,12 +279,11 @@ function extractInfoFromHTML(html)
     //colors: extractAll(/data-color=['"](#[0-9a-f]{3,6})['"]/gi),
     bgbutton: extract(/id=['"]btn-bglayer['"]/),
     playerid: extract(/<a href="\/player\/(\d+)\//),
-    playername: extract(/<span class="glyphicon glyphicon-user"><\/span> (.+)\n/),
     playerurl: extract(/<a href="(\/player\/\d+\/[^\/]+\/)"/),
     avatar: extract(/<img src="(https:\/\/cdn\.drawception\.com\/images\/avatars\/[^"]+)"/),
     coins: extract(/<span id="user-coins-value">(\d+)<\/span>/),
-    pubgames: extract(/alt="pubgames"[^>]*> (\d+\/\d+)/),
-    friendgames: extract(/alt="friendgames"[^>]*> (\d+)/),
+    pubgames: extract(/id="btn-public-games-progress"[^>]+>[^>]+><\/span> (\d+\/\d+)/),
+    friendgames: extract(/id="btn-friend-games-progress"[^>]+>[^>]+><\/span> (\d+)/),
     notifications: extract(/<span id="user-notify-count">(\d+)<\/span>/),
     drawingbylink: extract(/drawing by (<a href="\/player\/\d+\/\S+\/">[^<]+<\/a>)/),
     h1: extract(/<h1>([^<]+)<\/h1>/) || extract(/<title>([^<]+) \(drawing by .*\)<\/title>/),
@@ -374,7 +373,7 @@ function handleCommonParameters()
   ID("infoprofile").href = gameinfo.playerurl;
   ID("infocoins").innerHTML = gameinfo.coins;
   ID("infogames").innerHTML = gameinfo.pubgames;
-  ID("infofriendgames").innerHTML = gameinfo.friendgames;
+  ID("infofriendgames").innerHTML = gameinfo.friendgames || 0;
   ID("infonotifications").innerHTML = gameinfo.notifications;
 }
 
@@ -384,10 +383,9 @@ function handleSandboxParameters()
   {
     var playerid = gameinfo.drawingbylink.match(/\d+/);
     var playername = gameinfo.drawingbylink.match(/>([^<]+)</);
-    var avatar = '<img src="https://cdn.drawception.com/images/avatars/' + playerid + '.jpg" width="25" height="25">';
     var replaylink = '<a href="http://grompe.org.ru/drawit/#drawception/' +
       location.hash.substr(1) + '" title="Public replay link for sharing">Drawing</a>';
-    ID("headerinfo").innerHTML = replaylink + ' by ' + avatar + " " + gameinfo.drawingbylink;
+    ID("headerinfo").innerHTML = replaylink + ' by ' + gameinfo.drawingbylink;
     if (playername) document.title = playername[1] + "'s drawing - Drawception";
     ID("drawthis").innerHTML = '"' + gameinfo.h1 + '"';
     ID("drawthis").classList.remove("onlyplay");
@@ -3180,22 +3178,6 @@ function addScriptSettings()
   $('input[name="location"]').attr('maxlength', "65");
 }
 
-function getUsername()
-{
-  // Get all inline scripts, now the only place we can get username from
-  var scripts = $("script:not([src])");
-  var m;
-  for (var i = 0; i < scripts.length; i++)
-  {
-    m = scripts.get(i).innerText.match(/"\$username": "([^"]+)"/);
-    if (m)
-    {
-      return m[1];
-    }
-  }
-  return null;
-}
-
 function autoSkip(reason)
 {
   var autoSkipInfo = $('<div id="autoSkipInfo" class="text-warning" style="cursor: pointer">(CLICK TO CANCEL)<br>Auto-skipping in <span id="autoSkipCounter">3</span>...<br>Reason: ' +  reason + '</div>');
@@ -3338,8 +3320,8 @@ function pageEnhancements()
 
   try
   {
-    var tmpuserlink = $(".glyphicon-user").parent();
-    username = getUsername();
+    var tmpuserlink = $('.player-dropdown a[href^="/player/"]');
+    username = tmpuserlink.find('strong').text();
     userid = tmpuserlink.attr("href").match(/\/player\/(\d+)\//)[1];
     localStorage.setItem("gpe_lastSeenName", username);
     localStorage.setItem("gpe_lastSeenId", userid);
