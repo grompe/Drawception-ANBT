@@ -7,7 +7,7 @@ if len(news)<2:
   print("Nothing new.")
   exit()
 
-f = open("CHANGELOG.txt", "r")
+f = open("CHANGELOG.txt", "rb")
 changelog = f.read()
 f.close()
 
@@ -18,7 +18,7 @@ newver = "%s.%s.%s.%s" % tuple(l)
 
 additions = newver + "\n" + news + "\n"
 
-f = open("CHANGELOG.txt", "w")
+f = open("CHANGELOG.txt", "wb")
 f.write(additions)
 f.write(changelog)
 f.close()
