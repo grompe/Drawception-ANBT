@@ -2297,8 +2297,7 @@ function betterPanel()
     panelPositions.load();
     if (!panelPositions.player[panelId])
     {
-      var profileUrl = $(".btn").has(".avatar-sm").attr("href");
-      $.get(profileUrl, function(html)
+      $.get("/player/" + userid + "/-/", function(html)
       {
         html = html.replace(/<img\b[^>]*>/ig, ''); // prevent image preload
         var profilePage = $.parseHTML(html);
