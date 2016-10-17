@@ -1,3 +1,7 @@
+1.100.2016.10
+- On game page, show which commenters participated and which participants commented
+- New canvas: fix play limit detection
+
 1.99.2016.9
 - Fix panel position detection
 
