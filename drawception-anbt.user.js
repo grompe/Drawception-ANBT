@@ -52,6 +52,7 @@ var options =
   markStalePosts: 1,
   newCanvasCSS: "",
   forumHiddenUsers: "",
+  maxCommentHeight: 1000,
 };
 
 /*
@@ -3205,6 +3206,7 @@ function addScriptSettings()
       ["autoplay", "boolean", "Automatically start replay when watching playback"],
       ["autoBypassNSFW", "boolean", "Automatically bypass NSFW game warning"],
       ["markStalePosts", "boolean", "Mark stale forum posts"],
+      ["maxCommentHeight", "number", "Maximum comments and posts height until directly linked (px, 0 = no limit)"],
     ]
   );
   addGroup("Advanced",
@@ -3447,6 +3449,16 @@ function pageEnhancements()
     ".avatar {box-sizing: content-box}" +
     ""
   );
+  if (options.maxCommentHeight)
+  {
+    var h = options.maxCommentHeight;
+    GM_addStyle(
+      ".comment-holder:not(:target)>.row .comment-body {max-height: " + h + "px; position:relative}" +
+      ".comment-holder:not(:target)>.row .comment-body:before" +
+      "{content: ''; position:absolute; width:100%; height:50px; left:0; top:" + (h-50) + "px;" +
+      "background:linear-gradient(transparent, rgba(0,0,0,0.4))}"
+    );
+  }
   // Enhance menu for higher resolutions
   var p = $(".navbar-toggle").parent();
   //p.prepend('<a href="/" class="gpe-wide" style="float:left; margin-right:8px"><img src="/img/logo-sm.png" width="166" height="43" alt="drawception" /></a>');
