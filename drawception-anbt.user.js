@@ -2181,7 +2181,7 @@ function betterGame()
       if (gamePlayers.indexOf(id) != -1)
       {
         var drew = 0;
-        var drew = playerdata[id].drew ? 'drew' : 'captioned';
+        var drew = playerdata[id].drew ? 'drew' : 'wrote';
         dateel.parent().before('<a href="#' + playerdata[id].panel_id +
           '">(' + drew + ' #' + playerdata[id].panel_number + ')</a> ');
         playerdata[id].comments += 1;
