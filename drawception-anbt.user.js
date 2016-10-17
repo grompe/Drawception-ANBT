@@ -16,7 +16,7 @@ function wrapped() {
 
 var SCRIPT_VERSION = "1.99.2016.9";
 var NEWCANVAS_VERSION = 30; // Increase to update the cached canvas
-var SITE_VERSION = "2.3.5"; // Last seen site version
+var SITE_VERSION = "2.4.7"; // Last seen site version
 
 // == DEFAULT OPTIONS ==
 
@@ -1997,7 +1997,7 @@ function betterCreateGame()
   }
 }
 
-function betterView()
+function betterGame()
 {
   if (document.title == "Not Safe For Work (18+) Gate")
   {
@@ -2121,42 +2121,85 @@ function betterView()
     }
   );
 
+  // Interlink game panels and comments
+  var gamePlayers = [];
+  var playerdata = {};
+  $(".panel-details .panel-user a").each(function(i)
+    {
+      var id = this.href.match(/\/player\/(\d+)\//)[1];
+      var det = $(this).parent().parent();
+      playerdata[id] =
+      {
+        panel_number: i + 1,
+        player_anchor: this,
+        panel_id: det.parent().find(".gamepanel").attr("id"),
+        drew: det.has(".glyphicon-search").length != 0,
+        comments: 0
+      }
+      gamePlayers.push(id);
+    }
+  );
+
   // Highlight new comments and remember seen comments
   var seenComments = localStorage.getItem("gpe_seenComments");
   seenComments = (seenComments === null) ? {} : JSON.parse(seenComments);
   var gameid = document.location.href.match(/game\/([^\/]+)\//)[1];
   var comments = $("#comments").parent();
   var holders = comments.find(".comment-holder");
-  if (!holders.length) return;
-  // Clear old tracked comments
-  var hour = Math.floor(Date.now() / (1000 * 60*60)); // timestamp with 1 hour precision
-  for (var tempgame in seenComments)
+  if (holders.length)
   {
-    // Store game entry for up to a week after last tracked comment
-    if (seenComments[tempgame].h + 24*7 < hour)
+    // Clear old tracked comments
+    var hour = Math.floor(Date.now() / (1000 * 60*60)); // timestamp with 1 hour precision
+    for (var tempgame in seenComments)
     {
-      delete seenComments[tempgame];
+      // Store game entry for up to a week after last tracked comment
+      if (seenComments[tempgame].h + 24*7 < hour)
+      {
+        delete seenComments[tempgame];
+      }
+    }
+    var maxseenid = 0;
+    holders.each(function()
+    {
+      var t = $(this);
+      var dateel = t.find(".text-muted").first();
+      var ago = dateel.text();
+      var commentid = parseInt(t.attr("id").slice(1), 10);
+      // Also allow linking to specific comment
+      dateel.wrap('<a title="Link to comment" href="#' + t.attr("id") + '"></a>');
+      // Track comments from up to week ago
+      if (ago.match(/just now|min|hour| [1-7] day/))
+      {
+        if (!(seenComments[gameid] && seenComments[gameid].id >= commentid))
+        {
+          t.addClass("comment-new");
+          if (maxseenid < commentid) maxseenid = commentid;
+        }
+      }
+      // Add game perticipation info
+      var id = t.find(".comment-user a").attr("href").match(/\/player\/(\d+)\//)[1];
+      if (gamePlayers.indexOf(id) != -1)
+      {
+        var drew = 0;
+        var drew = playerdata[id].drew ? 'drew' : 'captioned';
+        dateel.parent().before('<a href="#' + playerdata[id].panel_id +
+          '">(' + drew + ' #' + playerdata[id].panel_number + ')</a> ');
+        playerdata[id].comments += 1;
+      }
+    });
+    if (maxseenid) seenComments[gameid] = {h: hour, id: maxseenid};
+    localStorage.setItem("gpe_seenComments", JSON.stringify(seenComments));
+  }
+  for (var i = 0; i < gamePlayers.length; i++)
+  {
+    var data = playerdata[gamePlayers[i]];
+    if (data.comments != 0)
+    {
+      var cmt = data.comments == 1 ? " comment" : " comments";
+      data.player_anchor.title = "Left " + data.comments + cmt;
+      $(data.player_anchor).after("*");
     }
   }
-  var maxseenid = 0;
-  holders.each(function()
-  {
-    var t = $(this);
-    var dateel = t.find(".text-muted").first();
-    var ago = dateel.text();
-    var commentid = parseInt(t.attr("id").slice(1), 10);
-    // Also allow linking to specific comment
-    dateel.wrap('<a title="Link to comment" href="#' + t.attr("id") + '"></a>');
-    // Track comments from up to week ago
-    if (ago.match(/just now|min|hour| [1-7] day/))
-    {
-      if (seenComments[gameid] && seenComments[gameid].id >= commentid) return;
-      t.addClass("comment-new");
-      if (maxseenid < commentid) maxseenid = commentid;
-    }
-  });
-  if (maxseenid) seenComments[gameid] = {h: hour, id: maxseenid};
-  localStorage.setItem("gpe_seenComments", JSON.stringify(seenComments));
 }
 
 function checkForRecording(url, yesfunc, retrying)
@@ -3353,7 +3396,7 @@ function pageEnhancements()
   }
   if (loc.match(/drawception\.com\/game\//))
   {
-    betterView();
+    betterGame();
   }
   if (loc.match(/drawception\.com\/panel\//))
   {
