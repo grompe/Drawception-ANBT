@@ -1,3 +1,8 @@
+1.101.2016.10
+- Dark style: fix for fancy labels
+- When current page has 20 posts, warn about posting to another page
+- Limit comments and posts to 1000px height when not directly linked, configurable
+
 1.100.2016.10
 - On game page, show which commenters participated and which participants commented
 - New canvas: fix play limit detection
