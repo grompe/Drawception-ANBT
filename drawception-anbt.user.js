@@ -3656,6 +3656,7 @@ localStorage.setItem("gpe_darkCSS",
   "a.label{color:#fff$}a.text-muted{color:#999$}a.wrong-order{color:#F99$}div.comment-holder:target{~#454$}" +
   ".popover{~#777$}.popover-title{~#666$;border-bottom:1px solid #444$}.popover.top .arrow:after{border-top-color:#777$}.popover.right .arrow:after{border-right-color:#777$}.popover.bottom .arrow:after{border-bottom-color:#777$}.popover.left .arrow:after{border-left-color:#777$}" +
   ".comment-holder{border-bottom:1px solid #222$}" +
+  ".label-fancy{~#444$;border-color:#333$;color:#FFF$}" +
   ".avatar,.profile-avatar{~#444$;border:1px solid #777$;}" +
   ".bg-lifesupport{~#444$}body{~#555$}.snap-content{~#333$}" +
   "select,textarea{color:#000$}.help-block{color:#ddd$}.jumbotron{~#444$}" +
