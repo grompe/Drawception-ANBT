@@ -2675,6 +2675,43 @@ function viewMyCover()
   });
 }
 
+// Convert times
+// Forum time is Florida, GMT-6, to be +1 DST since 08 Mar 2015, 2:00
+// starts on the second Sunday in March and ends on the first Sunday in November
+function isFloridaDST()
+{
+  d = new Date(Date.now() - 6 * 60 * 60 * 1000);
+  var month = d.getUTCMonth();
+  var day = d.getUTCDate();
+  var hours = d.getUTCHours();
+  var dayofweek = d.getUTCDay();
+
+  if (month < 2 || month > 10) return false;
+  if (month > 2 && month < 10) return true;
+  if (month == 2)
+  {
+    if (day < 8) return false;
+    if (day > 14) return true;
+    if (dayofweek == 7) return (hours > 1);
+    return day > dayofweek + 7;
+  }
+  if (month == 10)
+  {
+    if (day > 7) return false;
+    if (dayofweek == 7) return (hours < 1);
+    return day <= dayofweek;
+  }
+}
+
+var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+function convertForumTime(year, month, day, hours, minutes)
+{
+  var d = new Date(year, month, day, hours, minutes);
+  var tzo = d.getTimezoneOffset() * 60 * 1000;
+  var dst = isFloridaDST();
+  return formatTimestamp(d.getTime() - tzo + (6 - dst) * 60 * 60 * 1000);
+}
+
 function betterPlayer()
 {
   // Remove the temptation to judge
@@ -2815,47 +2852,41 @@ function betterPlayer()
       }
     });
   }
+
+  // Convert timestamps in user profile's forum posts
+  if (loc.match(/player\/\d+\/[^/]+\/posts\//))
+  {
+    $("span.text-muted, small.text-muted").each(function(index)
+      {
+        var year, month, day, minutes, hours;
+        var m, t = $(this), tx = t.text();
+        if (m = tx.match(/^\s*\[ (\d+):(\d+)([ap]m) ... (...) (\d+).., (\d{4}) \]\s*$/))
+        {
+          hours = parseInt(m[1], 10) % 12;
+          minutes = parseInt(m[2], 10);
+          hours += (m[3] == 'pm') ? 12 : 0;
+          month = months.indexOf(m[4]);
+          day = parseInt(m[5], 10);
+          year = parseInt(m[6], 10);
+          t.text("[ " + convertForumTime(year, month, day, hours, minutes) + " ]");
+        }
+        else if (m = tx.match(/^\s*edited: (\d+):(\d+)([ap]m) (\d+)\/(\d+)\/(\d+)\s*$/))
+        {
+          hours = parseInt(m[1], 10) % 12;
+          minutes = parseInt(m[2], 10);
+          hours += (m[3] == 'pm') ? 12 : 0;
+          month = parseInt(m[4], 10) - 1;
+          day = parseInt(m[5], 10);
+          year = parseInt(m[6], 10) + 2000;
+          t.text("edited: " + convertForumTime(year, month, day, hours, minutes));
+        }
+      }
+    );
+  }
 }
 
 function betterForum()
 {
-  // Convert times
-  // Forum time is Florida, GMT-6, to be +1 DST since 08 Mar 2015, 2:00
-  // starts on the second Sunday in March and ends on the first Sunday in November
-  function isFloridaDST()
-  {
-    d = new Date(Date.now() - 6 * 60 * 60 * 1000);
-    var month = d.getUTCMonth();
-    var day = d.getUTCDate();
-    var hours = d.getUTCHours();
-    var dayofweek = d.getUTCDay();
-
-    if (month < 2 || month > 10) return false;
-    if (month > 2 && month < 10) return true;
-    if (month == 2)
-    {
-      if (day < 8) return false;
-      if (day > 14) return true;
-      if (dayofweek == 7) return (hours > 1);
-      return day > dayofweek + 7;
-    }
-    if (month == 10)
-    {
-      if (day > 7) return false;
-      if (dayofweek == 7) return (hours < 1);
-      return day <= dayofweek;
-    }
-  }
-
-  var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  function convertForumTime(year, month, day, hours, minutes)
-  {
-    var d = new Date(year, month, day, hours, minutes);
-    var tzo = d.getTimezoneOffset() * 60 * 1000;
-    var dst = isFloridaDST();
-    return formatTimestamp(d.getTime() - tzo + (6 - dst) * 60 * 60 * 1000);
-  }
-
   var ncPosts = [];
   $("span.muted, span.text-muted, small.text-muted").each(function(index)
     {
