@@ -1,3 +1,8 @@
+1.102.2016.10
+- In users' forum posts, display topic title and subforum at the top
+- Dark style: better visibility for post date
+- Convert timestamps in user profile's forum posts
+
 1.101.2016.10
 - Dark style: fix for fancy labels
 - When current page has 20 posts, warn about posting to another page
