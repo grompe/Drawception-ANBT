@@ -2882,6 +2882,22 @@ function betterPlayer()
         }
       }
     );
+    // Show topic title at the top of the posts instead and display subforum
+    $(".comment-body>p:last-child").each(function()
+      {
+        var t = $(this);
+        var created = t.text().match(/^\s+Created/);
+        var n = $('<h4 class="anbt_threadtitle">' + (created ? "New thread" : "Reply" ) + " in </h4>");
+        var thread = t.find("a");
+        window.dude = thread;
+        var subforum = thread.attr("href").match(/\/forums\/([^/]+)\//)[1];
+        n.append(subforum);
+        n.append(": ");
+        n.append(thread);
+        t.parents(".row").first().prepend(n);
+        t.remove();
+      }
+    );
   }
 }
 
@@ -3483,6 +3499,7 @@ function pageEnhancements()
     ".anbt_showt .anbt_unhidet:after {content: ' threads hidden. Hide'}" +
     ".anbt_hft:after {content: '[hide]'}" +
     ".forum-thread.anbt_hidden .anbt_hft:after {content: '[show]'}" +
+    ".anbt_threadtitle {margin: 0 20px 10px}" +
     ".avatar {box-sizing: content-box}" +
     ""
   );
