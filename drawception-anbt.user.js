@@ -2125,15 +2125,18 @@ function betterGame()
   // Interlink game panels and comments
   var gamePlayers = [];
   var playerdata = {};
-  $(".panel-details .panel-user a").each(function(i)
+  $(".thumbnail").each(function(i)
     {
-      var id = this.href.match(/\/player\/(\d+)\//)[1];
-      var det = $(this).parent().parent();
+      var t = $(this);
+      var det = t.find(".panel-details");
+      var a = det.find(".panel-user a");
+      if (!a.length) return;
+      var id = a.attr("href").match(/\/player\/(\d+)\//)[1];
       playerdata[id] =
       {
         panel_number: i + 1,
-        player_anchor: this,
-        panel_id: det.parent().find(".gamepanel").attr("id"),
+        player_anchor: a.get(0),
+        panel_id: t.find(".gamepanel").attr("id"),
         drew: det.has(".glyphicon-search").length != 0,
         comments: 0
       }
