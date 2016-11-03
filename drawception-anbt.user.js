@@ -3480,10 +3480,10 @@ function pageEnhancements()
     ".thumbnail > .panel-details {max-height: 30px; overflow: visible; display: flex; flex-direction: row-reverse; justify-content: space-between}" +
     ".thumbnail > .panel-details > .btn-group.pull-right {float: none !important; flex-grow: 0; flex-shrink: 0}" +
     ".thumbnail > .panel-details > .panel-user {flex-grow: 1; flex-shrink: 1}" +
-    ".gpe-wide {display: none}" +
+    ".gpe-wide, .gpe-wide-block {display: none}" +
     ".gpe-btn {padding: 5px 8px; height: 28px}" +
     ".gpe-spacer {margin-right: 7px; float:left}" +
-    "@media (min-width:992px) {.navbar-toggle {display: none} .gpe-wide {display: inline}}" +
+    "@media (min-width:992px) {.navbar-toggle,.btn-menu-player {display: none} .gpe-wide {display: inline} .gpe-wide-block {display: block}}" +
     "@media (min-width:1200px) {.gpe-btn {padding: 5px 16px;} .gpe-spacer {margin-right: 20px;}}" +
     "#anbtver {font-size: 10px; position:absolute; opacity:0.3; right:10px; top:50px}" +
     ".anbt_paneldel {position:absolute; padding:1px 6px; color:#FFF; background:#d9534f; text-decoration: none !important; right: 18px; border-radius: 5px}" +
@@ -3530,6 +3530,19 @@ function pageEnhancements()
   p.append('<a href="/search/" title="Search" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item"><span class="glyphicon glyphicon-search" /></a>');
   p.append('<a id="menusettings" href="/settings/" title="Settings" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item"><span class="glyphicon glyphicon-cog" /></a>');
   p.append('<a href="/logout" title="Log Out" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item" style="background:#A55"><span class="glyphicon glyphicon-log-out" style="color:#FBB" /></a>');
+
+  p = $("#navbar-user a[href^='/store/']").parent()
+  var inventory = $('<a href="#myItems" class="btn btn-menu navbar-btn navbar-user-item" data-toggle="modal" rel="tooltip" title="Inventory">' +
+    '<span class="glyphicon glyphicon-book glyphicon-1pxtweak add-opacity"></span></a>');
+  p.before(inventory);
+  inventory.wrap('<div class="pull-left navbar-userbar gpe-wide-block">');
+  inventory.tooltip({placement: "bottom"});
+  inventory.click(getItems);
+
+  p = $(".btn-menu-player").parent();
+  var userlink = $('.player-dropdown a[href^="/player/"]').attr("href");
+  var useravatar = $('.btn-menu-player').html();
+  p.append('<a href="' + userlink + '" title="View Profile" class="gpe-wide-block navbar-btn navbar-user-item" style="margin-top:8px">' + useravatar + '</a>');
 
   // Tell to look at settings if freshly installed
   var newSettingsSeen = localStorage.getItem("anbt_newSettingsSeen");
