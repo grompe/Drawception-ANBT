@@ -1,3 +1,8 @@
+1.103.2016.11
+- One-click profile and inventory buttons in navbar
+- Add text 'Click the post link to read more' to hidden long posts
+- Fix panel linking in game comments when a panel is removed
+
 1.102.2016.10
 - In users' forum posts, display topic title and subforum at the top
 - Dark style: better visibility for post date
