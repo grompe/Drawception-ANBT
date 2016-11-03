@@ -3512,8 +3512,8 @@ function pageEnhancements()
     GM_addStyle(
       ".comment-holder:not(:target)>.row .comment-body {max-height: " + h + "px; position:relative}" +
       ".comment-holder:not(:target)>.row .comment-body:before" +
-      "{content: ''; position:absolute; width:100%; height:50px; left:0; top:" + (h-50) + "px;" +
-      "background:linear-gradient(transparent, rgba(0,0,0,0.4))}"
+      "{content: 'Click the post link to read more'; position:absolute; width:100%; height:50px; left:0; top:" + (h-50) + "px;" +
+      "text-align: center; font-weight: bold; color: #fff; text-shadow: 0 0 2px #000; padding-top: 20px; background:linear-gradient(transparent, rgba(0,0,0,0.4))}"
     );
   }
   // Enhance menu for higher resolutions
