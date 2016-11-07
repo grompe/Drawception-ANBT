@@ -1,3 +1,6 @@
+1.104.2016.11
+- Fix settings on invalid input in the number field, assume 0
+
 1.103.2016.11
 - One-click profile and inventory buttons in navbar
 - Add text 'Click the post link to read more' to hidden long posts
