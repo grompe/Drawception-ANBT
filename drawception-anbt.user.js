@@ -3164,7 +3164,7 @@ function updateScriptSettings(theForm)
       }
       else if (this.getAttribute("data-subtype") == "number")
       {
-        result[this.name] = parseFloat(this.value);
+        result[this.name] = parseFloat(this.value) || 0;
       }
       else
       {
@@ -3206,6 +3206,7 @@ function addScriptSettings()
         }
         else if (t == "number")
         {
+          if (!v) v = 0;
           c.append('<b>' + desc + ':</b><input class="form-control" type="text" data-subtype="number" name="' + name + '" value="' + escapeHTML(v) + '">');
         }
         else if (t == "longstr")
