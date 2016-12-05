@@ -3411,8 +3411,6 @@ function pageEnhancements()
   __DEBUG__ = document.getElementById("_debug_");
   prestoOpera = navigator.userAgent.match(/\bPresto\b/);
 
-  var scroll = $("#content").scrollTop();
-
   // Stop tracking me! Best to block
   // api.mixpanel.com and cdn.mxpnl.com
   if (typeof mixpanel != "undefined") mixpanel = {track: function(){}, identify: function(){}};
@@ -3573,9 +3571,6 @@ function pageEnhancements()
     "a.wrong-order {color: #F99} div.comment-holder:target {background-color: #DFD}" +
     ".comment-new .text-muted:after {content: 'New'; color: #2F5; font-weight: bold; background-color: #183; border-radius: 9px; display: inline-block; padding: 0px 6px; margin-left: 10px;}"
   );
-
-  // Restore scroll position
-  $("html").scrollTop(scroll);
 
   // Show an error if it occurs instead of "loading forever"
   window.getNotifications = function()
