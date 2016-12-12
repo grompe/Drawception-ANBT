@@ -1,3 +1,8 @@
+1.105.2016.12
+- New canvas: make brush size buttons respond on mouse down, not only full click
+- Use the old Nunito font, with an option to disable that
+- Remove needless page scrolling
+
 1.104.2016.11
 - Fix settings on invalid input in the number field, assume 0
 
