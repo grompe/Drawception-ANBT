@@ -655,7 +655,7 @@ button:disabled {
     <div id="headercont">
       <div class="headerleft">
         <a href="/" title="Home"><img src="/img/logo-d.png"></a>
-        <span id="headerinfo" class="hideonsmall">New Canvas v30</span>
+        <span id="headerinfo" class="hideonsmall">New Canvas v31</span>
       </div>
       <div class="headerright">
         <a id="start" title="Play Drawception!" class="headerbutton active onlysandbox">Play</a>
@@ -2740,6 +2740,7 @@ function bindEvents()
 
   for (var i = 0; i < brushSizes.length; i++)
   {
+    ID("brush" + i).addEventListener('mousedown', makeBrushFunc(brushSizes[i]), false);
     ID("brush" + i).addEventListener('click', makeBrushFunc(brushSizes[i]), false);
   }
   var updateColorIndicators = function()
