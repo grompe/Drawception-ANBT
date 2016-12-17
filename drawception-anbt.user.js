@@ -3091,6 +3091,14 @@ function betterForum()
     );
   }
 
+  var pagination = $(".pagination");
+  if (pagination.length)
+  {
+    var e = pagination.clone();
+    $(".breadcrumb").after(e);
+    e.wrap('<div class="text-center"></div>');
+  }
+
   // For the topic list pages only
   if (document.location.pathname.match(/\/forums\/(\w+)\/$/))
   {
@@ -3505,6 +3513,7 @@ function pageEnhancements()
     ".forum-thread.anbt_hidden .anbt_hft:after {content: '[show]'}" +
     ".anbt_threadtitle {margin: 0 20px 10px}" +
     ".avatar {box-sizing: content-box}" +
+    ".pagination {margin: 0px}" +
     ""
   );
   if (options.maxCommentHeight)
