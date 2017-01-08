@@ -3764,6 +3764,7 @@ localStorage.setItem("gpe_darkCSS",
   "#jappix_mini a{color:#000$}" +
   // We have entered specificity hell...
   "a.anbt_replaypanel:hover{color:#8af$}" +
+  ".anbt_favedpanel{color:#d9534f$}" +
   // Some lamey compression method!
   "").replace(/~/g, "background-color:").replace(/\$/g, " !important")
 );
