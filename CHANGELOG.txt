@@ -1,3 +1,7 @@
+1.106.2017.1
+- Dark style: fix favorited panels not showing fully red heart button after faving
+- Add page navigation buttons to the top of the forum pages
+
 1.105.2016.12
 - New canvas: make brush size buttons respond on mouse down, not only full click
 - Use the old Nunito font, with an option to disable that
