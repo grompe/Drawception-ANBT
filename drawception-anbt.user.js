@@ -15,8 +15,8 @@
 function wrapped() {
 
 var SCRIPT_VERSION = "1.106.2017.1";
-var NEWCANVAS_VERSION = 31; // Increase to update the cached canvas
-var SITE_VERSION = "2.4.9"; // Last seen site version
+var NEWCANVAS_VERSION = 32; // Increase to update the cached canvas
+var SITE_VERSION = "2.5.0"; // Last seen site version
 
 // == DEFAULT OPTIONS ==
 
@@ -481,6 +481,7 @@ function handlePlayParameters()
     theme_beach: ["Beach", "#f7dca2"],
     theme_coty_2016: ["Colors of 2016", "#648589"],
     theme_bee: ["Bee", "#ffffff"],
+    theme_coty_2017: ["Colors of 2017", "#5f7278"],
   };
   var pal = info.palette || "default";
   var paldata;
