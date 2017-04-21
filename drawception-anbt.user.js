@@ -3511,6 +3511,7 @@ function pageEnhancements()
     ".anbt_unhidet:after {content: ' threads hidden. Show'}" +
     ".anbt_showt .anbt_unhidet:after {content: ' threads hidden. Hide'}" +
     ".anbt_hft:after {content: '[hide]'}" +
+    ".anbt_hft, .anbt_unhidet {cursor:pointer}" +
     ".forum-thread.anbt_hidden .anbt_hft:after {content: '[show]'}" +
     ".anbt_threadtitle {margin: 0 20px 10px}" +
     ".avatar {box-sizing: content-box}" +
