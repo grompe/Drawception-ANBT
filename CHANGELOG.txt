@@ -1,3 +1,7 @@
+1.108.2017.5
+- Add support for the new palette: Fire and Ice
+- Set pointer cursor for show/hide thread buttons
+
 1.107.2017.1
 - Add support for the new palette: Colors of the Year 2017
 
