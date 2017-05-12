@@ -16,7 +16,7 @@ function wrapped() {
 
 var SCRIPT_VERSION = "1.108.2017.5";
 var NEWCANVAS_VERSION = 33; // Increase to update the cached canvas
-var SITE_VERSION = "2.5.3"; // Last seen site version
+var SITE_VERSION = "2.5.8"; // Last seen site version
 
 // == DEFAULT OPTIONS ==
 
@@ -3443,9 +3443,11 @@ function pageEnhancements()
   var inplay = loc.match(/drawception\.com\/(:?contests\/)?play\/(.*)/);
   if (options.newCanvas)
   {
+    var hasCanvas = document.getElementById("drawingCanvas");
     // If created a friend game, the link won't present playable canvas
-    var hasCanvasOrGameForm = document.getElementById("gameForm") || document.getElementById("drawingCanvas");
-    if (insandbox || (inplay && hasCanvasOrGameForm) || __DEBUG__)
+    var hasCanvasOrGameForm = document.getElementById("gameForm") || hasCanvas;
+    var captioncontest = loc.match(/contests\/play\//) && !hasCanvas;
+    if (!captioncontest && (insandbox || (inplay && hasCanvasOrGameForm) || __DEBUG__))
     {
       setTimeout(function()
       {
