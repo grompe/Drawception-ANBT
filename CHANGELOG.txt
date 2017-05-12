@@ -1,3 +1,6 @@
+1.109.2017.5
+- New canvas: prevent loading in place of caption contests
+
 1.108.2017.5
 - Add support for the new palette: Fire and Ice
 - Set pointer cursor for show/hide thread buttons
