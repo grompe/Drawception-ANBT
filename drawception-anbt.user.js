@@ -2132,6 +2132,7 @@ function betterGame()
     {
       var t = $(this);
       var det = t.find(".panel-details");
+      var gamepanel = t.find(".gamepanel");
       var a = det.find(".panel-user a");
       if (!a.length) return;
       var id = a.attr("href").match(/\/player\/(\d+)\//)[1];
@@ -2139,8 +2140,8 @@ function betterGame()
       {
         panel_number: i + 1,
         player_anchor: a.get(0),
-        panel_id: t.find(".gamepanel").attr("id"),
-        drew: det.has(".glyphicon-search").length != 0,
+        panel_id: gamepanel.attr("id"),
+        drew: gamepanel.has("img").length != 0,
         comments: 0
       }
       gamePlayers.push(id);
