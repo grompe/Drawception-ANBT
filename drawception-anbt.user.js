@@ -3244,7 +3244,7 @@ function addScriptSettings()
     [
       ["newCanvas", "boolean", 'New drawing canvas (also allows <a href="http://grompe.org.ru/replayable-drawception/">watching playback</a>)'],
       ["submitConfirm", "boolean", "Confirm submitting if more than a minute is left (New canvas only)"],
-      ["smoothening", "boolean", "Smoothening of strokes (New canvas only)"],
+      ["smoothening", "boolean", "Smoothing of strokes (New canvas only)"],
       //["asyncSkip", "boolean", "Fast Async Skip (experimental, applies to old canvas only)"],
       ["hideCross", "boolean", "Hide the cross when drawing"],
       ["enterToCaption", "boolean", "Submit captions (and start games) by pressing Enter"],
