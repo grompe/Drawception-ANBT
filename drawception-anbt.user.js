@@ -3064,9 +3064,9 @@ function betterForum()
           id = parseInt(anch.substring(1), 10);
           if (id > lastid)
           {
-            t.after(' <a class="text-muted" href="#' + anch + '">#' + id + '</a>');
+            t.after(' <a title="Link to post" class="text-muted" href="#' + anch + '">#' + id + '</a>');
           } else {
-            t.after(' <a class="text-muted wrong-order" href="#' + anch + '">#' + id + '</a>');
+            t.after(' <a title="Link to post" class="text-muted wrong-order" href="#' + anch + '">#' + id + '</a>');
           }
           var userid = t.parent().find('a[href^="/player/"]').attr('href').match(/\d+/)[0];
           if (hideuserids.indexOf(userid) != -1) t.parent().parent().parent().parent().addClass('anbt_hideUserPost');
@@ -3528,9 +3528,17 @@ function pageEnhancements()
     GM_addStyle(
       ".comment-holder:not(:target)>.row .comment-body {max-height: " + h + "px; position:relative}" +
       ".comment-holder:not(:target)>.row .comment-body:before" +
-      "{content: 'Click the post link to read more'; position:absolute; width:100%; height:50px; left:0; top:" + (h-50) + "px;" +
+      "{content: 'Click to read more'; position:absolute; width:100%; height:50px; left:0; top:" + (h-50) + "px;" +
       "text-align: center; font-weight: bold; color: #fff; text-shadow: 0 0 2px #000; padding-top: 20px; background:linear-gradient(transparent, rgba(0,0,0,0.4))}"
     );
+    $(".comment-body").click(function()
+    {
+      var t = $(this);
+      if ((t.height() > h-50) && !$(location.hash).has(t).length)
+      {
+        location.hash = "#" + t.parent().parent().parent().attr("id");
+      }
+    });
   }
   if (options.useOldFont)
   {
