@@ -1,3 +1,6 @@
+1.111.2017.5
+- Fix for posts and comments by deleted accounts
+
 1.110.2017.5
 - Lifted the awkward requiremenet to click the anchor to view long posts. Now you can click anywhere to expand them
 - Fix friend games comments to display 'drew' instead of 'wrote' for drawing panels
