@@ -16,7 +16,7 @@ function wrapped() {
 
 var SCRIPT_VERSION = "1.110.2017.5";
 var NEWCANVAS_VERSION = 33; // Increase to update the cached canvas
-var SITE_VERSION = "2.5.8"; // Last seen site version
+var SITE_VERSION = "2.6.0"; // Last seen site version
 
 // == DEFAULT OPTIONS ==
 
@@ -2185,14 +2185,18 @@ function betterGame()
         }
       }
       // Add game perticipation info
-      var id = t.find(".comment-user a").attr("href").match(/\/player\/(\d+)\//)[1];
-      if (gamePlayers.indexOf(id) != -1)
+      var m = t.find(".comment-user a").attr("href").match(/\/player\/(\d+)\//);
+      if (m)
       {
-        var drew = 0;
-        var drew = playerdata[id].drew ? 'drew' : 'wrote';
-        dateel.parent().before('<a href="#' + playerdata[id].panel_id +
-          '">(' + drew + ' #' + playerdata[id].panel_number + ')</a> ');
-        playerdata[id].comments += 1;
+        var id = m[1];
+        if (gamePlayers.indexOf(id) != -1)
+        {
+          var drew = 0;
+          var drew = playerdata[id].drew ? 'drew' : 'wrote';
+          dateel.parent().before('<a href="#' + playerdata[id].panel_id +
+            '">(' + drew + ' #' + playerdata[id].panel_number + ')</a> ');
+          playerdata[id].comments += 1;
+        }
       }
     });
     if (maxseenid) seenComments[gameid] = {h: hour, id: maxseenid};
@@ -3068,8 +3072,12 @@ function betterForum()
           } else {
             t.after(' <a title="Link to post" class="text-muted wrong-order" href="#' + anch + '">#' + id + '</a>');
           }
-          var userid = t.parent().find('a[href^="/player/"]').attr('href').match(/\d+/)[0];
-          if (hideuserids.indexOf(userid) != -1) t.parent().parent().parent().parent().addClass('anbt_hideUserPost');
+          var h = t.parent().find('a[href^="/player/"]').attr('href');
+          if (h)
+          {
+            var userid = h.match(/\d+/)[0];
+            if (hideuserids.indexOf(userid) != -1) t.parent().parent().parent().parent().addClass('anbt_hideUserPost');
+          }
           lastid = id;
         }
       }
