@@ -2938,7 +2938,7 @@ function betterForum()
         {
           if (time != localStorage.getItem("anbt_subforum" + index))
           {
-            t.parent().prepend('<span class="label label-sm label-warning">NEW</span>');
+            t.parent().prepend('<span class="label label-sm label-warning">NEW</span> ');
             localStorage.setItem("anbt_subforum" + index, time);
           }
         }
@@ -3523,7 +3523,7 @@ function pageEnhancements()
     ".anbt_unhidet:after {content: ' threads hidden. Show'}" +
     ".anbt_showt .anbt_unhidet:after {content: ' threads hidden. Hide'}" +
     ".anbt_hft:after {content: '[hide]'}" +
-    ".anbt_hft, .anbt_unhidet {cursor:pointer}" +
+    ".anbt_hft, .anbt_unhidet {padding-left: 0.4em; cursor:pointer}" +
     ".forum-thread.anbt_hidden .anbt_hft:after {content: '[show]'}" +
     ".anbt_threadtitle {margin: 0 20px 10px}" +
     ".avatar {box-sizing: content-box}" +
