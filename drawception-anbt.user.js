@@ -2128,7 +2128,7 @@ function betterGame()
   // Interlink game panels and comments
   var gamePlayers = [];
   var playerdata = {};
-  $(".thumbnail").each(function(i)
+  $(".gamepanel-holder").each(function(i)
     {
       var t = $(this);
       var det = t.find(".panel-details");
@@ -2208,8 +2208,9 @@ function betterGame()
     if (data.comments != 0)
     {
       var cmt = data.comments == 1 ? " comment" : " comments";
-      data.player_anchor.title = "Left " + data.comments + cmt;
-      $(data.player_anchor).after("*");
+      var cmt2 = 'Player left '+ data.comments + cmt;
+      data.player_anchor.title = cmt2;
+      $(data.player_anchor).after('<sup title="' + cmt2 + '">' + data.comments + '</sup>');
     }
   }
 }
@@ -3499,6 +3500,7 @@ function pageEnhancements()
     betterCreateGame();
   }
   GM_addStyle(
+    ".panel-user {width: 240px} .panel-details img.loading {display: none}" +
     ".gpe-wide, .gpe-wide-block {display: none}" +
     ".gpe-btn {padding: 5px 8px; height: 28px}" +
     ".gpe-spacer {margin-right: 7px; float:left}" +
