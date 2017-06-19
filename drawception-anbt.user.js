@@ -3506,14 +3506,14 @@ function pageEnhancements()
     ".gpe-btn {padding: 5px 8px; height: 28px}" +
     ".gpe-spacer {margin-right: 7px; float:left}" +
     "@media (min-width:992px) {.navbar-toggle,.btn-menu-player {display: none} .gpe-wide {display: inline} .gpe-wide-block {display: block}}" +
-    "@media (min-width:1200px) {.gpe-btn {padding: 5px 16px;} .gpe-spacer {margin-right: 20px;}}" +
+    "@media (min-width:1200px) {.gpe-btn {padding: 5px 16px;} .gpe-spacer {margin-right: 20px;} .panel-number {left: -30px}}" +
     "#anbtver {font-size: 10px; position:absolute; opacity:0.3; right:10px; top:50px}" +
     ".anbt_paneldel {position:absolute; padding:1px 6px; color:#FFF; background:#d9534f; text-decoration: none !important; right: 18px; border-radius: 5px}" +
     ".anbt_paneldel:hover {background:#d2322d}" +
-    ".anbt_favpanel {top: 40px; font-weight: normal; padding: 6px 2px}" +
+    ".anbt_favpanel {top: 20px; font-weight: normal; padding: 0 2px}" +
     ".anbt_favpanel:hover {color: #d9534f; cursor:pointer}" +
     ".anbt_favedpanel {color: #d9534f; border-color: #d9534f}" +
-    ".anbt_replaypanel {top: 80px; font-weight: normal; padding: 6px 2px}" +
+    ".anbt_replaypanel {top: 50px; font-weight: normal; padding: 0 2px}" +
     ".anbt_replaypanel:hover {color: #8af; text-decoration: none}" +
     ".anbt_owncaption:before {content: ''; display: inline-block; background: #5C5; border: 1px solid #080; width: 10px; height: 10px; border-radius: 10px; margin-right: 10px;}" +
     ".gamepanel, .thumbpanel, .comment-body {word-wrap: break-word}" +
