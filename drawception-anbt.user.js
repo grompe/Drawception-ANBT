@@ -1915,7 +1915,7 @@ function uploadCanvasToImgur()
 window.reversePanels = reversePanels;
 function reversePanels()
 {
-  var e = $(".thumbnail").parent();
+  var e = $(".gamepanel-holder").parent();
   e.parent().append(e.get().reverse());
   return false;
 }
