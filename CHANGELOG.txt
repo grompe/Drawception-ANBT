@@ -1,3 +1,11 @@
+1.112.2017.6
+- Remove loading indicator when liking panels; fix comment indicator and fit longer usernames without hiding them
+- Fix reverse panels button
+- Remove old CSS that fixed game panels with long usernames
+- Fix panel numbers to not cover panels on high resolutions style and style of buttons under
+- Replace old IRC link with Discord chat link in the footer
+- Fix 'NEW' and '[hide]' forum spacing
+
 1.111.2017.5
 - Fix for posts and comments by deleted accounts
 

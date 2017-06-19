@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      1.111.2017.5
+// @version      1.112.2017.6
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,9 +14,9 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.111.2017.5";
+var SCRIPT_VERSION = "1.112.2017.6";
 var NEWCANVAS_VERSION = 33; // Increase to update the cached canvas
-var SITE_VERSION = "2.6.0"; // Last seen site version
+var SITE_VERSION = "2.6.5"; // Last seen site version
 
 // == DEFAULT OPTIONS ==
 
