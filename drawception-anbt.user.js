@@ -3500,7 +3500,7 @@ function pageEnhancements()
     betterCreateGame();
   }
   GM_addStyle(
-    ".panel-user {width: 240px} .panel-details img.loading {display: none}" +
+    ".panel-user {width: auto} .panel-details img.loading {display: none}" +
     ".gpe-wide, .gpe-wide-block {display: none}" +
     ".gpe-btn {padding: 5px 8px; height: 28px}" +
     ".gpe-spacer {margin-right: 7px; float:left}" +
