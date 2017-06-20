@@ -1,3 +1,6 @@
+1.113.2017.6
+- Fix game panels with long usernames, again
+
 1.112.2017.6
 - Remove loading indicator when liking panels; fix comment indicator and fit longer usernames without hiding them
 - Fix reverse panels button
