@@ -3030,6 +3030,18 @@ function betterForum()
       }
     }
   );
+  // Linkify full game image
+  $('img[src*="/images/games/"], img[src*="/pub/games/"]').each(function()
+    {
+      var t = $(this);
+      if (!t.parent().is("a"))
+      {
+        var gameid = t.attr("src").match(/\/([^\/]+)\.png/)[1];
+        var gameurl = "/game/" + gameid + "/-/";
+        t.wrap('<a href="' + gameurl +'"></a>');
+      }
+    }
+  );
   // Fix the dead link
   $('img[src*="/display-panel.php?"]').each(function()
     {
