@@ -1932,7 +1932,7 @@ function likeAll()
   $(".likebutton.btn-default").each(
     function(k, v)
     {
-      if ($(v).parent().parent().find("a:last-child").text().trim() != username) v.click();
+      if ($(v).parent().parent().find(".panel-user a").text().trim() != username) v.click();
     }
   );
   return false;
