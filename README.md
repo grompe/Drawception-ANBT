@@ -13,7 +13,7 @@ A userscript to make Drawception.com better: more drawing tools, tablet support,
 
 ## HOW TO USE
 
-- Chrome/Iron: (Recommended: all features, best performance)
+- Chrome/Iron:
   - add the script in [Tampermonkey extension](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo)
   - or open URL: chrome://extensions then drag and drop the .user.js file on it
 - Firefox: add the script in [Greasemonkey add-on](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/)
