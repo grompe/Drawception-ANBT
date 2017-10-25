@@ -1,3 +1,10 @@
+1.114.2017.10
+- Fix 'like all' when comment indicator is present
+- Linkify full game images on the forum
+- Dark style: fix visiblity of caption contests
+- Dark style: fix text input on search page
+- Dark style: fix background of caption panels
+
 1.113.2017.6
 - Fix game panels with long usernames, again
 
