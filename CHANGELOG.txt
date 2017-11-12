@@ -1,3 +1,7 @@
+1.115.2017.11
+- New canvas: workaround for strange cached error on Firefox upon clicking 'Play'
+- New canvas: remove default avatar, which was a broken image for a while now
+
 1.114.2017.10
 - Fix 'like all' when comment indicator is present
 - Linkify full game images on the forum
