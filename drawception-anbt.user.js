@@ -314,7 +314,9 @@ function getParametersFromPlay()
     window.origpage = null;
     return;
   }
-  sendGet(url, function()
+  // On Firefox, requesting "/play/" url would immediately return a cached error.
+  // Firefox, WTF? So we use cache-busting here.
+  sendGet(url + "?" + Date.now(), function()
   {
     window.gameinfo = extractInfoFromHTML(this.responseText);
     handlePlayParameters();
