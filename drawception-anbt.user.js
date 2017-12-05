@@ -319,7 +319,15 @@ function getParametersFromPlay()
   // Firefox, WTF? So we use cache-busting here.
   sendGet(url + "?" + Date.now(), function()
   {
-    window.gameinfo = extractInfoFromHTML(this.responseText);
+    var html = this.responseText;
+    if (html == "")
+    {
+      window.gameinfo = {
+        error: "Server returned a blank response :("
+      };
+    } else {
+      window.gameinfo = extractInfoFromHTML(html);
+    }
     handlePlayParameters();
   }, function()
   {
