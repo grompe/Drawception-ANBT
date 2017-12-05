@@ -36,6 +36,7 @@ var options =
   backup: 1,
   timeoutSound: 0,
   timeoutSoundBlitz: 0,
+  timeoutSoundVolume: 100,
   newCanvas: 1,
   proxyImgur: 0,
   rememberPosition: 0,
@@ -545,6 +546,7 @@ function handlePlayParameters()
   {
     window.playedWarningSound = false;
     var alarm = new Audio(window.alarmSoundOgg);
+    alarm.volume = options.timeoutSoundVolume / 100;
   }
 
   timerCallback = function(s)
@@ -1756,6 +1758,7 @@ function empowerPlay(noReload)
     {
       window.playedWarningSound = false;
       var alarm = new Audio(alarmSoundOgg);
+      alarm.volume = options.timeoutSoundVolume / 100;
       var old_highlightCountdown2 = window.highlightCountdown;
       window.highlightCountdown = function(p)
       {
@@ -3276,6 +3279,7 @@ function addScriptSettings()
       ["backup", "boolean", "Save the drawing in case of error and restore it in sandbox"],
       ["timeoutSound", "boolean", "Warning sound when only a minute is left (normal games)"],
       ["timeoutSoundBlitz", "boolean", "Warning sound when only 5 seconds left (blitz)"],
+      ["timeoutSoundVolume", "number", "Volume of the warning sound, in %"],
       ["rememberPosition", "boolean", "Show your panel position and track changes in unfinished games list"],
       ['colorNumberShortcuts', 'boolean', "Use 0-9 keys to select the color"],
       ['colorUnderCursorHint', 'boolean', "Show the color under the cursor in the palette (New canvas only)"],
