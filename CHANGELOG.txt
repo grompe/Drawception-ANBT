@@ -1,3 +1,8 @@
+1.116.2017.12
+- New canvas: show an error message instead of weird behavior when server returned a blank response
+- Configurable warning sound volume
+- New canvas: prevent executing old timerCallback, this fixes erroneous blitz warning sound on 60 seconds left
+
 1.115.2017.11
 - New canvas: workaround for strange cached error on Firefox upon clicking 'Play'
 - New canvas: remove default avatar, which was a broken image for a while now
