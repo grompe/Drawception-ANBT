@@ -537,6 +537,7 @@ function handlePlayParameters()
   }
 
   timerStart = Date.now() + 1000 * info.timeleft;
+  timerCallback = function(){};
   updateTimer();
   window.timesup = false;
 
