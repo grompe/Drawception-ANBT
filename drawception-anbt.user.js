@@ -2585,7 +2585,7 @@ function viewMyGameBookmarks()
     if (games[id].own) {
       extraClass = " anbt_owncaption";
     }
-    if (id.length == 43) // token
+    if (id.length > 10) // token, seen lengths: 43, 32; just in case assuming everything > 10 is a token
     {
       result += '<p class="well' + extraClass + '" id="' + id + '"><span>' + id + '</span>' + removeButtonHTML + '</p>';
       (function(id)
