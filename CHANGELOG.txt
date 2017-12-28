@@ -1,3 +1,7 @@
+1.117.2017.12
+- New canvas: remove color picking adjustment in friend games
+- Fix assumption that game tokens are 43 characters long (now anything longer than 10), this fixes display of bookmarked games
+
 1.116.2017.12
 - New canvas: show an error message instead of weird behavior when server returned a blank response
 - Configurable warning sound volume
