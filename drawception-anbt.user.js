@@ -933,7 +933,7 @@ function bindCanvasEvents()
     });
   });
 
-  var old_getClosestColor = window.old_getClosestColor;
+  var old_getClosestColor = window.getClosestColor;
   window.getClosestColor = function(rgb, pal)
   {
     // Allow any color in friend games
