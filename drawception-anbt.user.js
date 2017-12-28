@@ -866,6 +866,40 @@ function bindCanvasEvents()
 
   ID("timeplus").addEventListener('click', function()
   {
+    if (window.gameinfo.friend)
+    {
+      ID("timeplus").disabled = true;
+      sendGet("/play/exit.json?game_token=" + window.gameinfo.gameid, function()
+      {
+        sendGet("/play/" + window.gameinfo.gameid + "/?" + Date.now(), function()
+        {
+          ID("timeplus").disabled = false;
+          var html = this.responseText;
+          if (html == "")
+          {
+            window.gameinfo = {
+              error: "Server returned a blank response :("
+            };
+          } else {
+            window.gameinfo = extractInfoFromHTML(html);
+          }
+          timerStart = Date.now() + 1000 * window.gameinfo.timeleft;
+        }, function()
+        {
+          ID("timeplus").disabled = false;
+          alert("Server error. :( Try again?");
+        });
+      }, function()
+      {
+        ID("timeplus").disabled = false;
+        alert("Server error. :( Try again?");
+      }, function()
+      {
+        ID("timeplus").disabled = false;
+        alert("Server didn't respond in time. :( Try again?");
+      });
+      return;
+    }
     ID("timeplus").disabled = true;
     sendGet("/play/add-time.json?game_token=" + window.gameinfo.gameid, function()
     {
@@ -898,6 +932,14 @@ function bindCanvasEvents()
       alert("Server didn't respond in time. :( Try again?");
     });
   });
+
+  var old_getClosestColor = window.old_getClosestColor;
+  window.getClosestColor = function(rgb, pal)
+  {
+    // Allow any color in friend games
+    if (window.gameinfo.friend) return rgb2hex(rgb[0], rgb[1], rgb[2]);
+    return old_getClosestColor(rgb, pal);
+  };
 }
 
 function deeper_main()
