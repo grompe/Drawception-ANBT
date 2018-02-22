@@ -937,7 +937,7 @@ function bindCanvasEvents()
   window.getClosestColor = function(rgb, pal)
   {
     // Allow any color in friend games
-    if (window.gameinfo.friend) return rgb2hex(rgb[0], rgb[1], rgb[2]);
+    if (window.gameinfo && window.gameinfo.friend) return rgb2hex(rgb[0], rgb[1], rgb[2]);
     return old_getClosestColor(rgb, pal);
   };
 }
