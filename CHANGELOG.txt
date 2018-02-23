@@ -1,3 +1,6 @@
+1.118.2018.02
+- New canvas: resolve error in sandbox (window.gameinfo is not set)
+
 1.117.2017.12
 - New canvas: remove color picking adjustment in friend games
 - Fix assumption that game tokens are 43 characters long (now anything longer than 10), this fixes display of bookmarked games
