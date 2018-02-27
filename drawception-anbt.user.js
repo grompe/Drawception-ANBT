@@ -2108,7 +2108,7 @@ function betterGame()
     $(".panel-user").find('a[href*="/' + userid + '/"]').parent().parent().find("span.disabled .numlikes").text("?").css("opacity", "0.5");
 
   // Reverse panels button and like all button
-  $("#btn-remove-favorite")
+  $('div[data-v-baf71e0a=""]').first()
     .after(' <a href="#" class="btn btn-default" onclick="return reversePanels();" title="Reverse panels"><span class="glyphicon glyphicon-refresh"></span> Reverse</a>')
     .after(' <a href="#" class="btn btn-default" onclick="return likeAll();" title="Like all panels"><span class="glyphicon glyphicon-thumbs-up"></span> Like all</a>');
 
