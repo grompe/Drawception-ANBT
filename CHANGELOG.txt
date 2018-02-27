@@ -1,3 +1,6 @@
+1.119.2018.02
+- Update Like All and Reverse buttons to work with new Drawception UI
+
 1.118.2018.02
 - New canvas: resolve error in sandbox (window.gameinfo is not set)
 
