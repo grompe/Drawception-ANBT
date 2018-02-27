@@ -2,7 +2,7 @@
 // @name         Drawception ANBT
 // @author       Grom PE
 // @namespace    http://grompe.org.ru/
-// @version      1.118.2018.02
+// @version      1.119.2018.02
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.118.2018.02";
+var SCRIPT_VERSION = "1.119.2018.02";
 var NEWCANVAS_VERSION = 34; // Increase to update the cached canvas
 var SITE_VERSION = "2.7.4"; // Last seen site version
 
@@ -2108,7 +2108,7 @@ function betterGame()
     $(".panel-user").find('a[href*="/' + userid + '/"]').parent().parent().find("span.disabled .numlikes").text("?").css("opacity", "0.5");
 
   // Reverse panels button and like all button
-  $("#btn-remove-favorite")
+  $('div.btn-group.btn-group-lg').first()
     .after(' <a href="#" class="btn btn-default" onclick="return reversePanels();" title="Reverse panels"><span class="glyphicon glyphicon-refresh"></span> Reverse</a>')
     .after(' <a href="#" class="btn btn-default" onclick="return likeAll();" title="Like all panels"><span class="glyphicon glyphicon-thumbs-up"></span> Like all</a>');
 
