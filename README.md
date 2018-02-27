@@ -1,4 +1,4 @@
-## This is a fork of https://github.com/grompe/Drawception-ANBT with the addition of a fix to make the ```Like All``` and ```Reverse``` appear on the latest version of the Drawception website
+## This is a fork of https://github.com/grompe/Drawception-ANBT with the addition of a fix to make the ```Like All``` and ```Reverse``` buttons appear on the latest version of the Drawception website
 
 Drawception ANBT [![Public domain](http://i.creativecommons.org/p/zero/1.0/88x31.png)](http://creativecommons.org/publicdomain/zero/1.0/)
 ================
