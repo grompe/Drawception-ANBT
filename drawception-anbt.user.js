@@ -2976,6 +2976,12 @@ function betterPlayer()
       }
     );
   }
+
+  // Flatten the "more" dropdown
+  var nav = $(".nav-tabs");
+  var more = nav.find(">li:last-child");
+  nav.append(more.find("li"));
+  more.remove();
 }
 
 function betterForum()
