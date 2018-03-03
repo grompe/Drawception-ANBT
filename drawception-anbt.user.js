@@ -3756,7 +3756,7 @@ function pageEnhancements()
 
   $(".footer-main .list-unstyled").eq(0).append('<li><a href="/forums/general/11830/anbt-script/?page=9999">ANBT script</a></li>');
   $(".footer-main .list-unstyled").eq(1).append('<li><a href="http://drawception.wikia.com/">Wiki</a></li>');
-  $(".footer-main .list-unstyled").eq(2).append('<li><a href="http://chat.grompe.org.ru/#drawception">Chat</a> (<a href="https://discord.gg/7cPD7hC">Discord</a>)</li>');
+  $(".footer-main .list-unstyled").eq(2).append('<li><a href="http://chat.grompe.org.ru/#drawception">Chat</a> (<a href="https://discord.gg/Nrs658B">Discord</a>)</li>');
   
   if (options.newCanvas)
   {
