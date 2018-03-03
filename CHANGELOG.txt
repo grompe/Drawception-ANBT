@@ -1,3 +1,10 @@
+1.119.2018.03
+- Flatten 'more' submenu on userpages for fewer clicks in navigation
+- Fix handling new timestamps on userpages; support comments tab
+- Fix handling new forum timestamps
+- Add support for the new palette: Canyon Sunset
+- Restore 'Like All' and 'Reverse' buttons that got missing with the site update
+
 1.118.2018.02
 - New canvas: resolve error in sandbox (window.gameinfo is not set)
 
