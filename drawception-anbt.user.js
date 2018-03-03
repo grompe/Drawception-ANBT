@@ -2922,21 +2922,22 @@ function betterPlayer()
     });
   }
 
-  // Convert timestamps in user profile's forum posts
-  if (loc.match(/player\/\d+\/[^/]+\/posts\//))
+  // Convert timestamps in user profile's forum posts and game comments
+  if (loc.match(/player\/\d+\/[^/]+\/(posts)|(comments)\//))
   {
     $("span.text-muted, small.text-muted").each(function(index)
       {
         var year, month, day, minutes, hours;
         var m, t = $(this), tx = t.text();
-        if (m = tx.match(/^\s*\[ (\d+):(\d+)([ap]m) ... (...) (\d+).., (\d{4}) \]\s*$/))
+
+        if (m = tx.match(/^\s*\[ ..., (...) (\d+).. (\d{4}) @ (\d+):(\d+)([ap]m) \]\s*$/))
         {
-          hours = parseInt(m[1], 10) % 12;
-          minutes = parseInt(m[2], 10);
-          hours += (m[3] == 'pm') ? 12 : 0;
-          month = months.indexOf(m[4]);
-          day = parseInt(m[5], 10);
-          year = parseInt(m[6], 10);
+          hours = parseInt(m[4], 10) % 12;
+          minutes = parseInt(m[5], 10);
+          hours += (m[6] == 'pm') ? 12 : 0;
+          month = months.indexOf(m[1]);
+          day = parseInt(m[2], 10);
+          year = parseInt(m[3], 10);
           t.text("[ " + convertForumTime(year, month, day, hours, minutes) + " ]");
         }
         else if (m = tx.match(/^\s*edited: (\d+):(\d+)([ap]m) (\d+)\/(\d+)\/(\d+)\s*$/))
@@ -2952,16 +2953,23 @@ function betterPlayer()
       }
     );
     // Show topic title at the top of the posts instead and display subforum
+    // Show game title at the top of the posts
     $(".comment-body>p:last-child").each(function()
       {
         var t = $(this);
-        var created = t.text().match(/^\s+Created/);
-        var n = $('<h4 class="anbt_threadtitle">' + (created ? "New thread" : "Reply" ) + " in </h4>");
+        var created = t.text().match(/^\s*Created/);
+        var commented = t.text().match(/^\s*Commented/);
+        var prefix = commented ? "Comment" : created ? "New thread" : "Reply";
+        var n = $('<h4 class="anbt_threadtitle">' + prefix + " in </h4>");
         var thread = t.find("a");
-        window.dude = thread;
-        var subforum = thread.attr("href").match(/\/forums\/([^/]+)\//)[1];
-        n.append(subforum);
-        n.append(": ");
+        if (commented)
+        {
+          n.append("in the game: ");
+        } else {
+          var subforum = thread.attr("href").match(/\/forums\/([^/]+)\//)[1];
+          n.append(subforum);
+          n.append(": ");
+        }
         n.append(thread);
         t.parents(".row").first().prepend(n);
         t.remove();
