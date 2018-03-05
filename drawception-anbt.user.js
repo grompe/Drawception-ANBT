@@ -3754,9 +3754,10 @@ function pageEnhancements()
           break;
       default:
         //leave it green
-    }catch{
-      //do nothing
     }
+  }
+  catch{
+    //do nothing
   }
 
   var versionDisplay;
