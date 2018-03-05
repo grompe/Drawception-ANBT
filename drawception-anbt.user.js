@@ -3686,10 +3686,10 @@ function pageEnhancements()
   p.append('<a href="/logout" title="Log Out" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item logout-item" style="border-radius: 0px 5px 5px 0px;"><span class="glyphicon glyphicon-log-out" /></a>');
 
   p = $("#navbar-user a[href^='/store/']").parent()
-  var inventory = $('<a href="#myItems" class="btn btn-menu navbar-btn navbar-user-item" data-toggle="modal" rel="tooltip" title="Inventory" style="padding-right: 0px; border-radius: 5px 0px 0px 5px;">' +
+  var inventory = $('<a href="#myItems" class="btn btn-menu navbar-btn navbar-user-item" data-toggle="modal" rel="tooltip" title="Inventory" style="border-radius: 5px 0px 0px 5px;">' +
     '<span class="glyphicon glyphicon-book glyphicon-1pxtweak add-opacity"></span></a>');
   p.before(inventory);
-  inventory.wrap('<div class="pull-left navbar-userbar gpe-wide-block">');
+  inventory.wrap('<div class="pull-left navbar-userbar gpe-wide-block " style="padding-right: 0px;">');
   inventory.tooltip({placement: "bottom"});
   inventory.click(getItems);
 
