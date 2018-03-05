@@ -3618,7 +3618,7 @@ function pageEnhancements()
     ".btn-info {background-color: rgba(0,0,0,.3)}" + //color for create game button
     ".btn-primary {border-color: rgba(0,0,0,0)}" + //border for play button
     ".btn-info {border-color: rgba(0,0,0,0)}" + //border for create game button
-    ".navbar-user-item {margin-left: 5px}" + //border for create game button
+    ".logout-item:hover {background-color: #286090}" + //border for create game button
     ""
   );
 
@@ -3681,7 +3681,7 @@ function pageEnhancements()
   p.append('<a href="/forums/" title="Forums" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item"><span class="glyphicon glyphicon-comment" /></a>');
   p.append('<a href="/search/" title="Search" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item"><span class="glyphicon glyphicon-search" /></a>');
   p.append('<a id="menusettings" href="/settings/" title="Settings" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item"><span class="glyphicon glyphicon-cog" /></a>');
-  p.append('<a href="/logout" title="Log Out" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item"><span class="glyphicon glyphicon-log-out" /></a>');
+  p.append('<a href="/logout" title="Log Out" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item logout-item"><span class="glyphicon glyphicon-log-out" /></a>');
 
   p = $("#navbar-user a[href^='/store/']").parent()
   var inventory = $('<a href="#myItems" class="btn btn-menu navbar-btn navbar-user-item" data-toggle="modal" rel="tooltip" title="Inventory">' +
