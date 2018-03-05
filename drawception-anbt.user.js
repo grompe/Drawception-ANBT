@@ -3618,6 +3618,7 @@ function pageEnhancements()
     ".btn-info {background-color: rgba(0,0,0,.3)}" + //color for create game button
     ".btn-primary {border-color: rgba(0,0,0,0)}" + //border for play button
     ".btn-info {border-color: rgba(0,0,0,0)}" + //border for create game button
+    ".navbar-user-item {padding-left: 5px}" + //border for create game button
     ""
   );
 
