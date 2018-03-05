@@ -3750,7 +3750,7 @@ function pageEnhancements()
     var theme = document.getElementsByClassName("label-no-select")[1].innerHTML;
     switch(theme) {
       case "bee":
-          $("#nav-drag").style.backgroundColor = "#EAB618"
+          document.getElementById("nav-drag").style.backgroundColor = "#EAB618";
           break;
       default:
         //leave it green
