@@ -2,7 +2,7 @@
 // @name         Bertrand's Drawception ANBT
 // @author       Bertrand the Healer
 // @namespace    https://bertrandthehealer.github.io/
-// @version      1.125.2018.03
+// @version      1.126.2018.03
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/bertrandthehealer/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.125.2018.03";
+var SCRIPT_VERSION = "1.126.2018.03";
 var NEWCANVAS_VERSION = 35; // Increase to update the cached canvas
 var SITE_VERSION = "2.8.4"; // Last seen site version
 
@@ -3750,8 +3750,59 @@ function pageEnhancements()
     var theme = document.getElementsByClassName("label-no-select")[1].innerHTML;
     switch(theme) {
       case "bee":
-          document.getElementById("nav-drag").style.backgroundColor = "#EAB618";
-          break;
+        document.getElementById("nav-drag").style.backgroundColor = "#EAB618";
+        break;
+      case "canyon sunset":
+        document.getElementById("nav-drag").style.backgroundColor = "#2E1B50";
+        break;
+      case "halloween":
+        document.getElementById("nav-drag").style.backgroundColor = "#BEF202";
+        break;
+      case "sepia":
+        document.getElementById("nav-drag").style.backgroundColor = "#402305";
+        break;
+      case "the blues":
+        document.getElementById("nav-drag").style.backgroundColor = "#295C6F";
+        break;
+      case "grayscale":
+        document.getElementById("nav-drag").style.backgroundColor = "#333333";
+        break;
+      case "spring":
+        document.getElementById("nav-drag").style.backgroundColor = "#9ED396";
+        break;
+      case "b & w":
+        document.getElementById("nav-drag").style.backgroundColor = "#000000";
+        break;
+      case "beach":
+        document.getElementById("nav-drag").style.backgroundColor = "#F7DCA2";
+        break;
+      case "cga":
+        document.getElementById("nav-drag").style.backgroundColor = "#FFFF55";
+        break;
+      case "coty 2016":
+        document.getElementById("nav-drag").style.backgroundColor = "#648589";
+        break;
+      case "gameboy":
+        document.getElementById("nav-drag").style.backgroundColor = "#9BBC0F";
+        break;
+      case "neon":
+        document.getElementById("nav-drag").style.backgroundColor = "#00ABFF";
+        break;
+      case "coty 2017":
+        document.getElementById("nav-drag").style.backgroundColor = "#5F7278";
+        break;
+      case "thanksgiving":
+        document.getElementById("nav-drag").style.backgroundColor = "#F5E9CE";
+        break;
+      case "fire & ice":
+        document.getElementById("nav-drag").style.backgroundColor = "#FD2119";
+        break;
+      case "holiday":
+        document.getElementById("nav-drag").style.backgroundColor = "#3D9949";
+        break;
+      case "valentines":
+        document.getElementById("nav-drag").style.backgroundColor = "#FFCCDF";
+        break;
       default:
         //leave it green
     }
