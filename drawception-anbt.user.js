@@ -1,10 +1,10 @@
 // ==UserScript==
-// @name         Drawception ANBT
-// @author       Grom PE
-// @namespace    http://grompe.org.ru/
-// @version      1.119.2018.03
+// @name         Bertrand's Drawception ANBT
+// @author       Bertrand the Healer
+// @namespace    https://bertrandthehealer.github.io/
+// @version      1.120.2018.03
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
-// @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
+// @downloadURL  https://raw.github.com/bertrandthehealer/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
 // @match        https://drawception.com/*
 // @grant        none
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.119.2018.03";
+var SCRIPT_VERSION = "1.120.2018.03";
 var NEWCANVAS_VERSION = 35; // Increase to update the cached canvas
 var SITE_VERSION = "2.8.4"; // Last seen site version
 
@@ -3613,7 +3613,7 @@ function pageEnhancements()
     ".pagination {margin: 0px}" +
     ""
   );
-  
+
   //sticky navbar
   $("#nav-drag").style.position = "fixed";
   $("#nav-drag").style.width = "100%";
