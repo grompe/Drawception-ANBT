@@ -3622,7 +3622,7 @@ function pageEnhancements()
     ".btn {border-radius: 5px}" + //border radius for buttons
     ".avatar-sm {border-radius: 5px; height: 28px; width: 28px; margin-top: 2px;}" + //smaller profile button
     ".navbar-toggle {background-color: rgba(0,0,0,.3)}" + //Overflow menu background color
-    ".icon-bar {background-color: #FFFFFF}" + //Overflow menu icon colors
+    ".navbar-default .navbar-toggle .icon-bar {background-color: white}" + //Overflow menu icon colors
     ""
   );
 
