@@ -3611,9 +3611,9 @@ function pageEnhancements()
     ".anbt_threadtitle {margin: 0 20px 10px}" +
     ".avatar {box-sizing: content-box}" +
     ".pagination {margin: 0px}" +
-    ".navbar {position: fixed; width: 100%; top: 0; left: 0; z-index: 1060}" +
-    "#main {padding-top: 50px}" +
-    ".btn-menu {background-color: rgba(0,0,0,.3)}" +
+    ".navbar {position: fixed; width: 100%; top: 0; left: 0; z-index: 1060}" + //floating navbar
+    "#main {padding-top: 50px}" + //space for floating navbar
+    ".btn-menu {background-color: rgba(0,0,0,.3)}" + //colors for navbar buttons
     ""
   );
 
