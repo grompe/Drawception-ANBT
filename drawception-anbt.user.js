@@ -3618,7 +3618,8 @@ function pageEnhancements()
     ".btn-info {background-color: rgba(0,0,0,.3)}" + //color for create game button
     ".btn-primary {border-color: rgba(0,0,0,0)}" + //border for play button
     ".btn-info {border-color: rgba(0,0,0,0)}" + //border for create game button
-    ".logout-item:hover {background-color: #c93232}" + //border for create game button
+    ".logout-item:hover {background-color: #c93232}" + //logout button red on hover
+    ".btn {border-radius: 5px}" + //border radius for buttons
     ""
   );
 
