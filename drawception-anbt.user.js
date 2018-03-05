@@ -2,7 +2,7 @@
 // @name         Bertrand's Drawception ANBT
 // @author       Bertrand the Healer
 // @namespace    https://bertrandthehealer.github.io/
-// @version      1.148.2018.03
+// @version      1.149.2018.03
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/bertrandthehealer/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.148.2018.03";
+var SCRIPT_VERSION = "1.149.2018.03";
 var NEWCANVAS_VERSION = 35; // Increase to update the cached canvas
 var SITE_VERSION = "2.8.4"; // Last seen site version
 
@@ -3697,6 +3697,16 @@ function pageEnhancements()
 
   //Change inventory button
   document.getElementById("user-coins-value").parentElement.style.borderRadius = "0px 5px 5px 0px"
+
+  //change tabs in profile page
+  try{
+    document.getElementsByClassName("active")[0].firstChild.style.border = "none";
+    document.getElementsByClassName("active")[0].firstChild.style.backgroundColor = "rgb(0,0,0,.2)"
+    document.getElementsByClassName("active")[0].firstChild.style.borderRadius = "5px"
+  }catch{
+
+  }
+  
 
   p = $(".btn-menu-player").parent();
   var userlink = $('.player-dropdown a[href^="/player/"]').attr("href");
