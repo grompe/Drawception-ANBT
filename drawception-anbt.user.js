@@ -3747,129 +3747,133 @@ function pageEnhancements()
 
   //set navbar color based on theme
   try{
+    var navbarColor = "#0CE853";
     var theme = document.getElementsByClassName("label-no-select")[0].innerHTML;
     switch(theme) {
       case "bee":
-        document.getElementById("nav-drag").style.backgroundColor = "#EAB618";
+        navbarColor = "#EAB618";
         break;
       case "canyon sunset":
-        document.getElementById("nav-drag").style.backgroundColor = "#2E1B50";
+        navbarColor = "#2E1B50";
         break;
       case "halloween":
-        document.getElementById("nav-drag").style.backgroundColor = "#BEF202";
+        navbarColor = "#BEF202";
         break;
       case "sepia":
-        document.getElementById("nav-drag").style.backgroundColor = "#402305";
+        navbarColor = "#402305";
         break;
       case "the blues":
-        document.getElementById("nav-drag").style.backgroundColor = "#295C6F";
+        navbarColor = "#295C6F";
         break;
       case "grayscale":
-        document.getElementById("nav-drag").style.backgroundColor = "#333333";
+        navbarColor = "#333333";
         break;
       case "spring":
-        document.getElementById("nav-drag").style.backgroundColor = "#9ED396";
+        navbarColor = "#9ED396";
         break;
       case "b & w":
-        document.getElementById("nav-drag").style.backgroundColor = "#000000";
+        navbarColor = "#000000";
         break;
       case "beach":
-        document.getElementById("nav-drag").style.backgroundColor = "#F7DCA2";
+        navbarColor = "#F7DCA2";
         break;
       case "cga":
-        document.getElementById("nav-drag").style.backgroundColor = "#FFFF55";
+        navbarColor = "#FFFF55";
         break;
       case "coty 2016":
-        document.getElementById("nav-drag").style.backgroundColor = "#648589";
+        navbarColor = "#648589";
         break;
       case "gameboy":
-        document.getElementById("nav-drag").style.backgroundColor = "#9BBC0F";
+        navbarColor = "#9BBC0F";
         break;
       case "neon":
-        document.getElementById("nav-drag").style.backgroundColor = "#00ABFF";
+        navbarColor = "#00ABFF";
         break;
       case "coty 2017":
-        document.getElementById("nav-drag").style.backgroundColor = "#5F7278";
+        navbarColor = "#5F7278";
         break;
       case "thanksgiving":
-        document.getElementById("nav-drag").style.backgroundColor = "#F5E9CE";
+        navbarColor = "#F5E9CE";
         break;
       case "fire & ice":
-        document.getElementById("nav-drag").style.backgroundColor = "#FD2119";
+        navbarColor = "#FD2119";
         break;
       case "holiday":
-        document.getElementById("nav-drag").style.backgroundColor = "#3D9949";
+        navbarColor = "#3D9949";
         break;
       case "valentines":
-        document.getElementById("nav-drag").style.backgroundColor = "#FFCCDF";
+        navbarColor = "#FFCCDF";
         break;
       default:
         //leave it green
     }
+    document.getElementById("nav-drag").style.backgroundColor = navbarColor;
   }
   catch{
     //do nothing
   }
   try{
+    var navbarColor = "#0CE853";
     var theme = document.getElementsByClassName("label-no-select")[1].innerHTML;
     switch(theme) {
       case "bee":
-        document.getElementById("nav-drag").style.backgroundColor = "#EAB618";
+        navbarColor = "#EAB618";
         break;
       case "canyon sunset":
-        document.getElementById("nav-drag").style.backgroundColor = "#2E1B50";
+        navbarColor = "#2E1B50";
         break;
       case "halloween":
-        document.getElementById("nav-drag").style.backgroundColor = "#BEF202";
+        navbarColor = "#BEF202";
         break;
       case "sepia":
-        document.getElementById("nav-drag").style.backgroundColor = "#402305";
+        navbarColor = "#402305";
         break;
       case "the blues":
-        document.getElementById("nav-drag").style.backgroundColor = "#295C6F";
+        navbarColor = "#295C6F";
         break;
       case "grayscale":
-        document.getElementById("nav-drag").style.backgroundColor = "#333333";
+        navbarColor = "#333333";
         break;
       case "spring":
-        document.getElementById("nav-drag").style.backgroundColor = "#9ED396";
+        navbarColor = "#9ED396";
         break;
       case "b & w":
-        document.getElementById("nav-drag").style.backgroundColor = "#000000";
+        navbarColor = "#000000";
         break;
       case "beach":
-        document.getElementById("nav-drag").style.backgroundColor = "#F7DCA2";
+        navbarColor = "#F7DCA2";
         break;
       case "cga":
-        document.getElementById("nav-drag").style.backgroundColor = "#FFFF55";
+        navbarColor = "#FFFF55";
         break;
       case "coty 2016":
-        document.getElementById("nav-drag").style.backgroundColor = "#648589";
+        navbarColor = "#648589";
         break;
       case "gameboy":
-        document.getElementById("nav-drag").style.backgroundColor = "#9BBC0F";
+        navbarColor = "#9BBC0F";
         break;
       case "neon":
-        document.getElementById("nav-drag").style.backgroundColor = "#00ABFF";
+        navbarColor = "#00ABFF";
         break;
       case "coty 2017":
-        document.getElementById("nav-drag").style.backgroundColor = "#5F7278";
+        navbarColor = "#5F7278";
         break;
       case "thanksgiving":
-        document.getElementById("nav-drag").style.backgroundColor = "#F5E9CE";
+        navbarColor = "#F5E9CE";
         break;
       case "fire & ice":
-        document.getElementById("nav-drag").style.backgroundColor = "#FD2119";
+        navbarColor = "#FD2119";
         break;
       case "holiday":
-        document.getElementById("nav-drag").style.backgroundColor = "#3D9949";
+        navbarColor = "#3D9949";
         break;
       case "valentines":
-        document.getElementById("nav-drag").style.backgroundColor = "#FFCCDF";
+        navbarColor = "#FFCCDF";
         break;
       default:
         //leave it green
     }
+    document.getElementById("nav-drag").style.backgroundColor = navbarColor;
   }
   catch{
     //do nothing
