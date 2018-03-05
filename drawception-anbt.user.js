@@ -3612,7 +3612,7 @@ function pageEnhancements()
     ".avatar {box-sizing: content-box}" +
     ".pagination {margin: 0px}" +
     ".navbar {position: fixed; width: 100%; top: 0; left: 0; z-index: 1060}" +
-    ".main {padding-top: 50px}" +
+    "#main {padding-top: 50px}" +
     ""
   );
 
