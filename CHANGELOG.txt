@@ -1,3 +1,8 @@
+1.146.2018.03
+- Sticky top menu
+- Top menu color changes to match game theme
+- Modified top menu UI
+
 1.119.2018.03
 - Flatten 'more' submenu on userpages for fewer clicks in navigation
 - Fix handling new timestamps on userpages; support comments tab
