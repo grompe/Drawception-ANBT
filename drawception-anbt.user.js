@@ -3620,6 +3620,7 @@ function pageEnhancements()
     ".btn-info {border-color: rgba(0,0,0,0)}" + //border for create game button
     ".logout-item:hover {background-color: #c93232}" + //logout button red on hover
     ".btn {border-radius: 5px}" + //border radius for buttons
+    ".avatar-sm {border-radius: 5px; height: 28px; width: 28px; margin-top: 2px;}" + //smaller profile button
     ""
   );
 
