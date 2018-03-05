@@ -3672,16 +3672,16 @@ function pageEnhancements()
   var p = $(".navbar-toggle").parent();
   //p.prepend('<a href="/" class="gpe-wide" style="float:left; margin-right:8px"><img src="/img/logo-sm.png" width="166" height="43" alt="drawception" /></a>');
   p.append('<span class="gpe-wide gpe-spacer">&nbsp</span>');
-  p.append('<a href="/sandbox/" title="Sandbox" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item"><span class="glyphicon glyphicon-edit" /></a>');
-  p.append('<a href="/browse/all-games/" title="Browse Games" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item"><span class="glyphicon glyphicon-folder-open" /></a>');
-  p.append('<a href="/contests/" title="Contests" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item"><span class="glyphicon glyphicon-tower" /></a>');
-  p.append('<a href="javascript:toggleLight()" title="Toggle light" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item"><span class="glyphicon glyphicon-eye-open" /></a>');
-  p.append('<a href="/leaderboard/" title="Leaderboards" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item"><span class="glyphicon glyphicon-fire" /></a>');
-  p.append('<a href="/faq/" title="FAQ" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item"><span class="glyphicon glyphicon-info-sign" /></a>');
-  p.append('<a href="/forums/" title="Forums" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item"><span class="glyphicon glyphicon-comment" /></a>');
-  p.append('<a href="/search/" title="Search" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item"><span class="glyphicon glyphicon-search" /></a>');
-  p.append('<a id="menusettings" href="/settings/" title="Settings" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item"><span class="glyphicon glyphicon-cog" /></a>');
-  p.append('<a href="/logout" title="Log Out" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item logout-item"><span class="glyphicon glyphicon-log-out" /></a>');
+  p.append('<a href="/sandbox/" title="Sandbox" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item" style="border-radius: 5px 0px 0px 5px;"><span class="glyphicon glyphicon-edit" /></a>');
+  p.append('<a href="/browse/all-games/" title="Browse Games" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item" style="border-radius: 0px;"><span class="glyphicon glyphicon-folder-open" /></a>');
+  p.append('<a href="/contests/" title="Contests" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item" style="border-radius: 0px;"><span class="glyphicon glyphicon-tower" /></a>');
+  p.append('<a href="javascript:toggleLight()" title="Toggle light" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item" style="border-radius: 0px;"><span class="glyphicon glyphicon-eye-open" /></a>');
+  p.append('<a href="/leaderboard/" title="Leaderboards" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item" style="border-radius: 0px;"><span class="glyphicon glyphicon-fire" /></a>');
+  p.append('<a href="/faq/" title="FAQ" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item" style="border-radius: 0px;"><span class="glyphicon glyphicon-info-sign" /></a>');
+  p.append('<a href="/forums/" title="Forums" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item" style="border-radius: 0px;"><span class="glyphicon glyphicon-comment" /></a>');
+  p.append('<a href="/search/" title="Search" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item" style="border-radius: 0px;"><span class="glyphicon glyphicon-search" /></a>');
+  p.append('<a id="menusettings" href="/settings/" title="Settings" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item" style="border-radius: 0px;"><span class="glyphicon glyphicon-cog" /></a>');
+  p.append('<a href="/logout" title="Log Out" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item logout-item" style="border-radius: 0px 5px 5px 0px;"><span class="glyphicon glyphicon-log-out" /></a>');
 
   p = $("#navbar-user a[href^='/store/']").parent()
   var inventory = $('<a href="#myItems" class="btn btn-menu navbar-btn navbar-user-item" data-toggle="modal" rel="tooltip" title="Inventory">' +
