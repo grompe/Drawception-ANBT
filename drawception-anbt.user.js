@@ -2,7 +2,7 @@
 // @name         Bertrand's Drawception ANBT
 // @author       Bertrand the Healer
 // @namespace    https://bertrandthehealer.github.io/
-// @version      1.152.2018.03
+// @version      1.153.2018.03
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/bertrandthehealer/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.152.2018.03";
+var SCRIPT_VERSION = "1.153.2018.03";
 var NEWCANVAS_VERSION = 35; // Increase to update the cached canvas
 var SITE_VERSION = "2.8.4"; // Last seen site version
 
@@ -246,6 +246,54 @@ function sendPost(url, params, onloadfunc, onerrorfunc, ontimeoutfunc)
   xhr.onerror = onerrorfunc || onloadfunc;
   xhr.ontimeout = ontimeoutfunc || onerrorfunc || onloadfunc;
   xhr.send(params);
+}
+
+
+//get average color from image
+function getAverageRGB(imgEl) {
+
+  var blockSize = 5, // only visit every 5 pixels
+      defaultRGB = {r:0,g:0,b:0}, // for non-supporting envs
+      canvas = document.createElement('canvas'),
+      context = canvas.getContext && canvas.getContext('2d'),
+      data, width, height,
+      i = -4,
+      length,
+      rgb = {r:0,g:0,b:0},
+      count = 0;
+
+  if (!context) {
+      return defaultRGB;
+  }
+
+  height = canvas.height = imgEl.naturalHeight || imgEl.offsetHeight || imgEl.height;
+  width = canvas.width = imgEl.naturalWidth || imgEl.offsetWidth || imgEl.width;
+
+  context.drawImage(imgEl, 0, 0);
+
+  try {
+      data = context.getImageData(0, 0, width, height);
+  } catch(e) {
+      /* security error, img on diff domain */
+      return defaultRGB;
+  }
+
+  length = data.data.length;
+
+  while ( (i += blockSize * 4) < length ) {
+      ++count;
+      rgb.r += data.data[i];
+      rgb.g += data.data[i+1];
+      rgb.b += data.data[i+2];
+  }
+
+  // ~~ used to floor values
+  rgb.r = ~~(rgb.r/count);
+  rgb.g = ~~(rgb.g/count);
+  rgb.b = ~~(rgb.b/count);
+
+  return rgb;
+
 }
 
 function extractInfoFromHTML(html)
@@ -3902,6 +3950,14 @@ function pageEnhancements()
   }
   catch{
     //do nothing
+  }
+
+  //set navbar color based on user profile
+  try{
+    var navbarColor = getAverageRGB(document.getElementsByClassName("profile-avatar")[0]);
+    document.getElementById("nav-drag").style.backgroundColor = navbarColor;
+  }catch{
+
   }
 
   var versionDisplay;
