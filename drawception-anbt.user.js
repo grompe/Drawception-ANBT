@@ -2,7 +2,7 @@
 // @name         Bertrand's Drawception ANBT
 // @author       Bertrand the Healer
 // @namespace    https://bertrandthehealer.github.io/
-// @version      1.121.2018.03
+// @version      1.122.2018.03
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/bertrandthehealer/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.121.2018.03";
+var SCRIPT_VERSION = "1.122.2018.03";
 var NEWCANVAS_VERSION = 35; // Increase to update the cached canvas
 var SITE_VERSION = "2.8.4"; // Last seen site version
 
@@ -3612,7 +3612,7 @@ function pageEnhancements()
     ".avatar {box-sizing: content-box}" +
     ".pagination {margin: 0px}" +
     ".navbar {position: fixed; width: 100%; top: 0; left: 0; z-index: 1060}" +
-    ".wrapper {paddingTop: 50px}" +
+    ".wrapper {padding-top: 50px}" +
     ""
   );
 
