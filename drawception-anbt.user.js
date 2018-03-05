@@ -3696,13 +3696,13 @@ function pageEnhancements()
   inventory.click(getItems);
 
   //Change inventory button
-  document.getElementById("user-coins-value").parentElement.style.borderRadius = "0px 5px 5px 0px"
+  document.getElementById("user-coins-value").parentElement.style.borderRadius = "0px 5px 5px 0px";
 
-  //change tabs in profile page
+  //change tab appearance in profile page
   try{
     document.getElementsByClassName("active")[0].firstChild.style.border = "none";
-    document.getElementsByClassName("active")[0].firstChild.style.backgroundColor = "rgb(0,0,0,.2)"
-    document.getElementsByClassName("active")[0].firstChild.style.borderRadius = "5px"
+    document.getElementsByClassName("active")[0].firstChild.style.backgroundColor = "rgb(0,0,0,.2)";
+    document.getElementsByClassName("active")[0].firstChild.style.borderRadius = "5px";
   }catch{
 
   }
