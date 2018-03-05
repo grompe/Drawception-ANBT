@@ -3613,6 +3613,15 @@ function pageEnhancements()
     ".pagination {margin: 0px}" +
     ""
   );
+  
+  //sticky navbar
+  $("#nav-drag").style.position = "fixed";
+  $("#nav-drag").style.width = "100%";
+  $("#nav-drag").style.top = "0";
+  $("#nav-drag").style.left = "0";
+  $("#nav-drag").style.zIndex = "1060";
+  $("#app").style.paddingTop = "50px";
+
   if (options.maxCommentHeight)
   {
     var h = options.maxCommentHeight;
