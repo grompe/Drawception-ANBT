@@ -3611,16 +3611,11 @@ function pageEnhancements()
     ".anbt_threadtitle {margin: 0 20px 10px}" +
     ".avatar {box-sizing: content-box}" +
     ".pagination {margin: 0px}" +
+    ".navbar {position: fixed; width: 100%; top: 0; left: 0; z-index: 1060}" +
+    ".wrapper {paddingTop: 50px}" +
     ""
   );
 
-  //sticky navbar
-  $("#nav-drag").style.position = "fixed";
-  $("#nav-drag").style.width = "100%";
-  $("#nav-drag").style.top = "0";
-  $("#nav-drag").style.left = "0";
-  $("#nav-drag").style.zIndex = "1060";
-  $("#app").style.paddingTop = "50px";
 
   if (options.maxCommentHeight)
   {
