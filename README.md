@@ -1,8 +1,8 @@
-Drawception ANBT [![Public domain](http://i.creativecommons.org/p/zero/1.0/88x31.png)](http://creativecommons.org/publicdomain/zero/1.0/)
+Bertrand's Drawception ANBT [![Public domain](http://i.creativecommons.org/p/zero/1.0/88x31.png)](http://creativecommons.org/publicdomain/zero/1.0/)
 ================
 
-A userscript to make Drawception.com better: more drawing tools, tablet support, sandbox with palettes and uploading to imgur, like all, quick menu buttons with old browser support, and other enhancements.
-Original [here](https://github.com/grompe/Drawception-ANBT)
+A userscript to make Drawception.com better: more drawing tools, tablet support, sandbox with palettes and uploading to imgur, like all, quick menu buttons, improved UI, and other enhancements.
+Original by Grom PE [here](https://github.com/grompe/Drawception-ANBT).
 
 [**Direct script link**](https://raw.github.com/bertrandthehealer/Drawception-ANBT/master/drawception-anbt.user.js) (use to install/update manually, or "save as...")
 
@@ -17,15 +17,15 @@ Original [here](https://github.com/grompe/Drawception-ANBT)
 - Chrome/Iron:
   - add the script in [Tampermonkey extension](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo)
   - or open URL: chrome://extensions then drag and drop the .user.js file on it
-- Firefox: add the script in [Greasemonkey add-on](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/)
-- Firefox for Android: add the script in [User|Unified Script Injector](https://addons.mozilla.org/en-us/android/addon/userunified-script-injector/)
+- Firefox: add the script in [Tampermonkey add-on](https://addons.mozilla.org/en-US/firefox/addon/tampermonkey/)
+- Firefox for Android: add the script in [User|Unified Script Injector](https://addons.mozilla.org/en-us/android/addon/userunified-script-injector/) or use [Tampermonkey](https://addons.mozilla.org/en-US/firefox/addon/tampermonkey/)
 - Opera 12: add the script in "site properties"
 - Opera 15+: add the script in [Violentmonkey add-on](https://addons.opera.com/en/extensions/details/violent-monkey/?display=en)
 - Maxthon: add the script in [Violentmonkey add-on](http://extension.maxthon.com/detail/index.php?view_id=1680)
 - Mobile browsers / other / single use:
   - create a bookmark with the following URL:
 
-    `javascript:void($.ajax({dataType:"script",cache:!0,url:"//rawgit.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js"}))`
+    `javascript:void($.ajax({dataType:"script",cache:!0,url:"//rawgit.com/bertrandthehealer/Drawception-ANBT/master/drawception-anbt.user.js"}))`
     
     and follow it while being on drawception.com site; if that doesn't work, try pasting it in the address bar.
 
