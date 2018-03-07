@@ -2,7 +2,7 @@
 // @name         Bertrand's Drawception ANBT
 // @author       Bertrand the Healer
 // @namespace    https://bertrandthehealer.github.io/
-// @version      1.157.2018.03
+// @version      1.158.2018.03
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/bertrandthehealer/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.157.2018.03";
+var SCRIPT_VERSION = "1.158.2018.03";
 var NEWCANVAS_VERSION = 35; // Increase to update the cached canvas
 var SITE_VERSION = "2.8.4"; // Last seen site version
 
@@ -55,6 +55,7 @@ var options =
   forumHiddenUsers: "",
   maxCommentHeight: 1000,
   useOldFont: true,
+  colorizeNavBar: true,
 };
 
 /*
@@ -3372,6 +3373,7 @@ function addScriptSettings()
       ["markStalePosts", "boolean", "Mark stale forum posts"],
       ["maxCommentHeight", "number", "Maximum comments and posts height until directly linked (px, 0 = no limit)"],
       ["useOldFont", "boolean", "Use old Nunito font (which is usually bolder and less wiggly)"],
+      ["colorizeNavBar", "boolean", "Change top bar color based on panel colors"],
     ]
   );
   addGroup("Advanced",
@@ -3772,169 +3774,169 @@ function pageEnhancements()
     }
   };
 
-  //set navbar color based on first panel
-  try{
-    //if the first panel is a drawing, set navbar color to average color
-    if (typeof document.getElementsByClassName("gamepanel")[0].firstChild.src !== 'undefined') {
-      $("#nav-drag")[0].style.background = "url("+document.getElementsByClassName("gamepanel")[0].firstChild.src+")";
-    }
-    //if the second panel is a drawing, set navbar color to average color
-    if (typeof document.getElementsByClassName("gamepanel")[1].firstChild.src !== 'undefined') {
-      $("#nav-drag")[0].style.background = "url("+document.getElementsByClassName("gamepanel")[1].firstChild.src+")";
-    }
-    $("#nav-drag")[0].style.backgroundSize = "1px 1px";
-    $("#nav-drag")[0].style.backgroundRepeat = "repeat";
-  }catch{
-  }
+  //change navbar color
+  if(options.colorizeNavBar){
 
-  //set navbar color based on theme
-  try{
-    var navbarColor = "#0CE853";
-    var theme = document.getElementsByClassName("label-no-select")[0].innerHTML;
-    switch(theme) {
-      case "bee":
-        navbarColor = "#EAB618";
-        break;
-      case "canyon sunset":
-        navbarColor = "#2E1B50";
-        break;
-      case "halloween":
-        navbarColor = "#BEF202";
-        break;
-      case "sepia":
-        navbarColor = "#402305";
-        break;
-      case "the blues":
-        navbarColor = "#295C6F";
-        break;
-      case "grayscale":
-        navbarColor = "#333333";
-        break;
-      case "spring":
-        navbarColor = "#9ED396";
-        break;
-      case "b &amp; w":
-        navbarColor = "#000000";
-        break;
-      case "beach":
-        navbarColor = "#F7DCA2";
-        break;
-      case "cga":
-        navbarColor = "#FFFF55";
-        break;
-      case "coty 2016":
-        navbarColor = "#648589";
-        break;
-      case "gameboy":
-        navbarColor = "#9BBC0F";
-        break;
-      case "neon":
-        navbarColor = "#00ABFF";
-        break;
-      case "coty 2017":
-        navbarColor = "#5F7278";
-        break;
-      case "thanksgiving":
-        navbarColor = "#F5E9CE";
-        break;
-      case "fire &amp; ice":
-        navbarColor = "#FD2119";
-        break;
-      case "holiday":
-        navbarColor = "#3D9949";
-        break;
-      case "valentines":
-        navbarColor = "#FFCCDF";
-        break;
-      default:
-        //leave it green
-    }
-    if(navbarColor != "#0CE853"){
-      $("#nav-drag")[0].style.background = "";
-    }
-    $("#nav-drag")[0].style.backgroundColor = navbarColor;
-  }
-  catch{
-    //do nothing
-  }
-  try{
-    var navbarColor = "#0CE853";
-    var theme = document.getElementsByClassName("label-no-select")[1].innerHTML;
-    switch(theme) {
-      case "bee":
-        navbarColor = "#EAB618";
-        break;
-      case "canyon sunset":
-        navbarColor = "#2E1B50";
-        break;
-      case "halloween":
-        navbarColor = "#BEF202";
-        break;
-      case "sepia":
-        navbarColor = "#402305";
-        break;
-      case "the blues":
-        navbarColor = "#295C6F";
-        break;
-      case "grayscale":
-        navbarColor = "#333333";
-        break;
-      case "spring":
-        navbarColor = "#9ED396";
-        break;
-      case "b &amp; w":
-        navbarColor = "#000000";
-        break;
-      case "beach":
-        navbarColor = "#F7DCA2";
-        break;
-      case "cga":
-        navbarColor = "#FFFF55";
-        break;
-      case "coty 2016":
-        navbarColor = "#648589";
-        break;
-      case "gameboy":
-        navbarColor = "#9BBC0F";
-        break;
-      case "neon":
-        navbarColor = "#00ABFF";
-        break;
-      case "coty 2017":
-        navbarColor = "#5F7278";
-        break;
-      case "thanksgiving":
-        navbarColor = "#F5E9CE";
-        break;
-      case "fire &amp; ice":
-        navbarColor = "#FD2119";
-        break;
-      case "holiday":
-        navbarColor = "#3D9949";
-        break;
-      case "valentines":
-        navbarColor = "#FFCCDF";
-        break;
-      default:
-        //leave it green
-    }
-    if(navbarColor != "#0CE853"){
-      $("#nav-drag")[0].style.background = "";
-    }
-    $("#nav-drag")[0].style.backgroundColor = navbarColor;
-  }
-  catch{
-    //do nothing
-  }
+    //set navbar color based on first panel
+    try{
+      //if the first panel is a drawing, set navbar color to average color
+      if (typeof document.getElementsByClassName("gamepanel")[0].firstChild.src !== 'undefined') {
+        $("#nav-drag")[0].style.background = "url("+document.getElementsByClassName("gamepanel")[0].firstChild.src+")";
+      }
+      //if the second panel is a drawing, set navbar color to average color
+      if (typeof document.getElementsByClassName("gamepanel")[1].firstChild.src !== 'undefined') {
+        $("#nav-drag")[0].style.background = "url("+document.getElementsByClassName("gamepanel")[1].firstChild.src+")";
+      }
+      $("#nav-drag")[0].style.backgroundSize = "1px 1px";
+      $("#nav-drag")[0].style.backgroundRepeat = "repeat";
+    }catch{}
+    
+    //set navbar color based on theme
+    try{//if the game is not a vet game the theme will be in the first "label-no-select" element
+      var navbarColor = "#0CE853";
+      var theme = document.getElementsByClassName("label-no-select")[0].innerHTML;
+      switch(theme) {
+        case "bee":
+          navbarColor = "#EAB618";
+          break;
+        case "canyon sunset":
+          navbarColor = "#2E1B50";
+          break;
+        case "halloween":
+          navbarColor = "#BEF202";
+          break;
+        case "sepia":
+          navbarColor = "#402305";
+          break;
+        case "the blues":
+          navbarColor = "#295C6F";
+          break;
+        case "grayscale":
+          navbarColor = "#333333";
+          break;
+        case "spring":
+          navbarColor = "#9ED396";
+          break;
+        case "b &amp; w":
+          navbarColor = "#000000";
+          break;
+        case "beach":
+          navbarColor = "#F7DCA2";
+          break;
+        case "cga":
+          navbarColor = "#FFFF55";
+          break;
+        case "coty 2016":
+          navbarColor = "#648589";
+          break;
+        case "gameboy":
+          navbarColor = "#9BBC0F";
+          break;
+        case "neon":
+          navbarColor = "#00ABFF";
+          break;
+        case "coty 2017":
+          navbarColor = "#5F7278";
+          break;
+        case "thanksgiving":
+          navbarColor = "#F5E9CE";
+          break;
+        case "fire &amp; ice":
+          navbarColor = "#FD2119";
+          break;
+        case "holiday":
+          navbarColor = "#3D9949";
+          break;
+        case "valentines":
+          navbarColor = "#FFCCDF";
+          break;
+        default:
+          //leave it green
+      }
+      if(navbarColor != "#0CE853"){
+        //if there is a theme remove the color generated from the first drawing
+        $("#nav-drag")[0].style.background = "";
+      }
+      $("#nav-drag")[0].style.backgroundColor = navbarColor;
+    }catch{}
+    try{//if the game is a vet game the theme will be in the second "label-no-select" element
+      var navbarColor = "#0CE853";
+      var theme = document.getElementsByClassName("label-no-select")[1].innerHTML;
+      switch(theme) {
+        case "bee":
+          navbarColor = "#EAB618";
+          break;
+        case "canyon sunset":
+          navbarColor = "#2E1B50";
+          break;
+        case "halloween":
+          navbarColor = "#BEF202";
+          break;
+        case "sepia":
+          navbarColor = "#402305";
+          break;
+        case "the blues":
+          navbarColor = "#295C6F";
+          break;
+        case "grayscale":
+          navbarColor = "#333333";
+          break;
+        case "spring":
+          navbarColor = "#9ED396";
+          break;
+        case "b &amp; w":
+          navbarColor = "#000000";
+          break;
+        case "beach":
+          navbarColor = "#F7DCA2";
+          break;
+        case "cga":
+          navbarColor = "#FFFF55";
+          break;
+        case "coty 2016":
+          navbarColor = "#648589";
+          break;
+        case "gameboy":
+          navbarColor = "#9BBC0F";
+          break;
+        case "neon":
+          navbarColor = "#00ABFF";
+          break;
+        case "coty 2017":
+          navbarColor = "#5F7278";
+          break;
+        case "thanksgiving":
+          navbarColor = "#F5E9CE";
+          break;
+        case "fire &amp; ice":
+          navbarColor = "#FD2119";
+          break;
+        case "holiday":
+          navbarColor = "#3D9949";
+          break;
+        case "valentines":
+          navbarColor = "#FFCCDF";
+          break;
+        default:
+          //leave it green
+      }
+      if(navbarColor != "#0CE853"){
+        //if there is a theme remove the color generated from the first drawing
+        $("#nav-drag")[0].style.background = "";
+      }
+      $("#nav-drag")[0].style.backgroundColor = navbarColor;
+    }catch{}
 
-  //set navbar color based on user profile image
-  try{
-    $("#nav-drag")[0].style.background = "url("+document.getElementsByClassName("profile-avatar")[0].src+")";
-    $("#nav-drag")[0].style.backgroundSize = "1px 1px";
-    $("#nav-drag")[0].style.backgroundRepeat = "repeat";
-  }catch{
-
+    //set navbar color based on user profile image
+    try{
+      $("#nav-drag")[0].style.background = "url("+document.getElementsByClassName("profile-avatar")[0].src+")";
+      $("#nav-drag")[0].style.backgroundSize = "1px 1px";
+      $("#nav-drag")[0].style.backgroundRepeat = "repeat";
+    }catch{}
   }
+  
+
+  
 
   var versionDisplay;
   try
