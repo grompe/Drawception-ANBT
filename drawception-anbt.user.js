@@ -2,7 +2,7 @@
 // @name         Bertrand's Drawception ANBT
 // @author       Bertrand the Healer
 // @namespace    https://bertrandthehealer.github.io/
-// @version      1.155.2018.03
+// @version      1.156.2018.03
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/bertrandthehealer/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.155.2018.03";
+var SCRIPT_VERSION = "1.156.2018.03";
 var NEWCANVAS_VERSION = 35; // Increase to update the cached canvas
 var SITE_VERSION = "2.8.4"; // Last seen site version
 
@@ -3772,6 +3772,22 @@ function pageEnhancements()
     }
   };
 
+  //set navbar color based on first panel
+  try{
+    $("#nav-drag")[0].style.background = "url("+document.getElementsByClassName("gamepanel")[1].firstChild.src+")";
+    $("#nav-drag")[0].style.backgroundSize = "1px 1px";
+    $("#nav-drag")[0].style.backgroundRepeat = "repeat";
+  }catch{
+
+  }
+  try{
+    $("#nav-drag")[0].style.background = "url("+document.getElementsByClassName("gamepanel")[0].firstChild.src+")";
+    $("#nav-drag")[0].style.backgroundSize = "1px 1px";
+    $("#nav-drag")[0].style.backgroundRepeat = "repeat";
+  }catch{
+
+  }
+
   //set navbar color based on theme
   try{
     var navbarColor = "#0CE853";
@@ -3834,7 +3850,10 @@ function pageEnhancements()
       default:
         //leave it green
     }
-    $("#nav-drag")[0].style.backgroundColor = navbarColor;
+    if(navbarColor != "#0CE853"){
+      $("#nav-drag")[0].style.background = "";
+      $("#nav-drag")[0].style.backgroundColor = navbarColor;
+    }
   }
   catch{
     //do nothing
@@ -3900,7 +3919,10 @@ function pageEnhancements()
       default:
         //leave it green
     }
-    $("#nav-drag")[0].style.backgroundColor = navbarColor;
+    if(navbarColor != "#0CE853"){
+      $("#nav-drag")[0].style.background = "";
+      $("#nav-drag")[0].style.backgroundColor = navbarColor;
+    }
   }
   catch{
     //do nothing
@@ -3914,7 +3936,6 @@ function pageEnhancements()
   }catch{
 
   }
-
 
   var versionDisplay;
   try
