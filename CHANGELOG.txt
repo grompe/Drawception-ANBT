@@ -1,5 +1,9 @@
+1.158.2018.03
+- Fixed transparent top panel in Draw First games
+- Added a setting to make top panel color changes optional
+
 1.156.2018.03
-- Fixed top menu button styles
+- Changed top menu button styles to be more uniform
 - Top menu color changes to match user's profile picture in profile page
 - Top menu color changes to match first panel in non-themed game
 - Fixed top menu color change for b & w and fire & ice themes
