@@ -2,7 +2,7 @@ Bertrand's Drawception ANBT [![Public domain](http://i.creativecommons.org/p/zer
 ================
 
 A userscript to make Drawception.com better: more drawing tools, tablet support, sandbox with palettes and uploading to imgur, like all, quick menu buttons, improved UI, and other enhancements.
-Original by Grom PE [here](https://github.com/grompe/Drawception-ANBT).
+Original by Grom PE [here](https://github.com/grompe/Drawception-ANBT)
 
 [**Direct script link**](https://raw.github.com/bertrandthehealer/Drawception-ANBT/master/drawception-anbt.user.js) (use to install/update manually, or "save as...")
 
