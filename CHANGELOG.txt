@@ -1,3 +1,6 @@
+1.161.2018.03
+- Change mobile menu color for dark theme
+
 1.160.2018.03
 - Added Browse Games and Toggle Light buttons to menu for mobile devices
 
