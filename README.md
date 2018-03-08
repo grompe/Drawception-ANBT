@@ -42,6 +42,7 @@ General:
 - Automatically retry failed requests to reduce annoying error messages
 - Sticky top panel
 - Change top panel color based on game panels
+- Dark theme
 
 Canvas:
 
