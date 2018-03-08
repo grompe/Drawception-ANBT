@@ -3753,34 +3753,6 @@ function pageEnhancements()
     ".comment-new .text-muted:after {content: 'New'; color: #2F5; font-weight: bold; background-color: #183; border-radius: 9px; display: inline-block; padding: 0px 6px; margin-left: 10px;}"
   );
 
-  //show desktop notification
-  try{
-    Notification.requestPermission();
-    getNotifications();
-    var unreadNotifications = $("#user-notify-count")[0].innerHTML;
-    if(unreadNotifications>0){
-      if(window.Notification){
-        const notification = new Notification("Drawception", {
-          tag: "tag",
-          body: unreadNotifications +" new notifications",
-          iconUrl: "https://drawception.com/img/logo-d-large.png",
-          icon: "https://drawception.com/img/logo-d-large.png"
-          }
-        );
-        notification.onclick = function() {
-          notification.close();
-          //# chrome only 
-          //# If the window is minimized, restore the size of the window
-          var childNodes = $("#user-notify-list")[0].firstChild.getElementsByTagName("a");
-          for (i = 0; i < unreadNotifications; i++) {
-            window.open(childNodes[i].href, "_blank");
-          }
-        };
-      }
-    }
-  }catch{}
-
-
   // Show an error if it occurs instead of "loading forever"
   window.getNotifications = function()
   {
@@ -3806,6 +3778,35 @@ function pageEnhancements()
       );
     }
   };
+
+  //show desktop notification
+  try{
+    Notification.requestPermission();//get notification permissions if they aren't already granted
+    window.getNotifications();//load notifications
+    var unreadNotifications = $("#user-notify-count")[0].innerHTML;//get number of unread notifications
+    if(unreadNotifications>0){//if there are unread notifications
+      if(window.Notification){//and we have notification permissions
+        const notification = new Notification("Drawception", {//create a new notification
+          tag: "tag",
+          body: unreadNotifications +" new notifications",
+          iconUrl: "https://drawception.com/img/logo-d-large.png",
+          icon: "https://drawception.com/img/logo-d-large.png"
+          }
+        );
+        notification.onclick = function() {//when the notification is activated
+          launchNotifications(notification, unreadNotifications);//run function
+        };
+      }
+    }
+  }catch{}
+
+  function launchNotifications(notification, unreadNotifications) {
+    notification.close();//close notification
+    var childNodes = $("#user-notify-list")[0].firstChild.getElementsByTagName("a");//get list of notifications
+    for (i = 0; i < unreadNotifications; i++) {
+      window.open(childNodes[i].href, "_blank").focus();//open link for each new notification
+    }
+  }
 
   //change navbar color
   if(options.colorizeNavBar){
