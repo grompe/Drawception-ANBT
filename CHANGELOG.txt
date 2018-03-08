@@ -1,3 +1,6 @@
+1.163.2018.03
+- Desktop notifications for followers, comments, and finished games
+
 1.161.2018.03
 - Change mobile menu color for dark theme
 - Dark top bar for dark theme
@@ -18,6 +21,12 @@
 - Top menu color changes to match user's profile picture in profile page
 - Top menu color changes to match first panel in non-themed game
 - Fixed top menu color change for b & w and fire & ice themes
+
+1.151.2018.03
+- Changed style of menu on userpages
+
+1.148.2018.03
+- Removed shadows from cover and user info on userpages
 
 1.146.2018.03
 - Sticky top menu

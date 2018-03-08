@@ -2,7 +2,7 @@
 // @name         Bertrand's Drawception ANBT
 // @author       Bertrand the Healer
 // @namespace    https://bertrandthehealer.github.io/
-// @version      1.161.2018.03
+// @version      1.163.2018.03
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/bertrandthehealer/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.161.2018.03";
+var SCRIPT_VERSION = "1.163.2018.03";
 var NEWCANVAS_VERSION = 35; // Increase to update the cached canvas
 var SITE_VERSION = "2.8.4"; // Last seen site version
 
@@ -3778,6 +3778,35 @@ function pageEnhancements()
       );
     }
   };
+
+  //show desktop notification
+  try{
+    Notification.requestPermission();//get notification permissions if they aren't already granted
+    window.getNotifications();//load notifications
+    var unreadNotifications = $("#user-notify-count")[0].innerHTML;//get number of unread notifications
+    if(unreadNotifications>0){//if there are unread notifications
+      if(window.Notification){//and we have notification permissions
+        const notification = new Notification("Drawception", {//create a new notification
+          tag: "tag",
+          body: unreadNotifications +" new notifications",
+          iconUrl: "https://drawception.com/img/logo-d-large.png",
+          icon: "https://drawception.com/img/logo-d-large.png"
+          }
+        );
+        notification.onclick = function() {//when the notification is activated
+          launchNotifications(notification, unreadNotifications);//run function
+        };
+      }
+    }
+  }catch{}
+
+  function launchNotifications(notification, unreadNotifications) {
+    notification.close();//close notification
+    var childNodes = $("#user-notify-list")[0].firstChild.getElementsByTagName("a");//get list of notifications
+    for (i = 0; i < unreadNotifications; i++) {
+      window.open(childNodes[i].href, "_blank").focus();//open link for each new notification
+    }
+  }
 
   //change navbar color
   if(options.colorizeNavBar){
