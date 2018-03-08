@@ -19,6 +19,12 @@
 - Top menu color changes to match first panel in non-themed game
 - Fixed top menu color change for b & w and fire & ice themes
 
+1.151.2018.03
+- Changed style of menu on userpages
+
+1.148.2018.03
+- Removed shadows from cover and user info on userpages
+
 1.146.2018.03
 - Sticky top menu
 - Top menu color changes to match game theme
