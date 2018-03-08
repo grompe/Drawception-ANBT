@@ -33,6 +33,7 @@ After installing script management add-on, just click on the [**Direct script li
 
 
 ## FEATURES
+**bold** features by me, others by Grom PE et. al.
 
 General:
 
@@ -40,9 +41,11 @@ General:
 - No temptation to judge
 - An embedded chat (http://chat.grompe.org.ru/#drawception)
 - Automatically retry failed requests to reduce annoying error messages
-- Sticky top panel
-- Change top panel color based on game panels
-- Dark theme
+- **Sticky top panel**
+- **Change top panel color based on game panels**
+- **Dark mode**
+- **Various UI improvements**
+- **Desktop notifications for followers, comments, and finished games**
 
 Canvas:
 
