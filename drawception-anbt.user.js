@@ -3756,7 +3756,7 @@ function pageEnhancements()
   //show desktop notification
   try{
     Notification.requestPermission();
-    $("#user-notify-count")[0].click();
+    getNotifications();
     var unreadNotifications = $("#user-notify-count")[0].innerHTML;
     if(unreadNotifications>0){
       if(window.Notification){
