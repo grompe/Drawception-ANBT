@@ -2,7 +2,7 @@
 // @name         Bertrand's Drawception ANBT
 // @author       Bertrand the Healer
 // @namespace    https://bertrandthehealer.github.io/
-// @version      1.162.2018.03
+// @version      1.163.2018.03
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/bertrandthehealer/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.162.2018.03";
+var SCRIPT_VERSION = "1.163.2018.03";
 var NEWCANVAS_VERSION = 35; // Increase to update the cached canvas
 var SITE_VERSION = "2.8.4"; // Last seen site version
 
@@ -3756,12 +3756,13 @@ function pageEnhancements()
   //show desktop notification
   try{
     Notification.requestPermission();
+    $("#user-notify-count")[0].click();
     var unreadNotifications = $("#user-notify-count")[0].innerHTML;
     if(unreadNotifications>0){
       if(window.Notification){
         const notification = new Notification("Drawception", {
           tag: "tag",
-          body: unreadNotifications +" new notifications on Drawception",
+          body: unreadNotifications +" new notifications",
           iconUrl: "https://drawception.com/img/logo-d-large.png",
           icon: "https://drawception.com/img/logo-d-large.png"
           }
@@ -3770,8 +3771,10 @@ function pageEnhancements()
           notification.close();
           //# chrome only 
           //# If the window is minimized, restore the size of the window
-          window.open().close();
-          return window.focus();
+          var childNodes = $("#user-notify-list")[0].firstChild.getElementsByTagName("a");
+          for (i = 0; i < unreadNotifications; i++) {
+            window.open(childNodes[i].href, "_blank");
+          }
         };
       }
     }
