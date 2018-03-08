@@ -2,7 +2,7 @@
 // @name         Bertrand's Drawception ANBT
 // @author       Bertrand the Healer
 // @namespace    https://bertrandthehealer.github.io/
-// @version      1.159.2018.03
+// @version      1.160.2018.03
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/bertrandthehealer/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.159.2018.03";
+var SCRIPT_VERSION = "1.160.2018.03";
 var NEWCANVAS_VERSION = 35; // Increase to update the cached canvas
 var SITE_VERSION = "2.8.4"; // Last seen site version
 
@@ -3692,6 +3692,11 @@ function pageEnhancements()
   p.append('<a href="/search/" title="Search" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item" style="border-radius: 0px;"><span class="glyphicon glyphicon-search" /></a>');
   p.append('<a id="menusettings" href="/settings/" title="Settings" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item" style="border-radius: 0px;"><span class="glyphicon glyphicon-cog" /></a>');
   p.append('<a href="/logout" title="Log Out" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item logout-item" style="border-radius: 0px 5px 5px 0px;"><span class="glyphicon glyphicon-log-out" /></a>');
+
+  //add menu items
+  var p = $("#main-menu");
+  p.append('<a href="javascript:toggleLight()" class="list-group-item"><span class="glyphicon glyphicon-eye-open"></span> Toggle Light</a>');
+  p.append('<a href="/browse/all-games/" class="list-group-item"><span class="glyphicon glyphicon-folder-open"></span> Browse Games</a>');
 
   p = $("#navbar-user a[href^='/store/']").parent()
   var inventory = $('<a href="#myItems" class="btn btn-menu navbar-btn navbar-user-item" data-toggle="modal" rel="tooltip" title="Inventory" style="border-radius: 5px 0px 0px 5px; border-style: none solid none none; border-width: 1px; border-color: rgb(0,0,0,.3);">' +

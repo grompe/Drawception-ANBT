@@ -1,3 +1,6 @@
+1.160.2018.03
+- Added Browse Games and Toggle Light buttons to menu for mobile devices
+
 1.159.2018.03
 - Improved dark theme
 
