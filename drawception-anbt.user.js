@@ -2,7 +2,7 @@
 // @name         Bertrand's Drawception ANBT
 // @author       Bertrand the Healer
 // @namespace    https://bertrandthehealer.github.io/
-// @version      1.161.2018.03
+// @version      1.162.2018.03
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/bertrandthehealer/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.161.2018.03";
+var SCRIPT_VERSION = "1.162.2018.03";
 var NEWCANVAS_VERSION = 35; // Increase to update the cached canvas
 var SITE_VERSION = "2.8.4"; // Last seen site version
 
@@ -3752,6 +3752,31 @@ function pageEnhancements()
     "a.wrong-order {color: #F99} div.comment-holder:target {background-color: #DFD}" +
     ".comment-new .text-muted:after {content: 'New'; color: #2F5; font-weight: bold; background-color: #183; border-radius: 9px; display: inline-block; padding: 0px 6px; margin-left: 10px;}"
   );
+
+  //show desktop notification
+  try{
+    Notification.requestPermission();
+    var unreadNotifications = $("#user-notify-count")[0].innerHTML;
+    if(unreadNotifications>0){
+      if(window.Notification){
+        const notification = new Notification("Drawception", {
+          tag: "tag",
+          body: unreadNotifications +" new notifications on Drawception",
+          iconUrl: "https://drawception.com/img/logo-d-large.png",
+          icon: "https://drawception.com/img/logo-d-large.png"
+          }
+        );
+        notification.onclick = function() {
+          notification.close();
+          //# chrome only 
+          //# If the window is minimized, restore the size of the window
+          window.open().close();
+          return window.focus();
+        };
+      }
+    }
+  }catch{}
+
 
   // Show an error if it occurs instead of "loading forever"
   window.getNotifications = function()
