@@ -4036,7 +4036,7 @@ if (typeof DrawceptionPlay == "undefined")
 
 // From http://userstyles.org/styles/93911/dark-gray-style-for-drawception-com
 localStorage.setItem("gpe_darkCSS",
-  ("a{color:#77c0ff$}.wrapper{~#444$}.icon-bar{~#77c0ff$}#user-notify-count{color:#77c0ff$}.glyphicon-bell{color:#77c0ff$}.btn-bright{color:#cccccc$;~#7f7f7f$}.btn-default{~#7f7f7f$;border-bottom-color:#666$;border-left-color:#666$;border-right-color:#666$;border-top-color:#666$;color:#CCC$}" +
+  ("a{color:#77c0ff$}#nav-drag{~#555$;background-image:none$}.wrapper{~#444$}.icon-bar{~#77c0ff$}#user-notify-count{color:#77c0ff$}.glyphicon-bell{color:#77c0ff$}.btn-bright{color:#cccccc$;~#7f7f7f$}.btn-default{~#7f7f7f$;border-bottom-color:#666$;border-left-color:#666$;border-right-color:#666$;border-top-color:#666$;color:#CCC$}" +
   ".btn-default:hover,.btn-default:focus,.btn-default:active,.btn-default.active,.open .dropdown-toggle.btn-default{~#757575$;border-bottom-color:#565656$;border-left-color:#565656$;border-right-color:#565656$;border-top-color:#565656$;color:#DDD$}" +
   ".btn-success{~#2e2e2e$;border-bottom-color:#262626$;border-left-color:#262626$;border-right-color:#262626$;border-top-color:#262626$;color:#CCC$}" +
   ".btn-success:hover,.btn-success:focus,.btn-success:active,.btn-success.active,.open .dropdown-toggle.btn-success{~#232323$;border-bottom-color:#1c1c1c$;border-left-color:#1c1c1c$;border-right-color:#1c1c1c$;border-top-color:#1c1c1c$;color:#DDD$}" +
