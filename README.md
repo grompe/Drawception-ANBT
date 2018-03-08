@@ -46,6 +46,7 @@ General:
 - **Dark mode**
 - **Various UI improvements**
 - **Desktop notifications for followers, comments, and finished games**
+- **Browse all games**
 
 Canvas:
 
