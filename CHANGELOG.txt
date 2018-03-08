@@ -1,3 +1,6 @@
+1.159.2018.03
+- Improved dark theme
+
 1.158.2018.03
 - Fixed transparent top panel in Draw First games
 - Added a setting to make top panel color changes optional
