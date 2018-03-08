@@ -1,3 +1,6 @@
+1.163.2018.03
+- Desktop notifications for followers, comments, and finished games
+
 1.161.2018.03
 - Change mobile menu color for dark theme
 - Dark top bar for dark theme
