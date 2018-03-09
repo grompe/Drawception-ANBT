@@ -45,7 +45,8 @@ General:
 - **Change top panel color based on game panels**
 - **Dark mode**
 - **Various UI improvements**
-- **Desktop notifications for followers, comments, and finished games**
+- **Desktop notifications for new comments, followers, top games, and finished games**
+- **Notifications for new comments, etc without reloading page**
 - **Browse all games**
 
 Canvas:
