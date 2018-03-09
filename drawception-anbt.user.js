@@ -2,7 +2,7 @@
 // @name         Bertrand's Drawception ANBT
 // @author       Bertrand the Healer
 // @namespace    https://bertrandthehealer.github.io/
-// @version      1.165.2018.03
+// @version      1.166.2018.03
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/bertrandthehealer/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.165.2018.03";
+var SCRIPT_VERSION = "1.166.2018.03";
 var NEWCANVAS_VERSION = 35; // Increase to update the cached canvas
 var SITE_VERSION = "2.8.4"; // Last seen site version
 
@@ -56,6 +56,7 @@ var options =
   maxCommentHeight: 1000,
   useOldFont: true,
   colorizeNavBar: true,
+  checkForNotifications: true,
 };
 
 /*
@@ -3374,6 +3375,7 @@ function addScriptSettings()
       ["maxCommentHeight", "number", "Maximum comments and posts height until directly linked (px, 0 = no limit)"],
       ["useOldFont", "boolean", "Use old Nunito font (which is usually bolder and less wiggly)"],
       ["colorizeNavBar", "boolean", "Change top bar color based on panel colors"],
+      ["checkForNotifications", "boolean", "Check for notifications periodically while page is open"],
     ]
   );
   addGroup("Advanced",
@@ -3810,7 +3812,7 @@ function pageEnhancements()
   }
 
   //check for notifications every 30 seconds
-  var notificationTimer = setInterval(checkNotifications, 30000);
+  if(options.checkForNotifications){var notificationTimer = setInterval(checkNotifications, 30000);}
 
   function checkNotifications(){
     try{
