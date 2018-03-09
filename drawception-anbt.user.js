@@ -2,7 +2,7 @@
 // @name         Bertrand's Drawception ANBT
 // @author       Bertrand the Healer
 // @namespace    https://bertrandthehealer.github.io/
-// @version      1.164.2018.03
+// @version      1.165.2018.03
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/bertrandthehealer/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.164.2018.03";
+var SCRIPT_VERSION = "1.165.2018.03";
 var NEWCANVAS_VERSION = 35; // Increase to update the cached canvas
 var SITE_VERSION = "2.8.4"; // Last seen site version
 
@@ -3795,17 +3795,48 @@ function pageEnhancements()
         );
         notification.onclick = function() {//when the notification is activated
           launchNotifications(notification, unreadNotifications);//run function
+          notification.close();//close notification
         };
       }
     }
   }catch{}
 
+  //runs when user clicks on notification
   function launchNotifications(notification, unreadNotifications) {
-    notification.close();//close notification
     var childNodes = $("#user-notify-list")[0].firstChild.getElementsByTagName("a");//get list of notifications
     for (i = 0; i < unreadNotifications; i++) {
       window.open(childNodes[i].href, "_blank").focus();//open link for each new notification
     }
+  }
+
+  //check for notifications every 30 seconds
+  var notificationTimer = setInterval(checkNotifications, 30000);
+
+  function checkNotifications(){
+    try{
+      var unreadCount = "";
+      $.get('https://drawception.com/', function (response) {//grab the homepage
+        parser = new DOMParser();
+        doc = parser.parseFromString(response, "text/html");//parse the homepage
+        unreadCount = doc.getElementById("user-notify-count").innerHTML;//get unread count
+        console.log(unreadCount+" new notifications");
+        if(parseInt(unreadCount)>0){//if there are new notifications
+          if(window.Notification){//and we have notification permissions
+            const notification = new Notification("Drawception", {//create a new notification
+              tag: "tag",
+              body: unreadCount +" new notifications",
+              iconUrl: "https://drawception.com/img/logo-d-large.png",
+              icon: "https://drawception.com/img/logo-d-large.png"
+              }
+            );
+            notification.onclick = function() {//when the notification is activated
+              notification.close();//close notification
+              location.reload();//reload page
+            };
+          }
+        }
+      });
+    }catch{}
   }
 
   //change navbar color

@@ -1,3 +1,6 @@
+1.165.2018.03
+-Check for new notifications without reloading page
+
 1.164.2018.03
 - Fix navbar theme for games with new "top game" breadcrumb
 
