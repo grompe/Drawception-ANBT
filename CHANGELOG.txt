@@ -1,3 +1,6 @@
+1.164.2018.03
+- Fix navbar theme for games with new "top game" breadcrumb
+
 1.163.2018.03
 - Desktop notifications for followers, comments, and finished games
 

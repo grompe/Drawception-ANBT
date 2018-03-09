@@ -2,7 +2,7 @@
 // @name         Bertrand's Drawception ANBT
 // @author       Bertrand the Healer
 // @namespace    https://bertrandthehealer.github.io/
-// @version      1.163.2018.03
+// @version      1.164.2018.03
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/bertrandthehealer/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.163.2018.03";
+var SCRIPT_VERSION = "1.164.2018.03";
 var NEWCANVAS_VERSION = 35; // Increase to update the cached canvas
 var SITE_VERSION = "2.8.4"; // Last seen site version
 
@@ -3896,6 +3896,73 @@ function pageEnhancements()
     try{//if the game is a vet game the theme will be in the second "label-no-select" element
       var navbarColor = "#0CE853";
       var theme = document.getElementsByClassName("label-no-select")[1].innerHTML;
+      switch(theme) {
+        case "bee":
+          navbarColor = "#EAB618";
+          break;
+        case "canyon sunset":
+          navbarColor = "#2E1B50";
+          break;
+        case "halloween":
+          navbarColor = "#BEF202";
+          break;
+        case "sepia":
+          navbarColor = "#402305";
+          break;
+        case "the blues":
+          navbarColor = "#295C6F";
+          break;
+        case "grayscale":
+          navbarColor = "#333333";
+          break;
+        case "spring":
+          navbarColor = "#9ED396";
+          break;
+        case "b &amp; w":
+          navbarColor = "#000000";
+          break;
+        case "beach":
+          navbarColor = "#F7DCA2";
+          break;
+        case "cga":
+          navbarColor = "#FFFF55";
+          break;
+        case "coty 2016":
+          navbarColor = "#648589";
+          break;
+        case "gameboy":
+          navbarColor = "#9BBC0F";
+          break;
+        case "neon":
+          navbarColor = "#00ABFF";
+          break;
+        case "coty 2017":
+          navbarColor = "#5F7278";
+          break;
+        case "thanksgiving":
+          navbarColor = "#F5E9CE";
+          break;
+        case "fire &amp; ice":
+          navbarColor = "#FD2119";
+          break;
+        case "holiday":
+          navbarColor = "#3D9949";
+          break;
+        case "valentines":
+          navbarColor = "#FFCCDF";
+          break;
+        default:
+          //leave it green
+      }
+      if(navbarColor != "#0CE853"){
+        //if there is a theme remove the color generated from the first drawing
+        $("#nav-drag")[0].style.background = "";
+      }
+      $("#nav-drag")[0].style.backgroundColor = navbarColor;
+    }catch{}
+    try{//if the game is a vet game and a top game the theme will be in the third "label-no-select" element
+      var navbarColor = "#0CE853";
+      var theme = document.getElementsByClassName("label-no-select")[2].innerHTML;
       switch(theme) {
         case "bee":
           navbarColor = "#EAB618";
