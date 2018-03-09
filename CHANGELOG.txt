@@ -1,3 +1,6 @@
+1.166.2018.03
+- Added setting to disable notification checks
+
 1.165.2018.03
 -Check for new notifications without reloading page
 
