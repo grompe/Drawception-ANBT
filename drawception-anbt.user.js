@@ -760,7 +760,7 @@ function bindCanvasEvents()
         } else {
           alert(o.error);
         }
-      } else if (o.callJS == complete)
+      } else if (o.data && o.data.url)
       {
         window.onbeforeunload = function(){};
         location.replace(o.data.url);
