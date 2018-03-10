@@ -29,7 +29,6 @@ var options =
   enterToCaption: 0, // Whether to submit caption by pressing Enter
   pressureExponent: 0.5, // Smaller = softer tablet response, bigger = sharper
   brushSizes: [2, 5, 12, 35], // Brush sizes for choosing via keyboard
-  loadChat: 1, // Whether to load the chat
   chatAutoConnect: 0, // Whether to automatically connect to the chat
   removeFlagging: 1, // Whether to remove flagging buttons
   ownPanelLikesSecret: 0,
@@ -1032,37 +1031,6 @@ function deeper_main()
         path.pathSegList.appendItem(path.createSVGPathSegLinetoAbs(c.x, c.y));
       }
     }
-  }
-
-  if (options.loadChat)
-  {
-    // jQuery overwrites onbeforeunload; restore
-    var old_beforeunload = window.onbeforeunload;
-    include("//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js",
-    function()
-    {
-      setTimeout(function()
-      {
-        $(window).bind('beforeunload', old_beforeunload);
-
-        include("//grompe.github.io/jappix-mini.js?1", function()
-        {
-          disconnectMini(); // For browsers where embedded chat mysteriously
-          // survives the page being overwritten by the new canvas, causing
-          // double connection to the chat and doubling messages.
-          // Thanks go to vpzom for helping figuring that out.
-
-          var username = localStorage.getItem("gpe_lastSeenName");
-          var userid = localStorage.getItem("gpe_lastSeenId");
-
-          MINI_GROUPCHATS = ["drawception"];
-          MINI_GROUPCHATS_NOCLOSE = ["drawception@chat.grompe.org.ru"];
-          MINI_NICKNAME = username;
-          MINI_RESOURCE = userid + "/jm" + Math.random().toString(36).slice(1, 5);
-          launchMini(Boolean(options.chatAutoConnect), true, "ip");
-        });
-      }, 1);
-    });
   }
 
   // Poor poor memory devices, let's save on memory to avoid them "crashing"...
@@ -3352,12 +3320,6 @@ function addScriptSettings()
       ['bookmarkOwnCaptions', 'boolean', "Automatically bookmark your own captions in case of dustcatchers (New canvas only)"],
     ]
   );
-  addGroup('Chat (Standalone address: <a href="http://chat.grompe.org.ru/#drawception">http://chat.grompe.org.ru/#drawception</a>)',
-    [
-      ["loadChat", "boolean", "Load the embedded chat"],
-      ["chatAutoConnect", "boolean", "Automatically connect to the chat"],
-    ]
-  );
   addGroup("Miscellaneous",
     [
       ["localeTimestamp", "boolean", "Format timestamps as your system locale (" + (new Date()).toLocaleString() +")"],
@@ -3787,24 +3749,6 @@ function pageEnhancements()
       return msg;
     }
   };
-
-  if (options.loadChat)
-  {
-    $.ajax(
-      {
-        dataType: "script",
-        cache: true,
-        url: "//grompe.github.io/jappix-mini.js?1"
-      }
-    ).success(function()
-    {
-      MINI_GROUPCHATS = ["drawception"];
-      MINI_GROUPCHATS_NOCLOSE = ["drawception@chat.grompe.org.ru"];
-      MINI_NICKNAME = username;
-      MINI_RESOURCE = userid + "/jm" + Math.random().toString(36).slice(1, 5);
-      launchMini(Boolean(options.chatAutoConnect), true, "ip");
-    });
-  }
 }
 
 var mark = document.createElement("b");
@@ -3867,7 +3811,6 @@ localStorage.setItem("gpe_darkCSS",
   ".likebutton.btn-success{color:#050$;~#5A5$}.likebutton.btn-success:hover{~#494$}" +
   ".thumbnail[style*='background-color: rgb(255, 255, 255)']{~#555$}" +
   ".gsc-control-cse{~#444$;border-color:#333$}.gsc-above-wrapper-area,.gsc-result{border:none$}.gs-snippet{color:#AAA$}.gs-visibleUrl{color:#8A8$}a.gs-title b,.gs-visibleUrl b{color:#EEE$}.gsc-adBlock{display:none$}.gsc-input{~#444$;border-color:#333$;color:#EEE$}" +
-  "#jappix_mini a{color:#000$}" +
   // We have entered specificity hell...
   "a.anbt_replaypanel:hover{color:#8af$}" +
   ".anbt_favedpanel{color:#d9534f$}" +
