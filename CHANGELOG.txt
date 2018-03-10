@@ -1,3 +1,9 @@
+1.120.2018.03
+- Remove the embedded chat
+- New canvas: fix drawing submission broken with the site update
+- Fix error in Firefox 59+ due to partial removal of SVGPathSegList API
+- Update Discord chat link
+
 1.119.2018.03
 - Flatten 'more' submenu on userpages for fewer clicks in navigation
 - Fix handling new timestamps on userpages; support comments tab
