@@ -1,3 +1,6 @@
+1.167.2018.03
+- Prevent opening a new tab if notification is for comment on current page
+
 1.166.2018.03
 - Added setting to disable notification checks
 
