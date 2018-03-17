@@ -1,3 +1,7 @@
+1.121.2018.03
+- Update Discord chat link to point to introduction channel, as per request
+- Force update cached canvas
+
 1.120.2018.03
 - Remove the embedded chat
 - New canvas: fix drawing submission broken with the site update
