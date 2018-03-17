@@ -1222,22 +1222,6 @@ function enhanceCanvas(insandbox)
       if (typeof drawApp == "undefined") return;
       clearInterval(waitForDrawApp);
 
-      // Clear leaving page warning on submitting the drawing
-      var old_savePanelDrawing = savePanelDrawing;
-      savePanelDrawing = function(a, b, c)
-      {
-        window.onbeforeunload = function(){};
-        return old_savePanelDrawing(a, b, c);
-      };
-
-      // And contest panel too
-      var old_saveContestDrawing = saveContestDrawing;
-      saveContestDrawing = function(a, b, c)
-      {
-        window.onbeforeunload = function(){};
-        return old_saveContestDrawing(a, b, c);
-      };
-
       // Remove backup when exiting (even if confirmation is cancelled)
       if (options.backup)
       {
@@ -1757,6 +1741,8 @@ function empowerPlay(noReload)
   $(".play-options").prepend(optionsButton);
   optionsButton.popover({container: "body", placement: "bottom", html: 1, content: optionsDiv});
 
+  // broken by site update
+  /*
   if (!noReload)
   {
     // Show time remaining in document title
@@ -1769,7 +1755,7 @@ function empowerPlay(noReload)
       var s = ("0" + p[6]).slice(-2);
       document.title = "[" + m + ":" + s + "] " + origtitle;
     };
-    $("#timeleft").countdown('option', 'onTick', window.highlightCountdown);
+    $(".playtimer").countdown('option', 'onTick', window.highlightCountdown);
 
     // Add sound to timeout warning
     var blitz = isBlitzInPlay();
@@ -1789,12 +1775,12 @@ function empowerPlay(noReload)
           window.playedWarningSound = true;
         }
       };
-      $("#timeleft").countdown('option', 'onTick', window.highlightCountdown);
+      $(".playtimer").countdown('option', 'onTick', window.highlightCountdown);
     }
   } else {
     window.playedWarningSound = false;
   }
-
+  */
   // Remake skip function to async (disabled as it is broken by site update)
   if (options.asyncSkip == 2)
   {
@@ -3740,15 +3726,6 @@ function pageEnhancements()
     $('a[href^="/sandbox/"]').click(directToNewSandbox);
     $('a[href="/play/"]').click(directToNewPlay);
   }
-  window.onbeforeunload = function(e)
-  {
-    if ($("#drawingCanvas").length && painted)
-    {
-      var msg = "Did you finish drawing?";
-      e.returnValue = msg;
-      return msg;
-    }
-  };
 }
 
 var mark = document.createElement("b");
