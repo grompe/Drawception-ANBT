@@ -1,10 +1,10 @@
 // ==UserScript==
-// @name         Drawception ANBT
-// @author       Grom PE
-// @namespace    http://grompe.org.ru/
-// @version      1.122.2018.03
+// @name         Bertrand's Drawception ANBT
+// @author       Bertrand the Healer
+// @namespace    https://bertrandthehealer.github.io/
+// @version      1.168.2018.03
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
-// @downloadURL  https://raw.github.com/grompe/Drawception-ANBT/master/drawception-anbt.user.js
+// @downloadURL  https://raw.github.com/bertrandthehealer/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
 // @match        https://drawception.com/*
 // @grant        none
@@ -14,9 +14,9 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.122.2018.03";
+var SCRIPT_VERSION = "1.168.2018.03";
 var NEWCANVAS_VERSION = 36; // Increase to update the cached canvas
-var SITE_VERSION = "2.9.36"; // Last seen site version
+var SITE_VERSION = "2.8.4"; // Last seen site version
 
 // == DEFAULT OPTIONS ==
 
@@ -54,6 +54,8 @@ var options =
   forumHiddenUsers: "",
   maxCommentHeight: 1000,
   useOldFont: true,
+  colorizeNavBar: true,
+  checkForNotifications: true,
 };
 
 /*
@@ -246,6 +248,8 @@ function sendPost(url, params, onloadfunc, onerrorfunc, ontimeoutfunc)
   xhr.ontimeout = ontimeoutfunc || onerrorfunc || onloadfunc;
   xhr.send(params);
 }
+
+
 
 function extractInfoFromHTML(html)
 {
@@ -3318,6 +3322,8 @@ function addScriptSettings()
       ["markStalePosts", "boolean", "Mark stale forum posts"],
       ["maxCommentHeight", "number", "Maximum comments and posts height until directly linked (px, 0 = no limit)"],
       ["useOldFont", "boolean", "Use old Nunito font (which is usually bolder and less wiggly)"],
+      ["colorizeNavBar", "boolean", "Change top bar color based on panel colors"],
+      ["checkForNotifications", "boolean", "Check for notifications periodically while page is open"],
     ]
   );
   addGroup("Advanced",
@@ -3559,8 +3565,24 @@ function pageEnhancements()
     ".anbt_threadtitle {margin: 0 20px 10px}" +
     ".avatar {box-sizing: content-box}" +
     ".pagination {margin: 0px}" +
+    ".navbar {position: fixed; width: 100%; top: 0; left: 0; z-index: 1060}" + //floating navbar
+    "#main {padding-top: 50px}" + //space for floating navbar
+    ".btn-menu {background-color: rgba(0,0,0,.3)}" + //colors for navbar buttons
+    ".btn-primary {background-color: rgba(0,0,0,.3)}" + //color for play button
+    ".btn-info {background-color: rgba(0,0,0,.3)}" + //color for create game button
+    ".btn-primary {border-color: rgba(0,0,0,0)}" + //border for play button
+    ".btn-info {border-color: rgba(0,0,0,0)}" + //border for create game button
+    ".logout-item:hover {background-color: #c93232}" + //logout button red on hover
+    ".btn {border-radius: 5px}" + //border radius for buttons
+    ".avatar-sm {border-radius: 5px; height: 28px; width: 28px; margin-top: 2px;}" + //smaller profile button
+    ".navbar-toggle {background-color: rgba(0,0,0,.3)}" + //Overflow menu background color
+    ".navbar-default .navbar-toggle .icon-bar {background-color: white}" + //Overflow menu icon colors
+    ".profile-user-header {background: none; -webkit-box-shadow: none; box-shadow: none;}" + //Remove divider after tabs
+    ".profile-header {-webkit-box-shadow: none; box-shadow: none;}" + //Remove shadow from cover
     ""
   );
+
+
   if (options.maxCommentHeight)
   {
     var h = options.maxCommentHeight;
@@ -3610,24 +3632,42 @@ function pageEnhancements()
   var p = $(".navbar-toggle").parent();
   //p.prepend('<a href="/" class="gpe-wide" style="float:left; margin-right:8px"><img src="/img/logo-sm.png" width="166" height="43" alt="drawception" /></a>');
   p.append('<span class="gpe-wide gpe-spacer">&nbsp</span>');
-  p.append('<a href="/sandbox/" title="Sandbox" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item" style="background:#5A5"><span class="glyphicon glyphicon-edit" style="color:#BFB" /></a>');
-  p.append('<a href="/browse/all-games/" title="Browse Games" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item"><span class="glyphicon glyphicon-folder-open" /></a>');
-  p.append('<a href="/contests/" title="Contests" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item"><span class="glyphicon glyphicon-tower" /></a>');
-  p.append('<a href="javascript:toggleLight()" title="Toggle light" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item" style="background:#AA5"><span class="glyphicon glyphicon-eye-open" style="color:#FFB" /></a>');
-  p.append('<a href="/leaderboard/" title="Leaderboards" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item"><span class="glyphicon glyphicon-fire" /></a>');
-  p.append('<a href="/faq/" title="FAQ" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item"><span class="glyphicon glyphicon-info-sign" /></a>');
-  p.append('<a href="/forums/" title="Forums" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item" style="background:#55A"><span class="glyphicon glyphicon-comment" style="color:#BBF" /></a>');
-  p.append('<a href="/search/" title="Search" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item"><span class="glyphicon glyphicon-search" /></a>');
-  p.append('<a id="menusettings" href="/settings/" title="Settings" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item"><span class="glyphicon glyphicon-cog" /></a>');
-  p.append('<a href="/logout" title="Log Out" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item" style="background:#A55"><span class="glyphicon glyphicon-log-out" style="color:#FBB" /></a>');
+  p.append('<a href="/sandbox/" title="Sandbox" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item" style="border-radius: 5px 0px 0px 5px;"><span class="glyphicon glyphicon-edit" /></a>');
+  p.append('<a href="/browse/all-games/" title="Browse Games" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item" style="border-radius: 0px;"><span class="glyphicon glyphicon-folder-open" /></a>');
+  p.append('<a href="/contests/" title="Contests" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item" style="border-radius: 0px;"><span class="glyphicon glyphicon-tower" /></a>');
+  p.append('<a href="javascript:toggleLight()" title="Toggle light" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item" style="border-radius: 0px;"><span class="glyphicon glyphicon-eye-open" /></a>');
+  p.append('<a href="/leaderboard/" title="Leaderboards" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item" style="border-radius: 0px;"><span class="glyphicon glyphicon-fire" /></a>');
+  p.append('<a href="/faq/" title="FAQ" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item" style="border-radius: 0px;"><span class="glyphicon glyphicon-info-sign" /></a>');
+  p.append('<a href="/forums/" title="Forums" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item" style="border-radius: 0px;"><span class="glyphicon glyphicon-comment" /></a>');
+  p.append('<a href="/search/" title="Search" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item" style="border-radius: 0px;"><span class="glyphicon glyphicon-search" /></a>');
+  p.append('<a id="menusettings" href="/settings/" title="Settings" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item" style="border-radius: 0px;"><span class="glyphicon glyphicon-cog" /></a>');
+  p.append('<a href="/logout" title="Log Out" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item logout-item" style="border-radius: 0px 5px 5px 0px;"><span class="glyphicon glyphicon-log-out" /></a>');
+
+  //add menu items
+  var p = $("#main-menu");
+  p.append('<a href="javascript:toggleLight()" class="list-group-item"><span class="glyphicon glyphicon-eye-open"></span> Toggle Light</a>');
+  p.append('<a href="/browse/all-games/" class="list-group-item"><span class="glyphicon glyphicon-folder-open"></span> Browse Games</a>');
 
   p = $("#navbar-user a[href^='/store/']").parent()
-  var inventory = $('<a href="#myItems" class="btn btn-menu navbar-btn navbar-user-item" data-toggle="modal" rel="tooltip" title="Inventory">' +
+  var inventory = $('<a href="#myItems" class="btn btn-menu navbar-btn navbar-user-item" data-toggle="modal" rel="tooltip" title="Inventory" style="border-radius: 5px 0px 0px 5px; border-style: none solid none none; border-width: 1px; border-color: rgb(0,0,0,.3);">' +
     '<span class="glyphicon glyphicon-book glyphicon-1pxtweak add-opacity"></span></a>');
   p.before(inventory);
-  inventory.wrap('<div class="pull-left navbar-userbar gpe-wide-block">');
+  inventory.wrap('<div class="pull-left navbar-userbar gpe-wide-block " style="padding-right: 0px;">');
   inventory.tooltip({placement: "bottom"});
   inventory.click(getItems);
+
+  //Change inventory button
+  document.getElementById("user-coins-value").parentElement.style.borderRadius = "0px 5px 5px 0px";
+
+  //change tab appearance in profile page
+  try{
+    document.getElementsByClassName("active")[0].firstChild.style.border = "none";
+    document.getElementsByClassName("active")[0].firstChild.style.backgroundColor = "rgb(0,0,0,.2)";
+    document.getElementsByClassName("active")[0].firstChild.style.borderRadius = "5px";
+  }catch{
+
+  }
+  
 
   p = $(".btn-menu-player").parent();
   var userlink = $('.player-dropdown a[href^="/player/"]').attr("href");
@@ -3688,6 +3728,301 @@ function pageEnhancements()
       );
     }
   };
+
+  //show desktop notification
+  try{
+    Notification.requestPermission();//get notification permissions if they aren't already granted
+    window.getNotifications();//load notifications
+    var unreadNotifications = $("#user-notify-count")[0].innerHTML;//get number of unread notifications
+    if(unreadNotifications>0){//if there are unread notifications
+      if(window.Notification){//and we have notification permissions
+        const notification = new Notification("Drawception", {//create a new notification
+          tag: "tag",
+          body: unreadNotifications +" new notifications",
+          iconUrl: "https://drawception.com/img/logo-d-large.png",
+          icon: "https://drawception.com/img/logo-d-large.png"
+          }
+        );
+        notification.onclick = function() {//when the notification is activated
+          launchNotifications(notification, unreadNotifications);//run function
+          notification.close();//close notification
+        };
+      }
+    }
+  }catch{}
+
+  //runs when user clicks on notification
+  function launchNotifications(notification, unreadNotifications) {
+    var childNodes = $("#user-notify-list")[0].firstChild.getElementsByTagName("a");//get list of notifications
+    for (i = 0; i < unreadNotifications; i++) {
+      if(childNodes[i].href!=window.location.href){
+        window.open(childNodes[i].href, "_blank").focus();//open link for each new notification
+      }else{
+        location.reload();
+      }
+    }
+  }
+
+  //check for notifications every 30 seconds
+  if(options.checkForNotifications){var notificationTimer = setInterval(checkNotifications, 30000);}
+
+  function checkNotifications(){
+    try{
+      var unreadCount = "";
+      $.get('https://drawception.com/', function (response) {//grab the homepage
+        parser = new DOMParser();
+        doc = parser.parseFromString(response, "text/html");//parse the homepage
+        unreadCount = doc.getElementById("user-notify-count").innerHTML;//get unread count
+        console.log(unreadCount+" new notifications");
+        if(parseInt(unreadCount)>0){//if there are new notifications
+          if(window.Notification){//and we have notification permissions
+            const notification = new Notification("Drawception", {//create a new notification
+              tag: "tag",
+              body: unreadCount +" new notifications",
+              iconUrl: "https://drawception.com/img/logo-d-large.png",
+              icon: "https://drawception.com/img/logo-d-large.png"
+              }
+            );
+            notification.onclick = function() {//when the notification is activated
+              notification.close();//close notification
+              location.reload();//reload page
+            };
+          }
+        }
+      });
+    }catch{}
+  }
+
+  //change navbar color
+  if(options.colorizeNavBar){
+
+    //set navbar color based on first panel
+    try{
+      //if the first panel is a drawing, set navbar color to average color
+      if (typeof document.getElementsByClassName("gamepanel")[0].firstChild.src !== 'undefined') {
+        $("#nav-drag")[0].style.background = "url("+document.getElementsByClassName("gamepanel")[0].firstChild.src+")";
+      }
+      //if the second panel is a drawing, set navbar color to average color
+      if (typeof document.getElementsByClassName("gamepanel")[1].firstChild.src !== 'undefined') {
+        $("#nav-drag")[0].style.background = "url("+document.getElementsByClassName("gamepanel")[1].firstChild.src+")";
+      }
+      $("#nav-drag")[0].style.backgroundSize = "1px 1px";
+      $("#nav-drag")[0].style.backgroundRepeat = "repeat";
+    }catch{}
+    
+    //set navbar color based on theme
+    try{//if the game is not a vet game the theme will be in the first "label-no-select" element
+      var navbarColor = "#0CE853";
+      var theme = document.getElementsByClassName("label-no-select")[0].innerHTML;
+      switch(theme) {
+        case "bee":
+          navbarColor = "#EAB618";
+          break;
+        case "canyon sunset":
+          navbarColor = "#2E1B50";
+          break;
+        case "halloween":
+          navbarColor = "#BEF202";
+          break;
+        case "sepia":
+          navbarColor = "#402305";
+          break;
+        case "the blues":
+          navbarColor = "#295C6F";
+          break;
+        case "grayscale":
+          navbarColor = "#333333";
+          break;
+        case "spring":
+          navbarColor = "#9ED396";
+          break;
+        case "b &amp; w":
+          navbarColor = "#000000";
+          break;
+        case "beach":
+          navbarColor = "#F7DCA2";
+          break;
+        case "cga":
+          navbarColor = "#FFFF55";
+          break;
+        case "coty 2016":
+          navbarColor = "#648589";
+          break;
+        case "gameboy":
+          navbarColor = "#9BBC0F";
+          break;
+        case "neon":
+          navbarColor = "#00ABFF";
+          break;
+        case "coty 2017":
+          navbarColor = "#5F7278";
+          break;
+        case "thanksgiving":
+          navbarColor = "#F5E9CE";
+          break;
+        case "fire &amp; ice":
+          navbarColor = "#FD2119";
+          break;
+        case "holiday":
+          navbarColor = "#3D9949";
+          break;
+        case "valentines":
+          navbarColor = "#FFCCDF";
+          break;
+        default:
+          //leave it green
+      }
+      if(navbarColor != "#0CE853"){
+        //if there is a theme remove the color generated from the first drawing
+        $("#nav-drag")[0].style.background = "";
+      }
+      $("#nav-drag")[0].style.backgroundColor = navbarColor;
+    }catch{}
+    try{//if the game is a vet game the theme will be in the second "label-no-select" element
+      var navbarColor = "#0CE853";
+      var theme = document.getElementsByClassName("label-no-select")[1].innerHTML;
+      switch(theme) {
+        case "bee":
+          navbarColor = "#EAB618";
+          break;
+        case "canyon sunset":
+          navbarColor = "#2E1B50";
+          break;
+        case "halloween":
+          navbarColor = "#BEF202";
+          break;
+        case "sepia":
+          navbarColor = "#402305";
+          break;
+        case "the blues":
+          navbarColor = "#295C6F";
+          break;
+        case "grayscale":
+          navbarColor = "#333333";
+          break;
+        case "spring":
+          navbarColor = "#9ED396";
+          break;
+        case "b &amp; w":
+          navbarColor = "#000000";
+          break;
+        case "beach":
+          navbarColor = "#F7DCA2";
+          break;
+        case "cga":
+          navbarColor = "#FFFF55";
+          break;
+        case "coty 2016":
+          navbarColor = "#648589";
+          break;
+        case "gameboy":
+          navbarColor = "#9BBC0F";
+          break;
+        case "neon":
+          navbarColor = "#00ABFF";
+          break;
+        case "coty 2017":
+          navbarColor = "#5F7278";
+          break;
+        case "thanksgiving":
+          navbarColor = "#F5E9CE";
+          break;
+        case "fire &amp; ice":
+          navbarColor = "#FD2119";
+          break;
+        case "holiday":
+          navbarColor = "#3D9949";
+          break;
+        case "valentines":
+          navbarColor = "#FFCCDF";
+          break;
+        default:
+          //leave it green
+      }
+      if(navbarColor != "#0CE853"){
+        //if there is a theme remove the color generated from the first drawing
+        $("#nav-drag")[0].style.background = "";
+      }
+      $("#nav-drag")[0].style.backgroundColor = navbarColor;
+    }catch{}
+    try{//if the game is a vet game and a top game the theme will be in the third "label-no-select" element
+      var navbarColor = "#0CE853";
+      var theme = document.getElementsByClassName("label-no-select")[2].innerHTML;
+      switch(theme) {
+        case "bee":
+          navbarColor = "#EAB618";
+          break;
+        case "canyon sunset":
+          navbarColor = "#2E1B50";
+          break;
+        case "halloween":
+          navbarColor = "#BEF202";
+          break;
+        case "sepia":
+          navbarColor = "#402305";
+          break;
+        case "the blues":
+          navbarColor = "#295C6F";
+          break;
+        case "grayscale":
+          navbarColor = "#333333";
+          break;
+        case "spring":
+          navbarColor = "#9ED396";
+          break;
+        case "b &amp; w":
+          navbarColor = "#000000";
+          break;
+        case "beach":
+          navbarColor = "#F7DCA2";
+          break;
+        case "cga":
+          navbarColor = "#FFFF55";
+          break;
+        case "coty 2016":
+          navbarColor = "#648589";
+          break;
+        case "gameboy":
+          navbarColor = "#9BBC0F";
+          break;
+        case "neon":
+          navbarColor = "#00ABFF";
+          break;
+        case "coty 2017":
+          navbarColor = "#5F7278";
+          break;
+        case "thanksgiving":
+          navbarColor = "#F5E9CE";
+          break;
+        case "fire &amp; ice":
+          navbarColor = "#FD2119";
+          break;
+        case "holiday":
+          navbarColor = "#3D9949";
+          break;
+        case "valentines":
+          navbarColor = "#FFCCDF";
+          break;
+        default:
+          //leave it green
+      }
+      if(navbarColor != "#0CE853"){
+        //if there is a theme remove the color generated from the first drawing
+        $("#nav-drag")[0].style.background = "";
+      }
+      $("#nav-drag")[0].style.backgroundColor = navbarColor;
+    }catch{}
+
+    //set navbar color based on user profile image
+    try{
+      $("#nav-drag")[0].style.background = "url("+document.getElementsByClassName("profile-avatar")[0].src+")";
+      $("#nav-drag")[0].style.backgroundSize = "1px 1px";
+      $("#nav-drag")[0].style.backgroundRepeat = "repeat";
+    }catch{}
+  }
+  
+
+  
 
   var versionDisplay;
   try
@@ -3755,7 +4090,7 @@ if (typeof DrawceptionPlay == "undefined")
 
 // From http://userstyles.org/styles/93911/dark-gray-style-for-drawception-com
 localStorage.setItem("gpe_darkCSS",
-  ("a{color:#77c0ff$}.wrapper{~#444$}#nav-drag{~#353535$}.btn-default{~#7f7f7f$;border-bottom-color:#666$;border-left-color:#666$;border-right-color:#666$;border-top-color:#666$;color:#CCC$}" +
+  ("a{color:#77c0ff$}#nav-drag{~#555$;background-image:none$}.wrapper{~#444$}.icon-bar{~#77c0ff$}#user-notify-count{color:#77c0ff$}.glyphicon-bell{color:#77c0ff$}.btn-bright{color:#cccccc$;~#7f7f7f$}.btn-default{~#7f7f7f$;border-bottom-color:#666$;border-left-color:#666$;border-right-color:#666$;border-top-color:#666$;color:#CCC$}" +
   ".btn-default:hover,.btn-default:focus,.btn-default:active,.btn-default.active,.open .dropdown-toggle.btn-default{~#757575$;border-bottom-color:#565656$;border-left-color:#565656$;border-right-color:#565656$;border-top-color:#565656$;color:#DDD$}" +
   ".btn-success{~#2e2e2e$;border-bottom-color:#262626$;border-left-color:#262626$;border-right-color:#262626$;border-top-color:#262626$;color:#CCC$}" +
   ".btn-success:hover,.btn-success:focus,.btn-success:active,.btn-success.active,.open .dropdown-toggle.btn-success{~#232323$;border-bottom-color:#1c1c1c$;border-left-color:#1c1c1c$;border-right-color:#1c1c1c$;border-top-color:#1c1c1c$;color:#DDD$}" +
@@ -3776,7 +4111,7 @@ localStorage.setItem("gpe_darkCSS",
   ".nav-tabs>li.active>a,.nav-tabs>li.active>a:hover,.nav-tabs>li.active>a:focus{color:#DDD$;~#555$;border:1px solid #222$}.nav>li>a:hover,.nav>li>a:focus{~#333$;border-bottom-color:#222$;border-left-color:#111$;border-right-color:#111$;border-top-color:#111$}" +
   ".nav>li.disabled>a,.nav>li.disabled>a:hover,.nav>li.disabled>a:focus{color:#555$}.table-striped>tbody>tr:nth-child(2n+1)>td,.table-striped>tbody>tr:nth-child(2n+1)>th{~#333$}" +
   ".table-hover>tbody>tr:hover>td,.table-hover>tbody>tr:hover>th{~#555$}.table thead>tr>th,.table tbody>tr>th,.table tfoot>tr>th,.table thead>tr>td,.table tbody>tr>td,.table tfoot>tr>td{border-top:1px solid #333$}.news-alert{~#555$;border:2px solid #444$}" +
-  ".btn-menu{~#2e2e2e$}.btn-menu:hover{~#232323$}.btn-yellow{~#8a874e$}.btn-yellow:hover{~#747034$}" +
+  ".btn-menu{~#2e2e2e$}.logout-item{~#c93232$}.btn-menu:hover{~#232323$}.btn-yellow{~#8a874e$}.btn-yellow:hover{~#747034$}" +
   "a.label{color:#fff$}.text-muted,a.text-muted{color:#999$}a.wrong-order{color:#F99$}div.comment-holder:target{~#454$}" +
   ".popover{~#777$}.popover-title{~#666$;border-bottom:1px solid #444$}.popover.top .arrow:after{border-top-color:#777$}.popover.right .arrow:after{border-right-color:#777$}.popover.bottom .arrow:after{border-bottom-color:#777$}.popover.left .arrow:after{border-left-color:#777$}" +
   ".comment-holder{border-bottom:1px solid #222$}" +
