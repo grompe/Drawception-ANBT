@@ -1,3 +1,7 @@
+1.122.2018.03
+- Old canvas: fix loading errors, but warning sound and timer in title are missing for now
+- New canvas: fix timer extraction
+
 1.121.2018.03
 - Update Discord chat link to point to introduction channel, as per request
 - Force update cached canvas
