@@ -273,7 +273,7 @@ function extractInfoFromHTML(html)
     nsfw: extract(/<span[^>]+title="This is a Not Safe For Work/),
     friend: extract(/<strong>[F]riend Game/),
     drawfirst: extract(/value="Abort" onclick="DrawceptionPlay\.abortDrawFirst\(\)/),
-    timeleft: extract(/<span[^>]+id="timeleft"[^>]*>\s+(\d+)\s+<\/span>/),
+    timeleft: extract(/<play-timer :seconds="(\d+)"/),
     timeleft2: extract(/<span[^>]+id="timeleft"[^>]+>[^:]+>(\d+:\d+)/),
     caption: extract(/<p class="play-phrase">\s+([^<]+)\s+<\/p>/),
     image: extract(/<img src="(data:image\/png;base64,[^"]*)"/),
