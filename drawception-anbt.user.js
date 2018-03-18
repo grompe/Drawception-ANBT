@@ -29,7 +29,6 @@ var options =
   enterToCaption: 0, // Whether to submit caption by pressing Enter
   pressureExponent: 0.5, // Smaller = softer tablet response, bigger = sharper
   brushSizes: [2, 5, 12, 35], // Brush sizes for choosing via keyboard
-  loadChat: 1, // Whether to load the chat
   chatAutoConnect: 0, // Whether to automatically connect to the chat
   removeFlagging: 1, // Whether to remove flagging buttons
   ownPanelLikesSecret: 0,
@@ -278,7 +277,7 @@ function extractInfoFromHTML(html)
     nsfw: extract(/<span[^>]+title="This is a Not Safe For Work/),
     friend: extract(/<strong>[F]riend Game/),
     drawfirst: extract(/value="Abort" onclick="DrawceptionPlay\.abortDrawFirst\(\)/),
-    timeleft: extract(/<span[^>]+id="timeleft"[^>]*>\s+(\d+)\s+<\/span>/),
+    timeleft: extract(/<play-timer :seconds="(\d+)"/),
     timeleft2: extract(/<span[^>]+id="timeleft"[^>]+>[^:]+>(\d+:\d+)/),
     caption: extract(/<p class="play-phrase">\s+([^<]+)\s+<\/p>/),
     image: extract(/<img src="(data:image\/png;base64,[^"]*)"/),
@@ -764,7 +763,7 @@ function bindCanvasEvents()
         } else {
           alert(o.error);
         }
-      } else if (o.callJS == complete)
+      } else if (o.data && o.data.url)
       {
         window.onbeforeunload = function(){};
         location.replace(o.data.url);
@@ -1038,37 +1037,6 @@ function deeper_main()
     }
   }
 
-  if (options.loadChat)
-  {
-    // jQuery overwrites onbeforeunload; restore
-    var old_beforeunload = window.onbeforeunload;
-    include("//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js",
-    function()
-    {
-      setTimeout(function()
-      {
-        $(window).bind('beforeunload', old_beforeunload);
-
-        include("//grompe.github.io/jappix-mini.js?1", function()
-        {
-          disconnectMini(); // For browsers where embedded chat mysteriously
-          // survives the page being overwritten by the new canvas, causing
-          // double connection to the chat and doubling messages.
-          // Thanks go to vpzom for helping figuring that out.
-
-          var username = localStorage.getItem("gpe_lastSeenName");
-          var userid = localStorage.getItem("gpe_lastSeenId");
-
-          MINI_GROUPCHATS = ["drawception"];
-          MINI_GROUPCHATS_NOCLOSE = ["drawception@chat.grompe.org.ru"];
-          MINI_NICKNAME = username;
-          MINI_RESOURCE = userid + "/jm" + Math.random().toString(36).slice(1, 5);
-          launchMini(Boolean(options.chatAutoConnect), true, "ip");
-        });
-      }, 1);
-    });
-  }
-
   // Poor poor memory devices, let's save on memory to avoid them "crashing"...
   if (/iPad|iPhone/.test(navigator.userAgent)) anbt.fastUndoLevels = 3;
   
@@ -1257,22 +1225,6 @@ function enhanceCanvas(insandbox)
     {
       if (typeof drawApp == "undefined") return;
       clearInterval(waitForDrawApp);
-
-      // Clear leaving page warning on submitting the drawing
-      var old_savePanelDrawing = savePanelDrawing;
-      savePanelDrawing = function(a, b, c)
-      {
-        window.onbeforeunload = function(){};
-        return old_savePanelDrawing(a, b, c);
-      };
-
-      // And contest panel too
-      var old_saveContestDrawing = saveContestDrawing;
-      saveContestDrawing = function(a, b, c)
-      {
-        window.onbeforeunload = function(){};
-        return old_saveContestDrawing(a, b, c);
-      };
 
       // Remove backup when exiting (even if confirmation is cancelled)
       if (options.backup)
@@ -1793,6 +1745,8 @@ function empowerPlay(noReload)
   $(".play-options").prepend(optionsButton);
   optionsButton.popover({container: "body", placement: "bottom", html: 1, content: optionsDiv});
 
+  // broken by site update
+  /*
   if (!noReload)
   {
     // Show time remaining in document title
@@ -1805,7 +1759,7 @@ function empowerPlay(noReload)
       var s = ("0" + p[6]).slice(-2);
       document.title = "[" + m + ":" + s + "] " + origtitle;
     };
-    $("#timeleft").countdown('option', 'onTick', window.highlightCountdown);
+    $(".playtimer").countdown('option', 'onTick', window.highlightCountdown);
 
     // Add sound to timeout warning
     var blitz = isBlitzInPlay();
@@ -1825,12 +1779,12 @@ function empowerPlay(noReload)
           window.playedWarningSound = true;
         }
       };
-      $("#timeleft").countdown('option', 'onTick', window.highlightCountdown);
+      $(".playtimer").countdown('option', 'onTick', window.highlightCountdown);
     }
   } else {
     window.playedWarningSound = false;
   }
-
+  */
   // Remake skip function to async (disabled as it is broken by site update)
   if (options.asyncSkip == 2)
   {
@@ -3356,12 +3310,6 @@ function addScriptSettings()
       ['bookmarkOwnCaptions', 'boolean', "Automatically bookmark your own captions in case of dustcatchers (New canvas only)"],
     ]
   );
-  addGroup('Chat (Standalone address: <a href="http://chat.grompe.org.ru/#drawception">http://chat.grompe.org.ru/#drawception</a>)',
-    [
-      ["loadChat", "boolean", "Load the embedded chat"],
-      ["chatAutoConnect", "boolean", "Automatically connect to the chat"],
-    ]
-  );
   addGroup("Miscellaneous",
     [
       ["localeTimestamp", "boolean", "Format timestamps as your system locale (" + (new Date()).toLocaleString() +")"],
@@ -4091,7 +4039,7 @@ function pageEnhancements()
 
   $(".footer-main .list-unstyled").eq(0).append('<li><a href="/forums/general/11830/anbt-script/?page=9999">ANBT script</a></li>');
   $(".footer-main .list-unstyled").eq(1).append('<li><a href="http://drawception.wikia.com/">Wiki</a></li>');
-  $(".footer-main .list-unstyled").eq(2).append('<li><a href="http://chat.grompe.org.ru/#drawception">Chat</a> (<a href="https://discord.gg/Nrs658B">Discord</a>)</li>');
+  $(".footer-main .list-unstyled").eq(2).append('<li><a href="http://chat.grompe.org.ru/#drawception">Chat</a> (<a href="https://discord.gg/tHtPy3u">Discord</a>)</li>');
   
   if (options.newCanvas)
   {
@@ -4112,33 +4060,6 @@ function pageEnhancements()
     }
     $('a[href^="/sandbox/"]').click(directToNewSandbox);
     $('a[href="/play/"]').click(directToNewPlay);
-  }
-  window.onbeforeunload = function(e)
-  {
-    if ($("#drawingCanvas").length && painted)
-    {
-      var msg = "Did you finish drawing?";
-      e.returnValue = msg;
-      return msg;
-    }
-  };
-
-  if (options.loadChat)
-  {
-    $.ajax(
-      {
-        dataType: "script",
-        cache: true,
-        url: "//grompe.github.io/jappix-mini.js?1"
-      }
-    ).success(function()
-    {
-      MINI_GROUPCHATS = ["drawception"];
-      MINI_GROUPCHATS_NOCLOSE = ["drawception@chat.grompe.org.ru"];
-      MINI_NICKNAME = username;
-      MINI_RESOURCE = userid + "/jm" + Math.random().toString(36).slice(1, 5);
-      launchMini(Boolean(options.chatAutoConnect), true, "ip");
-    });
   }
 }
 
@@ -4202,7 +4123,6 @@ localStorage.setItem("gpe_darkCSS",
   ".likebutton.btn-success{color:#050$;~#5A5$}.likebutton.btn-success:hover{~#494$}" +
   ".thumbnail[style*='background-color: rgb(255, 255, 255)']{~#555$}" +
   ".gsc-control-cse{~#444$;border-color:#333$}.gsc-above-wrapper-area,.gsc-result{border:none$}.gs-snippet{color:#AAA$}.gs-visibleUrl{color:#8A8$}a.gs-title b,.gs-visibleUrl b{color:#EEE$}.gsc-adBlock{display:none$}.gsc-input{~#444$;border-color:#333$;color:#EEE$}" +
-  "#jappix_mini a{color:#000$}" +
   // We have entered specificity hell...
   "a.anbt_replaypanel:hover{color:#8af$}" +
   ".anbt_favedpanel{color:#d9534f$}" +
