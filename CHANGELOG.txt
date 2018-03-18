@@ -1,16 +1,16 @@
-1.122.2018.03
-- Old canvas: fix loading errors, but warning sound and timer in title are missing for now
-- New canvas: fix timer extraction
-
-1.121.2018.03
-- Update Discord chat link to point to introduction channel, as per request
-- Force update cached canvas
-
-1.120.2018.03
-- Remove the embedded chat
-- New canvas: fix drawing submission broken with the site update
-- Fix error in Firefox 59+ due to partial removal of SVGPathSegList API
-- Update Discord chat link
+1.168.2018.03
+- Merge changes from original version:
+  1.120.2018.03
+  - Remove the embedded chat
+  - New canvas: fix drawing submission broken with the site update
+  - Fix error in Firefox 59+ due to partial removal of SVGPathSegList API
+  - Update Discord chat link
+  1.121.2018.03
+  - Update Discord chat link to point to introduction channel, as per request
+  - Force update cached canvas
+  1.122.2018.03
+  - Old canvas: fix loading errors, but warning sound and timer in title are missing for now
+  - New canvas: fix timer extraction
 
 1.167.2018.03
 - Prevent opening a new tab if notification is for comment on current page
