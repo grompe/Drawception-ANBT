@@ -3124,7 +3124,7 @@ function betterForum()
     // Warn about posting to another page
     if ($(".comment-holder").length == 20)
     {
-      $("#postForm fieldset").after('<span class="pull-right">Note: posting to another page</span>');
+      $("#commentButton").after('<div>Note: posting to another page</div>');
     }
   }
 
