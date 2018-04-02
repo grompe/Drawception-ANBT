@@ -3094,27 +3094,28 @@ function betterForum()
       );
     }
     var lastid = 0;
-    $(".comment-holder span.text-muted").each(function()
+    $(".comment-holder").each(function()
       {
         var t = $(this), anch, id;
         try
         {
-          anch = t.parent().parent().parent().parent().attr("id");
+          anch = t.attr("id");
         } catch(e) {}
         if (anch)
         {
           id = parseInt(anch.substring(1), 10);
+          var ts = t.find(".comment-user .text-muted:last-child");
           if (id > lastid)
           {
-            t.after(' <a title="Link to post" class="text-muted" href="#' + anch + '">#' + id + '</a>');
+            ts.after(' <a title="Link to post" class="text-muted" href="#' + anch + '">#' + id + '</a>');
           } else {
-            t.after(' <a title="Link to post" class="text-muted wrong-order" href="#' + anch + '">#' + id + '</a>');
+            ts.after(' <a title="Link to post" class="text-muted wrong-order" href="#' + anch + '">#' + id + '</a>');
           }
-          var h = t.parent().find('a[href^="/player/"]').attr('href');
+          var h = t.find('.comment-user a[href^="/player/"]').attr('href');
           if (h)
           {
             var userid = h.match(/\d+/)[0];
-            if (hideuserids.indexOf(userid) != -1) t.parent().parent().parent().parent().addClass('anbt_hideUserPost');
+            if (hideuserids.indexOf(userid) != -1) t.addClass('anbt_hideUserPost');
           }
           lastid = id;
         }
@@ -3575,7 +3576,7 @@ function pageEnhancements()
       var t = $(this);
       if ((t.height() > h-50) && !$(location.hash).has(t).length)
       {
-        location.hash = "#" + t.parent().parent().parent().attr("id");
+        location.hash = "#p" + t.attr("id");
       }
     });
   }
