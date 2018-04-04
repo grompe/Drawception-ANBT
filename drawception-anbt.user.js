@@ -1955,7 +1955,7 @@ function likeAll()
     if (likebuttons.length)
     {
       likebuttons.shift().click()
-      setTimeout(keepLiking, 2000);
+      setTimeout(keepLiking, 3000);
     }
   };
   keepLiking();
