@@ -1940,12 +1940,25 @@ function likePanelById(id)
 window.likeAll = likeAll;
 function likeAll()
 {
+  var likebuttons = [];
   $(".likebutton.btn-default").each(
     function(k, v)
     {
-      if ($(v).parent().parent().find(".panel-user a").text().trim() != username) v.click();
+      if ($(v).parent().parent().parent().find(".panel-user a").text().trim() != username)
+      {
+        likebuttons.push(v);
+      }
     }
   );
+  var keepLiking = function()
+  {
+    if (likebuttons.length)
+    {
+      likebuttons.shift().click()
+      setTimeout(keepLiking, 2000);
+    }
+  };
+  keepLiking();
   return false;
 }
 
