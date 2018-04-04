@@ -1,3 +1,10 @@
+1.123.2018.04
+- New canvas: hopefully improve touchscreen support for some people
+- 'Like all' button now waits 2 seconds before each like, the site seems to have a hard limit on how quickly you can like now.
+- Dark style: fix popups and reactions a bit
+- Fix missing forum anchors and 'show more' broken with the site update
+- Restore forum warning about posting to another page
+
 1.122.2018.03
 - Old canvas: fix loading errors, but warning sound and timer in title are missing for now
 - New canvas: fix timer extraction
