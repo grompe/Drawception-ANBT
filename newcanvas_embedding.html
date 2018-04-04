@@ -1,7 +1,7 @@
 <!doctype html>
 <link rel="author" href="http://grompe.org.ru/">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<meta name="viewport" content="width=device-width">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <link href="https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz" rel="stylesheet" type="text/css">
 <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet" type="text/css">
 <style>
@@ -550,6 +550,7 @@ button:disabled {
   height: 500px;
   margin: auto;
   cursor: crosshair;
+  touch-action: pinch-zoom;
 }
 #svgContainer.hidecursor {
   cursor: none;
@@ -655,7 +656,7 @@ button:disabled {
     <div id="headercont">
       <div class="headerleft">
         <a href="/" title="Home"><img src="/img/logo-d.png"></a>
-        <span id="headerinfo" class="hideonsmall">New Canvas v36</span>
+        <span id="headerinfo" class="hideonsmall">New Canvas v37</span>
       </div>
       <div class="headerright">
         <a id="start" title="Play Drawception!" class="headerbutton active onlysandbox">Play</a>
@@ -2585,8 +2586,8 @@ function bindEvents()
   {
     if (touchSingle)
     {
-      var x = lastTouch.pageX - rect.left - pageXOffset;
-      var y = lastTouch.pageY - rect.top - pageYOffset;
+      var x = lastTouch.pageX - rect.left /*- pageXOffset*/;
+      var y = lastTouch.pageY - rect.top /*- pageYOffset*/;
       anbt.StrokeBegin(x, y, true);
       touchSingle = false;
     }
@@ -2599,8 +2600,8 @@ function bindEvents()
       e.preventDefault();
       if (anbt.isStroking)
       {
-        var x = e.touches[0].pageX - rect.left - pageXOffset;
-        var y = e.touches[0].pageY - rect.top - pageYOffset;
+        var x = e.touches[0].pageX - rect.left /*- pageXOffset*/;
+        var y = e.touches[0].pageY - rect.top /*- pageYOffset*/;
         anbt.StrokeAdd(x, y);
       }
     }
@@ -2873,7 +2874,13 @@ function bindEvents()
   {
     e.preventDefault();
     var len = anbt.GetSeekMax();
-    var x = (e.touches ? e.touches[0].pageX : e.pageX) - rect.left - pageXOffset - 34;
+    var x;
+    if (e.touches)
+    {
+      x = e.touches[0].pageX - rect.left /*- pageXOffset*/ - 34;
+    } else {
+      e.pageX - rect.left - pageXOffset - 34;
+    }
     x = Math.min(Math.max(-10, x), 492);
     var pos = Math.round((x + 10) / 502 * len);
     x = pos / len * 502 - 10;

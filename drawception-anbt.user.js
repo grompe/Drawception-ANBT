@@ -15,8 +15,8 @@
 function wrapped() {
 
 var SCRIPT_VERSION = "1.122.2018.03";
-var NEWCANVAS_VERSION = 36; // Increase to update the cached canvas
-var SITE_VERSION = "2.9.36"; // Last seen site version
+var NEWCANVAS_VERSION = 37; // Increase to update the cached canvas
+var SITE_VERSION = "2.9.59"; // Last seen site version
 
 // == DEFAULT OPTIONS ==
 
