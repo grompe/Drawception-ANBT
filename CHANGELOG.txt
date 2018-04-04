@@ -1,3 +1,7 @@
+1.124.2018.04
+- Increase 'Like all' button delay between likes to 3 seconds
+- New canvas: fix typo
+
 1.123.2018.04
 - New canvas: hopefully improve touchscreen support for some people
 - 'Like all' button now waits 2 seconds before each like, the site seems to have a hard limit on how quickly you can like now.
