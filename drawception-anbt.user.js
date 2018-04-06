@@ -1944,12 +1944,25 @@ function likePanelById(id)
 window.likeAll = likeAll;
 function likeAll()
 {
+  var likebuttons = [];
   $(".likebutton.btn-default").each(
     function(k, v)
     {
-      if ($(v).parent().parent().find(".panel-user a").text().trim() != username) v.click();
+      if ($(v).parent().parent().parent().find(".panel-user a").text().trim() != username)
+      {
+        likebuttons.push(v);
+      }
     }
   );
+  var keepLiking = function()
+  {
+    if (likebuttons.length)
+    {
+      likebuttons.shift().click()
+      setTimeout(keepLiking, 3000);
+    }
+  };
+  keepLiking();
   return false;
 }
 
@@ -3098,27 +3111,28 @@ function betterForum()
       );
     }
     var lastid = 0;
-    $(".comment-holder span.text-muted").each(function()
+    $(".comment-holder").each(function()
       {
         var t = $(this), anch, id;
         try
         {
-          anch = t.parent().parent().parent().parent().attr("id");
+          anch = t.attr("id");
         } catch(e) {}
         if (anch)
         {
           id = parseInt(anch.substring(1), 10);
+          var ts = t.find(".comment-user .text-muted:last-child");
           if (id > lastid)
           {
-            t.after(' <a title="Link to post" class="text-muted" href="#' + anch + '">#' + id + '</a>');
+            ts.after(' <a title="Link to post" class="text-muted" href="#' + anch + '">#' + id + '</a>');
           } else {
-            t.after(' <a title="Link to post" class="text-muted wrong-order" href="#' + anch + '">#' + id + '</a>');
+            ts.after(' <a title="Link to post" class="text-muted wrong-order" href="#' + anch + '">#' + id + '</a>');
           }
-          var h = t.parent().find('a[href^="/player/"]').attr('href');
+          var h = t.find('.comment-user a[href^="/player/"]').attr('href');
           if (h)
           {
             var userid = h.match(/\d+/)[0];
-            if (hideuserids.indexOf(userid) != -1) t.parent().parent().parent().parent().addClass('anbt_hideUserPost');
+            if (hideuserids.indexOf(userid) != -1) t.addClass('anbt_hideUserPost');
           }
           lastid = id;
         }
@@ -3128,7 +3142,7 @@ function betterForum()
     // Warn about posting to another page
     if ($(".comment-holder").length == 20)
     {
-      $("#postForm fieldset").after('<span class="pull-right">Note: posting to another page</span>');
+      $("#commentButton").after('<div>Note: posting to another page</div>');
     }
   }
 
@@ -3597,7 +3611,7 @@ function pageEnhancements()
       var t = $(this);
       if ((t.height() > h-50) && !$(location.hash).has(t).length)
       {
-        location.hash = "#" + t.parent().parent().parent().attr("id");
+        location.hash = "#p" + t.attr("id");
       }
     });
   }
@@ -4122,6 +4136,7 @@ localStorage.setItem("gpe_darkCSS",
   ".navbar-dropdown{~#444$}a.list-group-item{~#444$;color:#fff$;border:1px solid #222$}a.list-group-item:hover,a.list-group-item:focus{~#222$}" +
   ".likebutton.btn-success{color:#050$;~#5A5$}.likebutton.btn-success:hover{~#494$}" +
   ".thumbnail[style*='background-color: rgb(255, 255, 255)']{~#555$}" +
+   ".popup,.v--modal{~#666$;border:1px solid #222$}.btn-reaction{~#666$;border:none$;color:#AAA$}" +
   ".gsc-control-cse{~#444$;border-color:#333$}.gsc-above-wrapper-area,.gsc-result{border:none$}.gs-snippet{color:#AAA$}.gs-visibleUrl{color:#8A8$}a.gs-title b,.gs-visibleUrl b{color:#EEE$}.gsc-adBlock{display:none$}.gsc-input{~#444$;border-color:#333$;color:#EEE$}" +
   // We have entered specificity hell...
   "a.anbt_replaypanel:hover{color:#8af$}" +
