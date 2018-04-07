@@ -1,6 +1,6 @@
 import re,subprocess
 
-template = """####[Script updated to %s](https://github.com/grompe/Drawception-ANBT#drawception-anbt-):
+template = """#### [Script updated to %s](https://github.com/grompe/Drawception-ANBT#drawception-anbt-):
 
 %s
 

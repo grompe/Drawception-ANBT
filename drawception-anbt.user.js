@@ -2,7 +2,7 @@
 // @name         Bertrand's Drawception ANBT
 // @author       Bertrand the Healer
 // @namespace    https://bertrandthehealer.github.io/
-// @version      1.169.2018.04
+// @version      1.170.2018.04
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/bertrandthehealer/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.169.2018.04";
+var SCRIPT_VERSION = "1.170.2018.04";
 var NEWCANVAS_VERSION = 36; // Increase to update the cached canvas
 var SITE_VERSION = "2.8.4"; // Last seen site version
 
@@ -283,7 +283,7 @@ function extractInfoFromHTML(html)
     image: extract(/<img src="(data:image\/png;base64,[^"]*)"/),
     palette: extract(/<color-picker[^>]+theme="([^"]+)"/),
     //colors: extractAll(/data-color=['"](#[0-9a-f]{3,6})['"]/gi),
-    bgbutton: extract(/data-content=['"]\s*<a class=bglayerPicker/),
+    bgbutton: extract(/<tool-bg-layer[^>]+:is_owned="true"/),
     playerid: extract(/<a href="\/player\/(\d+)\//),
     playerurl: extract(/<a href="(\/player\/\d+\/[^\/]+\/)"/),
     avatar: extract(/<img src="(https:\/\/cdn\.drawception\.com\/images\/avatars\/[^"]+)"/),
