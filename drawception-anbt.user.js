@@ -283,7 +283,7 @@ function extractInfoFromHTML(html)
     image: extract(/<img src="(data:image\/png;base64,[^"]*)"/),
     palette: extract(/<color-picker[^>]+theme="([^"]+)"/),
     //colors: extractAll(/data-color=['"](#[0-9a-f]{3,6})['"]/gi),
-    bgbutton: extract(/data-content=['"]\s*<a class=bglayerPicker/),
+    bgbutton: extract(/<tool-bg-layer[^>]+:is_owned="true"/),
     playerid: extract(/<a href="\/player\/(\d+)\//),
     playerurl: extract(/<a href="(\/player\/\d+\/[^\/]+\/)"/),
     avatar: extract(/<img src="(https:\/\/cdn\.drawception\.com\/images\/avatars\/[^"]+)"/),
