@@ -278,6 +278,7 @@ function extractInfoFromHTML(html)
     caption: extract(/<p class="play-phrase">\s+([^<]+)\s+<\/p>/),
     image: extract(/<img src="(data:image\/png;base64,[^"]*)"/),
     palette: extract(/<color-picker[^>]+theme="([^"]+)"/),
+    palette: extract(/<tool-color-picker[^>]+theme_id="([^"]+)"/),
     //colors: extractAll(/data-color=['"](#[0-9a-f]{3,6})['"]/gi),
     bgbutton: extract(/<tool-bg-layer[^>]+:is_owned="true"/),
     playerid: extract(/<a href="\/player\/(\d+)\//),
