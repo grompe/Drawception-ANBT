@@ -2994,14 +2994,14 @@ function betterForum()
         t.text("[ " + convertForumTime(year, month, day, hours, minutes) + " ]");
         ncPosts.push([this, day + month * 30 + (year - 1970) * 365]);
       }
-      else if (m = tx.match(/^\s*edited: (\d+):(\d+)([ap]m) (\d+)\/(\d+)\/(\d+)\s*$/))
+      else if (m = tx.match(/^\s*edited: ..., (...) (\d+).. (\d{4}) @ (\d+):(\d+)([ap]m)\s*$/))
       {
-        hours = parseInt(m[1], 10) % 12;
-        minutes = parseInt(m[2], 10);
-        hours += (m[3] == 'pm') ? 12 : 0;
-        month = parseInt(m[4], 10) - 1;
-        day = parseInt(m[5], 10);
-        year = parseInt(m[6], 10) + 2000;
+        hours = parseInt(m[4], 10) % 12;
+        minutes = parseInt(m[5], 10);
+        hours += (m[6] == 'pm') ? 12 : 0;
+        month = months.indexOf(m[1]);
+        day = parseInt(m[2], 10);
+        year = parseInt(m[3], 10);
         t.text("edited: " + convertForumTime(year, month, day, hours, minutes));
       }
     }
