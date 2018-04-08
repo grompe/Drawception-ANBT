@@ -1,3 +1,7 @@
+1.126.2018.04
+- Fix handling forum 'edited' timestamps
+- New canvas: fix palette extraction
+
 1.125.2018.04
 - New canvas: fix background tool availability extraction
 
