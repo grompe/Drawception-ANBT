@@ -277,7 +277,6 @@ function extractInfoFromHTML(html)
     timeleft2: extract(/<span[^>]+id="timeleft"[^>]+>[^:]+>(\d+:\d+)/),
     caption: extract(/<p class="play-phrase">\s+([^<]+)\s+<\/p>/),
     image: extract(/<img src="(data:image\/png;base64,[^"]*)"/),
-    palette: extract(/<color-picker[^>]+theme="([^"]+)"/),
     palette: extract(/<tool-color-picker[^>]+theme_id="([^"]+)"/),
     //colors: extractAll(/data-color=['"](#[0-9a-f]{3,6})['"]/gi),
     bgbutton: extract(/<tool-bg-layer[^>]+:is_owned="true"/),
@@ -496,38 +495,44 @@ function handlePlayParameters()
     theme_fire_ice: ["Fire and Ice", "#040526"],
     theme_coty_2018: ["Canyon Sunset", "#2e1b50"],
   };
-  var pal = info.palette || "default";
+  var pal = info.palette;
   var paldata;
-  if (pal == "theme_roulette")
+  if (!info.image)
   {
-    // Since site update, the game reports already chosen palette,
-    // but apparently this still happens sometimes. ???
-    alert("Warning: Drawception roulette didn't give a theme. ANBT will choose a random palette.");
-    delete palettes.Roulette;
-    var k = Object.keys(palettemap);
-    var n = k[k.length * Math.random() << 0];
-    palettes.Roulette = palettes[palettemap[n][0]];
-    paldata = ["Roulette", palettemap[n][1]];
+    // Drawing
+    if (pal == "theme_roulette")
+    {
+      // Since site update, the game reports already chosen palette,
+      // but apparently this still happens sometimes. ???
+      alert("Warning: Drawception roulette didn't give a theme. ANBT will choose a random palette.");
+      delete palettes.Roulette;
+      var k = Object.keys(palettemap);
+      var n = k[k.length * Math.random() << 0];
+      palettes.Roulette = palettes[palettemap[n][0]];
+      paldata = ["Roulette", palettemap[n][1]];
+    } else {
+      if (pal) paldata = palettemap[pal.toLowerCase()];
+    }
+    if (!paldata)
+    {
+      if (!pal)
+      {
+        alert("Error, please report! Failed to extract the palette.\nAre you using the latest ANBT version?");
+      } else {
+        alert("Error, please report! Unknown palette: '" + pal + "'.\nAre you using the latest ANBT version?");
+      }
+      // Prevent from drawing with a wrong palette
+      anbt.Lock();
+      ID("submit").disabled = true;
+    } else {
+      setPaletteByName(paldata[0]);
+      anbt.SetBackground(paldata[1]);
+      anbt.color = [palettes[paldata[0]][0], "eraser"];
+      updateColorIndicators();
+    }
+    ID("setbackground").hidden = !info.bgbutton;
   } else {
-    paldata = palettemap[pal.toLowerCase()];
-  }
-  if (!paldata)
-  {
-    alert("Error, please report! Unknown palette: '" + pal + "'.\nAre you using the latest ANBT version?");
-    // Prevent from drawing with a wrong palette
-    anbt.Lock();
-    ID("submit").disabled = true;
-  } else {
-    setPaletteByName(paldata[0]);
-    anbt.SetBackground(paldata[1]);
-    anbt.color = [palettes[paldata[0]][0], "eraser"];
-    updateColorIndicators();
-  }
-
-  ID("setbackground").hidden = !info.bgbutton;
-
-  if (info.image)
-  {
+    // Caption
     if (info.image.length <= 30)
     {
       // Broken drawing =(
