@@ -2,7 +2,7 @@
 // @name         Bertrand's Drawception ANBT
 // @author       Bertrand the Healer
 // @namespace    https://bertrandthehealer.github.io/
-// @version      1.170.2018.04
+// @version      1.171.2018.04
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/bertrandthehealer/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.170.2018.04";
+var SCRIPT_VERSION = "1.171.2018.04";
 var NEWCANVAS_VERSION = 36; // Increase to update the cached canvas
 var SITE_VERSION = "2.8.4"; // Last seen site version
 
@@ -3581,14 +3581,14 @@ function pageEnhancements()
     ".pagination {margin: 0px}" +
     ".navbar {position: fixed; width: 100%; top: 0; left: 0; z-index: 1060}" + //floating navbar
     "#main {padding-top: 50px}" + //space for floating navbar
-    ".btn-menu {background-color: rgba(0,0,0,.3)}" + //colors for navbar buttons
+    ".btn-menu {background-color: rgba(0,0,0,.3); height: 30.5px}" + //colors and sizes for navbar buttons
     ".btn-primary {background-color: rgba(0,0,0,.3)}" + //color for play button
     ".btn-info {background-color: rgba(0,0,0,.3)}" + //color for create game button
     ".btn-primary {border-color: rgba(0,0,0,0)}" + //border for play button
     ".btn-info {border-color: rgba(0,0,0,0)}" + //border for create game button
     ".logout-item:hover {background-color: #c93232}" + //logout button red on hover
     ".btn {border-radius: 5px}" + //border radius for buttons
-    ".avatar-sm {border-radius: 5px; height: 28px; width: 28px; margin-top: 2px;}" + //smaller profile button
+    ".avatar-sm {border-radius: 5px; height: 30.5px; width: 30.5px; margin-top: 2px;}" + //smaller profile button
     ".navbar-toggle {background-color: rgba(0,0,0,.3)}" + //Overflow menu background color
     ".navbar-default .navbar-toggle .icon-bar {background-color: white}" + //Overflow menu icon colors
     ".profile-user-header {background: none; -webkit-box-shadow: none; box-shadow: none;}" + //Remove divider after tabs
