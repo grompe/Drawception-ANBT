@@ -2,7 +2,7 @@
 // @name         Bertrand's Drawception ANBT
 // @author       Bertrand the Healer
 // @namespace    https://bertrandthehealer.github.io/
-// @version      1.170.2018.04
+// @version      1.172.2018.04
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/bertrandthehealer/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,7 +14,7 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.170.2018.04";
+var SCRIPT_VERSION = "1.172.2018.04";
 var NEWCANVAS_VERSION = 36; // Increase to update the cached canvas
 var SITE_VERSION = "2.8.4"; // Last seen site version
 
@@ -281,9 +281,9 @@ function extractInfoFromHTML(html)
     timeleft2: extract(/<span[^>]+id="timeleft"[^>]+>[^:]+>(\d+:\d+)/),
     caption: extract(/<p class="play-phrase">\s+([^<]+)\s+<\/p>/),
     image: extract(/<img src="(data:image\/png;base64,[^"]*)"/),
-    palette: extract(/<color-picker[^>]+theme="([^"]+)"/),
+    palette: extract(/<tool-color-picker[^>]+theme_id="([^"]+)"/),
     //colors: extractAll(/data-color=['"](#[0-9a-f]{3,6})['"]/gi),
-    bgbutton: extract(/<tool-bg-layer[^>]+:is_owned="true"/),
+    bgbutton: extract(/<tool-bg-layer[^>]+:is_owned="(?:true|1)"/),
     playerid: extract(/<a href="\/player\/(\d+)\//),
     playerurl: extract(/<a href="(\/player\/\d+\/[^\/]+\/)"/),
     avatar: extract(/<img src="(https:\/\/cdn\.drawception\.com\/images\/avatars\/[^"]+)"/),
@@ -499,38 +499,44 @@ function handlePlayParameters()
     theme_fire_ice: ["Fire and Ice", "#040526"],
     theme_coty_2018: ["Canyon Sunset", "#2e1b50"],
   };
-  var pal = info.palette || "default";
+  var pal = info.palette;
   var paldata;
-  if (pal == "theme_roulette")
+  if (!info.image)
   {
-    // Since site update, the game reports already chosen palette,
-    // but apparently this still happens sometimes. ???
-    alert("Warning: Drawception roulette didn't give a theme. ANBT will choose a random palette.");
-    delete palettes.Roulette;
-    var k = Object.keys(palettemap);
-    var n = k[k.length * Math.random() << 0];
-    palettes.Roulette = palettes[palettemap[n][0]];
-    paldata = ["Roulette", palettemap[n][1]];
+    // Drawing
+    if (pal == "theme_roulette")
+    {
+      // Since site update, the game reports already chosen palette,
+      // but apparently this still happens sometimes. ???
+      alert("Warning: Drawception roulette didn't give a theme. ANBT will choose a random palette.");
+      delete palettes.Roulette;
+      var k = Object.keys(palettemap);
+      var n = k[k.length * Math.random() << 0];
+      palettes.Roulette = palettes[palettemap[n][0]];
+      paldata = ["Roulette", palettemap[n][1]];
+    } else {
+      if (pal) paldata = palettemap[pal.toLowerCase()];
+    }
+    if (!paldata)
+    {
+      if (!pal)
+      {
+        alert("Error, please report! Failed to extract the palette.\nAre you using the latest ANBT version?");
+      } else {
+        alert("Error, please report! Unknown palette: '" + pal + "'.\nAre you using the latest ANBT version?");
+      }
+      // Prevent from drawing with a wrong palette
+      anbt.Lock();
+      ID("submit").disabled = true;
+    } else {
+      setPaletteByName(paldata[0]);
+      anbt.SetBackground(paldata[1]);
+      anbt.color = [palettes[paldata[0]][0], "eraser"];
+      updateColorIndicators();
+    }
+    ID("setbackground").hidden = !info.bgbutton;
   } else {
-    paldata = palettemap[pal.toLowerCase()];
-  }
-  if (!paldata)
-  {
-    alert("Error, please report! Unknown palette: '" + pal + "'.\nAre you using the latest ANBT version?");
-    // Prevent from drawing with a wrong palette
-    anbt.Lock();
-    ID("submit").disabled = true;
-  } else {
-    setPaletteByName(paldata[0]);
-    anbt.SetBackground(paldata[1]);
-    anbt.color = [palettes[paldata[0]][0], "eraser"];
-    updateColorIndicators();
-  }
-
-  ID("setbackground").hidden = !info.bgbutton;
-
-  if (info.image)
-  {
+    // Caption
     if (info.image.length <= 30)
     {
       // Broken drawing =(
@@ -2997,14 +3003,14 @@ function betterForum()
         t.text("[ " + convertForumTime(year, month, day, hours, minutes) + " ]");
         ncPosts.push([this, day + month * 30 + (year - 1970) * 365]);
       }
-      else if (m = tx.match(/^\s*edited: (\d+):(\d+)([ap]m) (\d+)\/(\d+)\/(\d+)\s*$/))
+      else if (m = tx.match(/^\s*edited: ..., (...) (\d+).. (\d{4}) @ (\d+):(\d+)([ap]m)\s*$/))
       {
-        hours = parseInt(m[1], 10) % 12;
-        minutes = parseInt(m[2], 10);
-        hours += (m[3] == 'pm') ? 12 : 0;
-        month = parseInt(m[4], 10) - 1;
-        day = parseInt(m[5], 10);
-        year = parseInt(m[6], 10) + 2000;
+        hours = parseInt(m[4], 10) % 12;
+        minutes = parseInt(m[5], 10);
+        hours += (m[6] == 'pm') ? 12 : 0;
+        month = months.indexOf(m[1]);
+        day = parseInt(m[2], 10);
+        year = parseInt(m[3], 10);
         t.text("edited: " + convertForumTime(year, month, day, hours, minutes));
       }
     }
@@ -3581,14 +3587,14 @@ function pageEnhancements()
     ".pagination {margin: 0px}" +
     ".navbar {position: fixed; width: 100%; top: 0; left: 0; z-index: 1060}" + //floating navbar
     "#main {padding-top: 50px}" + //space for floating navbar
-    ".btn-menu {background-color: rgba(0,0,0,.3)}" + //colors for navbar buttons
+    ".btn-menu {background-color: rgba(0,0,0,.3); height: 30.5px}" + //colors and sizes for navbar buttons
     ".btn-primary {background-color: rgba(0,0,0,.3)}" + //color for play button
     ".btn-info {background-color: rgba(0,0,0,.3)}" + //color for create game button
     ".btn-primary {border-color: rgba(0,0,0,0)}" + //border for play button
     ".btn-info {border-color: rgba(0,0,0,0)}" + //border for create game button
     ".logout-item:hover {background-color: #c93232}" + //logout button red on hover
     ".btn {border-radius: 5px}" + //border radius for buttons
-    ".avatar-sm {border-radius: 5px; height: 28px; width: 28px; margin-top: 2px;}" + //smaller profile button
+    ".avatar-sm {border-radius: 5px; height: 30.5px; width: 30.5px; margin-top: 2px;}" + //smaller profile button
     ".navbar-toggle {background-color: rgba(0,0,0,.3)}" + //Overflow menu background color
     ".navbar-default .navbar-toggle .icon-bar {background-color: white}" + //Overflow menu icon colors
     ".profile-user-header {background: none; -webkit-box-shadow: none; box-shadow: none;}" + //Remove divider after tabs
