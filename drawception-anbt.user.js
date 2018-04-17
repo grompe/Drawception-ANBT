@@ -2045,13 +2045,6 @@ function betterGame()
   fixLocationToCanonical("/game/");
 
   var drawings = $('img[src^="https://cdn.drawception.com/images/panels/"]');
-  if (drawings.length)
-  {
-    // Show approximate creation time from the first drawing panel
-    var startDate = panelUrlToDate(drawings.attr("src"));
-    var lead = $("#main .lead").first();
-    lead.text(lead.text().replace("game completed", "game started on " + startDate + " and completed"));
-  }
 
   // Show each drawing make date
   drawings.each(function()
