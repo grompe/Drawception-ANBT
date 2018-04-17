@@ -2925,17 +2925,9 @@ function betterPlayer()
         var t = $(this);
         var created = t.text().match(/^\s*Created/);
         var commented = t.text().match(/^\s*Commented/);
-        var prefix = commented ? "Comment" : created ? "New thread" : "Reply";
-        var n = $('<h4 class="anbt_threadtitle">' + prefix + " in </h4>");
+        var prefix = commented ? "Comment in the game" : created ? "New thread" : "Reply in";
+        var n = $('<h4 class="anbt_threadtitle">' + prefix + ": </h4>");
         var thread = t.find("a");
-        if (commented)
-        {
-          n.append("in the game: ");
-        } else {
-          var subforum = thread.attr("href").match(/\/forums\/([^/]+)\//)[1];
-          n.append(subforum);
-          n.append(": ");
-        }
         n.append(thread);
         t.parents(".row").first().prepend(n);
         t.remove();
