@@ -3108,7 +3108,7 @@ function betterForum()
         if (anch)
         {
           id = parseInt(anch.substring(1), 10);
-          var ts = t.find(".comment-user .text-muted:last-child");
+          var ts = t.find(".comment-user .text-muted:last-child").last();
           if (id > lastid)
           {
             ts.after(' <a title="Link to post" class="text-muted" href="#' + anch + '">#' + id + '</a>');
