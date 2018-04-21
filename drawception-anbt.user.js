@@ -149,16 +149,22 @@ function setupNewCanvas(insandbox, url, origpage)
 {
   var canvasHTML = localStorage.getItem("anbt_canvasHTML");
   var canvasHTMLver = localStorage.getItem("anbt_canvasHTMLver");
-  if (!canvasHTML || canvasHTMLver < NEWCANVAS_VERSION)
+  if (!canvasHTML || canvasHTMLver < NEWCANVAS_VERSION || canvasHTML.length < 10000)
   {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', "https://api.github.com/repos/grompe/Drawception-ANBT/contents/newcanvas_embedding.html");
     xhr.setRequestHeader("Accept", "application/vnd.github.3.raw");
     xhr.onload = function()
     {
-      localStorage.setItem("anbt_canvasHTML", this.responseText);
-      localStorage.setItem("anbt_canvasHTMLver", NEWCANVAS_VERSION);
-      setupNewCanvas(insandbox, url);
+      if (this.responseText.length < 10000)
+      {
+        alert("Error: instead of new canvas code, got this response from GitHub:\n" + this.responseText);
+        location.pathname = "/";
+      } else {
+        localStorage.setItem("anbt_canvasHTML", this.responseText);
+        localStorage.setItem("anbt_canvasHTMLver", NEWCANVAS_VERSION);
+        setupNewCanvas(insandbox, url);
+      }
     };
     xhr.onerror = function()
     {
