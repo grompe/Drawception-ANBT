@@ -1,3 +1,14 @@
+1.173.2018.05
+- Merge changes from original version:
+  1.128.2018.04
+  - New canvas: prevent caching an error from GitHub
+  - Prevent forum post anchor from appearing twice on deleted users
+  - Remove subforum detection in user profile's forum posts as site no longer gives that information
+  - Remove game length detection as it is now provided by the site
+  1.127.2018.04
+  - New canvas: fix background tool availability extraction as it got changed again
+  - New canvas: disallow drawing if palette couldn't be extracted
+
 1.172.2018.04
 - Merge changes from original version:
   1.127.2018.04
