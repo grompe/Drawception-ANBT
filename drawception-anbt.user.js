@@ -151,16 +151,22 @@ function setupNewCanvas(insandbox, url, origpage)
 {
   var canvasHTML = localStorage.getItem("anbt_canvasHTML");
   var canvasHTMLver = localStorage.getItem("anbt_canvasHTMLver");
-  if (!canvasHTML || canvasHTMLver < NEWCANVAS_VERSION)
+  if (!canvasHTML || canvasHTMLver < NEWCANVAS_VERSION || canvasHTML.length < 10000)
   {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', "https://api.github.com/repos/grompe/Drawception-ANBT/contents/newcanvas_embedding.html");
     xhr.setRequestHeader("Accept", "application/vnd.github.3.raw");
     xhr.onload = function()
     {
-      localStorage.setItem("anbt_canvasHTML", this.responseText);
-      localStorage.setItem("anbt_canvasHTMLver", NEWCANVAS_VERSION);
-      setupNewCanvas(insandbox, url);
+      if (this.responseText.length < 10000)
+      {
+        alert("Error: instead of new canvas code, got this response from GitHub:\n" + this.responseText);
+        location.pathname = "/";
+      } else {
+        localStorage.setItem("anbt_canvasHTML", this.responseText);
+        localStorage.setItem("anbt_canvasHTMLver", NEWCANVAS_VERSION);
+        setupNewCanvas(insandbox, url);
+      }
     };
     xhr.onerror = function()
     {
@@ -2049,13 +2055,6 @@ function betterGame()
   fixLocationToCanonical("/game/");
 
   var drawings = $('img[src^="https://cdn.drawception.com/images/panels/"]');
-  if (drawings.length)
-  {
-    // Show approximate creation time from the first drawing panel
-    var startDate = panelUrlToDate(drawings.attr("src"));
-    var lead = $("#main .lead").first();
-    lead.text(lead.text().replace("game completed", "game started on " + startDate + " and completed"));
-  }
 
   // Show each drawing make date
   drawings.each(function()
@@ -2936,17 +2935,9 @@ function betterPlayer()
         var t = $(this);
         var created = t.text().match(/^\s*Created/);
         var commented = t.text().match(/^\s*Commented/);
-        var prefix = commented ? "Comment" : created ? "New thread" : "Reply";
-        var n = $('<h4 class="anbt_threadtitle">' + prefix + " in </h4>");
+        var prefix = commented ? "Comment in the game" : created ? "New thread" : "Reply in";
+        var n = $('<h4 class="anbt_threadtitle">' + prefix + ": </h4>");
         var thread = t.find("a");
-        if (commented)
-        {
-          n.append("in the game: ");
-        } else {
-          var subforum = thread.attr("href").match(/\/forums\/([^/]+)\//)[1];
-          n.append(subforum);
-          n.append(": ");
-        }
         n.append(thread);
         t.parents(".row").first().prepend(n);
         t.remove();
@@ -3127,7 +3118,7 @@ function betterForum()
         if (anch)
         {
           id = parseInt(anch.substring(1), 10);
-          var ts = t.find(".comment-user .text-muted:last-child");
+          var ts = t.find(".comment-user .text-muted:last-child").last();
           if (id > lastid)
           {
             ts.after(' <a title="Link to post" class="text-muted" href="#' + anch + '">#' + id + '</a>');
