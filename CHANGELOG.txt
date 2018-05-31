@@ -1,3 +1,7 @@
+1.129.2018.06
+- Dark style: fix game creation page
+- Fix script loading and working on the updated Drawception site
+
 1.128.2018.04
 - New canvas: prevent caching an error from GitHub
 - Prevent forum post anchor from appearing twice on deleted users
