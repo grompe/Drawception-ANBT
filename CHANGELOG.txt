@@ -1,3 +1,6 @@
+1.130.2018.06
+- Restore old, smaller font size; can be disabled in options
+
 1.129.2018.06
 - Dark style: fix game creation page
 - Fix script loading and working on the updated Drawception site
