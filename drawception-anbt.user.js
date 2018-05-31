@@ -16,7 +16,7 @@ function wrapped() {
 
 var SCRIPT_VERSION = "1.128.2018.04";
 var NEWCANVAS_VERSION = 38; // Increase to update the cached canvas
-var SITE_VERSION = "2.9.90"; // Last seen site version
+var SITE_VERSION = "91ca9243"; // Last seen site version
 
 // == DEFAULT OPTIONS ==
 
@@ -241,62 +241,52 @@ function sendGet(url, onloadfunc, onerrorfunc, ontimeoutfunc)
   xhr.send();
 }
 
-function sendPost(url, params, onloadfunc, onerrorfunc, ontimeoutfunc)
+function sendPost(url, paramsobj, onloadfunc, onerrorfunc, ontimeoutfunc)
 {
   var xhr = new XMLHttpRequest();
   xhr.open('POST', url);
   xhr.timeout = 15000;
-  xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+  xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
   xhr.onload = onloadfunc;
   xhr.onerror = onerrorfunc || onloadfunc;
   xhr.ontimeout = ontimeoutfunc || onerrorfunc || onloadfunc;
-  xhr.send(params);
+  xhr.send(JSON.stringify(paramsobj));
 }
 
 function extractInfoFromHTML(html)
 {
-  // Warning, there's a caveat: the script can match against its own plaintext.
-  var extract = function(r)
+  var doc = document.implementation.createHTMLDocument("");
+  doc.body.innerHTML = html;
+  var el;
+  var drawapp = doc.querySelector("draw-app") || doc.querySelector("describe");
+  function getel(query)
   {
-    var m = html.match(r);
-    return m && m[1] || !!m;
-  };
-  var extractAll = function(r)
-  {
-    if (!r.global) return extract(r);
-    var m, res = [];
-    do
-    {
-      m = r.exec(html);
-      if (m) res.push(m[1]);
-    } while (m)
-    return res;
-  };
+    el = doc.querySelector(query);
+    return el;
+  }
   return {
-    error: extract(/<div class="error">\s+([^<]+)\s+<\/div>/),
-    gameid: extract(/name="which_game" value="([^"]+)"/),
-    blitz: extract(/BLITZ MODE<br ?\/?>/),
-    nsfw: extract(/<span[^>]+title="This is a Not Safe For Work/),
-    friend: extract(/<strong>[F]riend Game/),
-    drawfirst: extract(/value="Abort" onclick="DrawceptionPlay\.abortDrawFirst\(\)/),
-    timeleft: extract(/<play-timer :seconds="(\d+)"/),
-    timeleft2: extract(/<span[^>]+id="timeleft"[^>]+>[^:]+>(\d+:\d+)/),
-    caption: extract(/<p class="play-phrase">\s+([^<]+)\s+<\/p>/),
-    image: extract(/<img src="(data:image\/png;base64,[^"]*)"/),
-    palette: extract(/<tool-color-picker[^>]+theme_id="([^"]+)"/),
-    //colors: extractAll(/data-color=['"](#[0-9a-f]{3,6})['"]/gi),
-    bgbutton: extract(/<tool-bg-layer[^>]+:is_owned="(?:true|1)"/),
-    playerid: extract(/<a href="\/player\/(\d+)\//),
-    playerurl: extract(/<a href="(\/player\/\d+\/[^\/]+\/)"/),
-    avatar: extract(/<img src="(https:\/\/cdn\.drawception\.com\/images\/avatars\/[^"]+)"/),
-    coins: extract(/<span id="user-coins-value">(\d+)<\/span>/),
-    pubgames: extract(/id="btn-public-games-progress"[^>]+>[^>]+><\/span> (\d+\/\d+)/),
-    friendgames: extract(/id="btn-friend-games-progress"[^>]+>[^>]+><\/span> (\d+)/),
-    notifications: extract(/<span id="user-notify-count">(\d+)<\/span>/),
-    drawingbylink: extract(/drawing by (<a href="\/player\/\d+\/\S+\/">[^<]+<\/a>)/),
-    h1: extract(/<h1>([^<]+)<\/h1>/) || extract(/<title>([^<]+) \(drawing by .*\)<\/title>/),
-    notloggedin: extract(/>Login<\/a>/),
-    limitreached: extract(/>Check back soon![<]/),
+    error: getel(".error") ? el.textContent.trim() : false,
+    gameid: drawapp.getAttribute("game_token"),
+    blitz: drawapp.getAttribute(":seconds") * 1 == 60, // can't tell blitz games from regular ones with 60 s left
+    nsfw: drawapp.getAttribute(":nsfw") == "true",
+    friend: drawapp.getAttribute(":public") != "true",
+    drawfirst: drawapp.getAttribute(":draw_first") == "true",
+    timeleft: drawapp.getAttribute(":seconds") * 1,
+    caption: drawapp.getAttribute("phrase"),
+    image: drawapp.getAttribute("img_url"),
+    palette: drawapp.getAttribute("theme_id"),
+    bgbutton: drawapp.getAttribute(":bg_layer") == "1",
+    playerurl: "/profile/",
+    avatar: null,
+    coins: "-",
+    pubgames: "-",
+    friendgames: "-",
+    notifications: "-",
+    //drawingbylink: getel("#main p a[href^=/player/]") ? el.getAttribute("href") : false,
+    drawingbylink: getel("#main p a") ? el.getAttribute("href") : false,
+    drawncaption: getel("h1.game-title") ? el.textContent.trim() : false,
+    notloggedin: getel("form.form-login") != null,
+    limitreached: false, // ??? appears to be redirecting to /play/limit/ which gives "game not found" error
     html: html,
   };
 }
@@ -405,7 +395,7 @@ function handleSandboxParameters()
       location.hash.substr(1) + '" title="Public replay link for sharing">Drawing</a>';
     ID("headerinfo").innerHTML = replaylink + ' by ' + gameinfo.drawingbylink;
     if (playername) document.title = playername[1] + "'s drawing - Drawception";
-    ID("drawthis").innerHTML = '"' + gameinfo.h1 + '"';
+    ID("drawthis").innerHTML = '"' + gameinfo.drawncaption + '"';
     ID("drawthis").classList.remove("onlyplay");
     ID("emptytitle").classList.add("onlyplay");
     if (options.autoplay) anbt.Play();
@@ -549,12 +539,6 @@ function handlePlayParameters()
     ID("caption").value = "";
     ID("caption").focus();
     ID("usedchars").textContent = "46";
-  }
-
-  if (!info.timeleft && info.timeleft2)
-  {
-    var m = info.timeleft2.split(":");
-    info.timeleft = m[0] * 60 + m[1] * 1;
   }
 
   timerStart = Date.now() + 1000 * info.timeleft;
@@ -742,11 +726,11 @@ function bindCanvasEvents()
     var params, url, complete;
     if (window.incontest)
     {
-      params = "img=" + encodeURIComponent(anbt.pngBase64);
+      params = { img: anbt.pngBase64 };
       url = "/contests/submit-drawing.json";
       complete = "contestDrawingComplete";
     } else {
-      params = "game_token=" + window.gameinfo.gameid + "&panel=" + encodeURIComponent(anbt.pngBase64);
+      params = { game_token: window.gameinfo.gameid, panel: anbt.pngBase64 };
       url = '/play/draw.json';
       complete = "drawingComplete";
     }
@@ -771,15 +755,12 @@ function bindCanvasEvents()
         } else {
           alert(o.error);
         }
-      } else if (o.data && o.data.url)
-      {
-        window.onbeforeunload = function(){};
-        location.replace(o.data.url);
       } else if (o.message) {
         ID("submit").disabled = false;
         alert(o.message);
-      } else if (o.redirect) {
-        window.location.replace(o.redirect);
+      } else if (o.url) {
+        window.onbeforeunload = function(){};
+        location.replace(o.url);
       }
     }, function()
     {
@@ -811,7 +792,7 @@ function bindCanvasEvents()
       }
     };
     window.submitting = true;
-    var params = "game_token=" + window.gameinfo.gameid + "&title=" + encodeURIComponent(title);
+    var params = { game_token: window.gameinfo.gameid, title: title };
     ID("submitcaption").disabled = true;
     sendPost('/play/describe.json', params, function()
     {
@@ -834,16 +815,12 @@ function bindCanvasEvents()
         } else {
           alert(o.error);
         }
-      } else if (o.callJS == "drawingComplete")
-      {
-        onCaptionSuccess();
-        location.replace(o.data.url);
       } else if (o.message) {
         ID("submitcaption").disabled = false;
         alert(o.message);
-      } else if (o.redirect) {
+      } else if (o.url) {
         onCaptionSuccess();
-        location.replace(o.redirect);
+        location.replace(o.url);
       }
     }, function()
     {
@@ -3465,13 +3442,28 @@ function pagodaBoxError()
   }
 }
 
+function hookIntoWebpack()
+{
+  webpackJsonp([0], // 0 is the "common" pack
+  {
+    65535: function(module, exports, __webpack_require__)
+    {
+      // obfuscated value. If this changes, then this will be an update hell...
+      var jQuery = __webpack_require__("7t+N");
+
+      window.$ = window.jQuery = jQuery;
+    },
+  }, [65535]);
+}
+
 function pageEnhancements()
 {
   var loc = document.location.href;
   loadScriptSettings();
 
-  if (typeof jQuery == "undefined") return; // Firefox Greasemonkey seems to call pageEnhancements() after document.write...
+  if (typeof DrawceptionPlay == "undefined") return; // Firefox Greasemonkey seems to call pageEnhancements() after document.write...
   if (document.getElementById("newcanvasyo")) return; // Chrome, I'm looking at you too...
+  hookIntoWebpack();
 
   __DEBUG__ = document.getElementById("_debug_");
   prestoOpera = navigator.userAgent.match(/\bPresto\b/);
@@ -3496,9 +3488,8 @@ function pageEnhancements()
   var inplay = loc.match(/drawception\.com\/(:?contests\/)?play\/(.*)/);
   if (options.newCanvas)
   {
-    var hasCanvas = document.getElementById("drawingCanvas");
     // If created a friend game, the link won't present playable canvas
-    var hasCanvasOrGameForm = document.getElementById("gameForm") || hasCanvas;
+    var hasCanvasOrGameForm = document.querySelector(".playtimer");
     var captioncontest = loc.match(/contests\/play\//) && !hasCanvas;
     if (!captioncontest && (insandbox || (inplay && hasCanvasOrGameForm) || __DEBUG__))
     {
@@ -3703,13 +3694,15 @@ function pageEnhancements()
   var versionDisplay;
   try
   {
-    // JS and CSS update simultaneously now
-    jsVersion = $('script[src^="/js/"]').attr("src").match(/\/js\/\w+\.js\?(.+)$/)[1];
-    versionDisplay = "ANBT v" + SCRIPT_VERSION + " | site " + jsVersion;
-    if (jsVersion != "v" + SITE_VERSION) versionDisplay += "*";
+    var appver = $('script[src^="/build/app"]').attr("src").match(/(\w+)\.js$/)[1];
+    var commonver = $('script[src^="/build/common"]').attr("src").match(/(\w+)\.js$/)[1];
+    versionDisplay = "ANBT v" + SCRIPT_VERSION + " | app " + appver;
+    if (appver != SITE_VERSION) versionDisplay += "*";
+    versionDisplay += " | common " + commonver;
+    if (commonver != "aa609409") versionDisplay += "*!!!";
   } catch(e)
   {
-    versionDisplay = "ANBT v" + SCRIPT_VERSION + " | js/css unknown";
+    versionDisplay = "ANBT v" + SCRIPT_VERSION;
   }
   $("#navbar-user").append('<div id="anbtver">' + versionDisplay + '</div>');
 
