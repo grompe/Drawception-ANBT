@@ -54,6 +54,7 @@ var options =
   forumHiddenUsers: "",
   maxCommentHeight: 1000,
   useOldFont: true,
+  useOldFontSize: true,
 };
 
 /*
@@ -3306,6 +3307,7 @@ function addScriptSettings()
       ["markStalePosts", "boolean", "Mark stale forum posts"],
       ["maxCommentHeight", "number", "Maximum comments and posts height until directly linked (px, 0 = no limit)"],
       ["useOldFont", "boolean", "Use old Nunito font (which is usually bolder and less wiggly)"],
+      ["useOldFontSize", "boolean", "Use old, smaller font size"],
     ]
   );
   addGroup("Advanced",
@@ -3580,6 +3582,10 @@ function pageEnhancements()
         location.hash = "#p" + t.attr("id");
       }
     });
+  }
+  if (options.useOldFontSize)
+  {
+    document.body.style.fontSize = "14px";
   }
   if (options.useOldFont)
   {
