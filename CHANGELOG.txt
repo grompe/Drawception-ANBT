@@ -1,3 +1,10 @@
+1.132.2018.06
+- Reduce 'Like all' button delay between likes to 1.5 seconds
+- Fix panel favorites display style
+- Completely remove the old canvas code; fix new canvas detecting drawing contests
+- Fix panel favorites old links; fix username when faving from the panel page
+- Fix showing replay links for the new drawings
+
 1.131.2018.06
 - New canvas: fix viewing playback
 
