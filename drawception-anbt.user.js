@@ -260,6 +260,7 @@ function extractInfoFromHTML(html)
   doc.body.innerHTML = html;
   var el;
   var drawapp = doc.querySelector("draw-app") || doc.querySelector("describe");
+  if (!drawapp) drawapp = {getAttribute: function() {return false}};
   function getel(query)
   {
     el = doc.querySelector(query);
@@ -283,8 +284,8 @@ function extractInfoFromHTML(html)
     pubgames: "-",
     friendgames: "-",
     notifications: "-",
-    //drawingbylink: getel("#main p a[href^=/player/]") ? el.getAttribute("href") : false,
-    drawingbylink: getel("#main p a") ? el.getAttribute("href") : false,
+    drawinglink: getel(".gamepanel img") ? el.getAttribute("src") : false,
+    drawingbylink: getel("#main p a") ? [el.textContent.trim(), el.getAttribute("href")] : false,
     drawncaption: getel("h1.game-title") ? el.textContent.trim() : false,
     notloggedin: getel("form.form-login") != null,
     limitreached: false, // ??? appears to be redirecting to /play/limit/ which gives "game not found" error
@@ -390,12 +391,12 @@ function handleSandboxParameters()
 {
   if (gameinfo.drawingbylink)
   {
-    var playerid = gameinfo.drawingbylink.match(/\d+/);
-    var playername = gameinfo.drawingbylink.match(/>([^<]+)</);
+    var playername = gameinfo.drawingbylink[0];
+    var playerlink = gameinfo.drawingbylink[1];
     var replaylink = '<a href="http://grompe.org.ru/drawit/#drawception/' +
       location.hash.substr(1) + '" title="Public replay link for sharing">Drawing</a>';
-    ID("headerinfo").innerHTML = replaylink + ' by ' + gameinfo.drawingbylink;
-    if (playername) document.title = playername[1] + "'s drawing - Drawception";
+    ID("headerinfo").innerHTML = replaylink + ' by <a href="' + playerlink + '">' + playername + '</a>';
+    document.title = playername + "'s drawing - Drawception";
     ID("drawthis").innerHTML = '"' + gameinfo.drawncaption + '"';
     ID("drawthis").classList.remove("onlyplay");
     ID("emptytitle").classList.add("onlyplay");
@@ -975,12 +976,15 @@ function deeper_main()
   {
     if (window.panelid)
     {
-      anbt.FromURL("/panel/drawing/" + window.panelid + "/");
       sendGet("/panel/drawing/" + window.panelid + "/-/", function()
       {
         window.gameinfo = extractInfoFromHTML(this.responseText);
+        anbt.FromURL(gameinfo.drawinglink + "?anbt"); // workaround for non-CORS cached image
         handleSandboxParameters();
-      }, function() {});
+      }, function()
+      {
+        alert("Error loading the panel page. Please try again.");
+      });
     } else {
       if (window.origpage)
       {
