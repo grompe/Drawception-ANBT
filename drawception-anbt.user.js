@@ -1683,9 +1683,9 @@ function viewMyPanelFavorites()
       panels[id].image = panels[id].image.replace("/pub/panels/", "https://cdn.drawception.com/images/panels/");
     }
     result += '<div id="' + id + '" class="col-xs-6 col-sm-4 col-md-2" style="min-width: 150px;">' +
-      '<div class="thumbnail" style="overflow:hidden"><a class="anbt_paneldel" href="#" title="Remove">X</a>' +
+      '<div class="thumbpanel-holder" style="overflow:hidden"><a class="anbt_paneldel" href="#" title="Remove">X</a>' +
       '<a href="/panel/-/' +
-      id + '/-/" class="thumbnail thumbpanel" rel="tooltip" title="' +
+      id + '/-/" class="thumbpanel" rel="tooltip" title="' +
       panels[id].caption + '">' +
       (panels[id].image
         ? '<img src="' + panels[id].image + '" width="125" height="104" alt="' + panels[id].caption + '" />'
