@@ -2032,7 +2032,7 @@ function betterGame()
 
   fixLocationToCanonical("/game/");
 
-  var drawings = $('img[src^="https://cdn.drawception.com/images/panels/"]');
+  var drawings = $('img[src^="https://cdn.drawception.com/images/panels/"],img[src^="https://cdn.drawception.com/drawings/"]');
 
   // Show each drawing make date
   drawings.each(function()
@@ -2842,7 +2842,7 @@ function betterPlayer()
     }
 
   } else { // Not the current user's profile or not profile homepage
-    var drawings = $('img[src^="https://cdn.drawception.com/images/panels/"]');
+    var drawings = $('img[src^="https://cdn.drawception.com/images/panels/"],img[src^="https://cdn.drawception.com/drawings/"]');
     // Show replayable panels; links are not straightforward to make since there's no panel ID
     if (options.newCanvas)
     {
