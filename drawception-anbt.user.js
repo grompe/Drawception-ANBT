@@ -2277,7 +2277,7 @@ function betterPanel()
       e.preventDefault();
       var panels = localStorage.getItem("gpe_panelFavorites");
       panels = panels ? JSON.parse(panels) : {};
-      var panel = {time: Date.now(), by: $(".lead a").text()};
+      var panel = {time: Date.now(), by: $(".gamepanel-holder + p a").text()};
       var id = document.location.href.match(/\/panel\/[^\/]+\/([^\/]+)\//)[1];
       var img = $(".gamepanel img");
       if (img.length)
@@ -2542,8 +2542,14 @@ function viewMyPanelFavorites()
   var panels = localStorage.getItem("gpe_panelFavorites");
   panels = panels ? JSON.parse(panels) : {};
   var result = "";
+  var needsupdate = false;
   for (var id in panels)
   {
+    if (panels[id].image && panels[id].image.match(/^\/pub\/panels\//))
+    {
+      needsupdate = true;
+      panels[id].image = panels[id].image.replace("/pub/panels/", "https://cdn.drawception.com/images/panels/");
+    }
     result += '<div id="' + id + '" class="col-xs-6 col-sm-4 col-md-2" style="min-width: 150px;">' +
       '<div class="thumbnail" style="overflow:hidden"><a class="anbt_paneldel" href="#" title="Remove">X</a>' +
       '<a href="/panel/-/' +
@@ -2555,6 +2561,10 @@ function viewMyPanelFavorites()
       '</a><span class="text-muted" style="white-space:nowrap">by ' + panels[id].by +
       '</span><br><span class="text-muted"><span class="glyphicon glyphicon-heart"></span> ' +
       formatTimestamp(panels[id].time) + '</span></div></div>';
+  }
+  if (needsupdate)
+  {
+    localStorage.setItem("gpe_panelFavorites", JSON.stringify(panels));
   }
   if (!result) result = "You don't have any favorited panels.";
   $("#anbt_userpage").html(result);
