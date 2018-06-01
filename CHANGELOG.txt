@@ -1,3 +1,6 @@
+1.131.2018.06
+- New canvas: fix viewing playback
+
 1.130.2018.06
 - Restore old, smaller font size; can be disabled in options
 
