@@ -1081,7 +1081,7 @@ function likeAll()
     if (likebuttons.length)
     {
       likebuttons.shift().click()
-      setTimeout(keepLiking, 3000);
+      setTimeout(keepLiking, 1500);
     }
   };
   keepLiking();
