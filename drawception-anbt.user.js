@@ -1241,9 +1241,17 @@ function betterGame()
       if (this.replayAdded) return;
       this.replayAdded = true;
       var panel = $(this).parent();
+      var src = this.src;
       checkForRecording(this.src, function()
       {
-        var id = scrambleID(panel.attr("id").slice(6));
+        var id;
+        var newid = src.match(/(\w+).png$/)[1];
+        if (newid.length > 8)
+        {
+          id = newid;
+        } else {
+          id = scrambleID(panel.attr("id").slice(6));
+        }
         var replayButton = $('<a href="/sandbox/#' + id + '" class="panel-number anbt_replaypanel glyphicon glyphicon-repeat text-muted" title="Replay"></span>');
         replayButton.click(function(e)
         {
