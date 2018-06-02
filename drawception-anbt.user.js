@@ -2001,9 +2001,23 @@ function betterPlayer()
         if (this.replayAdded) return;
         this.replayAdded = true;
         var panel = $(this).parent().parent();
+        var src = this.src;
         checkForRecording(this.src, function()
         {
-          var replaySign = $('<span class="pull-right glyphicon glyphicon-repeat" style="color:#8af;margin-right:4px" title="Replayable!"></span>');
+          var replaySign;
+          var newid = src.match(/(\w+).png$/)[1];
+          if (newid.length > 8)
+          {
+            replaySign = $('<a href="/sandbox/#' + newid + '" class="pull-right glyphicon glyphicon-repeat" style="color:#8af;margin-right:4px" title="Replay!"></a>');
+            replaySign.click(function(e)
+            {
+              if (e.which === 2) return;
+              e.preventDefault();
+              setupNewCanvas(true, "/sandbox/#" + newid);
+            });
+          } else {
+            replaySign = $('<span class="pull-right glyphicon glyphicon-repeat" style="color:#8af;margin-right:4px" title="Replayable!"></span>');
+          }
           panel.append(replaySign);
           replaySign.tooltip();
         });
