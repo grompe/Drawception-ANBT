@@ -1,3 +1,6 @@
+1.134.2018.06
+- Add support for the new palette: Juice
+
 1.133.2018.06
 - Allow replaying right from the player's gallery for the new drawings
 - Fix viewing playback on newer drawings from the game page as their panel links got changed
