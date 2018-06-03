@@ -1,3 +1,7 @@
+1.135.2018.06
+- Forum: linkify new embedded panel images to panel pages
+- Change Drawception calls from GET to POST+JSON, this should fix Draw First aborting and contests
+
 1.134.2018.06
 - Add support for the new palette: Juice
 
