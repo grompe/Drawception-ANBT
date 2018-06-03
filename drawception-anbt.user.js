@@ -324,14 +324,14 @@ function exitToSandbox()
 {
   if (window.incontext && !window.drawing_aborted)
   {
-    sendGet("/contests/exit.json", function()
+    sendPost("/contests/exit.json", {game_token: window.gameinfo.gameid}, function()
     {
       alert("You have missed your contest.");
     });
   }
   if (window.gameinfo.drawfirst && !window.drawing_aborted)
   {
-    sendGet("/play/abort-start.json?game_token=" + window.gameinfo.gameid, function()
+    sendPost("/play/abort-start.json", {game_token: window.gameinfo.gameid}, function()
     {
       alert("You have missed your Draw First game.\nIt has been aborted.");
     }, function()
@@ -610,7 +610,7 @@ function bindCanvasEvents()
     {
       if (!confirm("Quit the contest? Entry coins will be lost!")) return;
       ID("exit").disabled = true;
-      sendGet("/contests/exit.json", function()
+      sendPost("/contests/exit.json", {game_token: window.gameinfo.gameid}, function()
       {
         ID("exit").disabled = false;
         window.drawing_aborted = true;
@@ -631,7 +631,7 @@ function bindCanvasEvents()
     {
       if (!confirm("Abort creating a draw first game?")) return;
       ID("exit").disabled = true;
-      sendGet("/play/abort-start.json?game_token=" + window.gameinfo.gameid, function()
+      sendPost("/play/abort-start.json", {game_token: window.gameinfo.gameid}, function()
       {
         ID("exit").disabled = false;
         window.drawing_aborted = true;
@@ -650,7 +650,7 @@ function bindCanvasEvents()
     }
     if (!confirm("Really exit?")) return;
     ID("exit").disabled = true;
-    sendGet("/play/exit.json?game_token=" + window.gameinfo.gameid, function()
+    sendPost("/play/exit.json", {game_token: window.gameinfo.gameid}, function()
     {
       ID("exit").disabled = false;
       exitToSandbox();
@@ -661,7 +661,7 @@ function bindCanvasEvents()
   {
     if (unsavedStopAction()) return;
     ID("skip").disabled = true;
-    sendGet("/play/skip.json?game_token=" + window.gameinfo.gameid, function()
+    sendPost("/play/skip.json", {game_token: window.gameinfo.gameid}, function()
     {
       // Postpone enabling skip until we get game info
       getParametersFromPlay();
@@ -682,7 +682,7 @@ function bindCanvasEvents()
   ID("report").addEventListener('click', function()
   {
     if (!confirm("Report this panel?")) return;
-    sendGet("/play/flag.json?game_token=" + window.gameinfo.gameid, function()
+    sendPost("/play/flag.json", {game_token: window.gameinfo.gameid}, function()
     {
       ID("report").disabled = false;
       getParametersFromPlay();
@@ -711,18 +711,14 @@ function bindCanvasEvents()
     }
     window.submitting = true;
 
-    var params, url, complete;
+    var url;
     if (window.incontest)
     {
-      params = { img: anbt.pngBase64 };
       url = "/contests/submit-drawing.json";
-      complete = "contestDrawingComplete";
     } else {
-      params = { game_token: window.gameinfo.gameid, panel: anbt.pngBase64 };
-      url = '/play/draw.json';
-      complete = "drawingComplete";
+      url = "/play/draw.json";
     }
-    sendPost(url, params, function()
+    sendPost(url, {game_token: window.gameinfo.gameid, panel: anbt.pngBase64}, function()
     {
       var o;
       try
@@ -780,9 +776,16 @@ function bindCanvasEvents()
       }
     };
     window.submitting = true;
-    var params = { game_token: window.gameinfo.gameid, title: title };
     ID("submitcaption").disabled = true;
-    sendPost('/play/describe.json', params, function()
+
+    var url;
+    if (window.incontest)
+    {
+      url = "/contests/submit-caption.json";
+    } else {
+      url = "/play/describe.json";
+    }
+    sendPost(url, {game_token: window.gameinfo.gameid, title: title}, function()
     {
       var o;
       try
@@ -846,7 +849,7 @@ function bindCanvasEvents()
     if (window.gameinfo.friend)
     {
       ID("timeplus").disabled = true;
-      sendGet("/play/exit.json?game_token=" + window.gameinfo.gameid, function()
+      sendPost("/play/exit.json", {game_token: window.gameinfo.gameid}, function()
       {
         sendGet("/play/" + window.gameinfo.gameid + "/?" + Date.now(), function()
         {
@@ -878,7 +881,7 @@ function bindCanvasEvents()
       return;
     }
     ID("timeplus").disabled = true;
-    sendGet("/play/add-time.json?game_token=" + window.gameinfo.gameid, function()
+    sendPost("/play/add-time.json", {game_token: window.gameinfo.gameid}, function()
     {
       var o = JSON.parse(this.responseText);
       if (o.error)
