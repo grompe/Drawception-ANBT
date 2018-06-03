@@ -2206,6 +2206,17 @@ function betterForum()
       }
     }
   );
+  $('img[src*="/drawings/"]').each(function()
+    {
+      var t = $(this);
+      if (!t.parent().is("a"))
+      {
+        var panelid = t.attr("src").match(/(\w+).png$/)[1];
+        var panelurl = "/panel/drawing/" + panelid + "/-/";
+        t.wrap('<a href="' + panelurl +'"></a>');
+      }
+    }
+  );
   $('img[src*="/panel/"]').each(function()
     {
       var t = $(this);
