@@ -1,3 +1,36 @@
+1.135.2018.06
+- Forum: linkify new embedded panel images to panel pages
+- Change Drawception calls from GET to POST+JSON, this should fix Draw First aborting and contests
+
+1.134.2018.06
+- Add support for the new palette: Juice
+
+1.133.2018.06
+- Allow replaying right from the player's gallery for the new drawings
+- Fix viewing playback on newer drawings from the game page as their panel links got changed
+
+1.132.2018.06
+- Reduce 'Like all' button delay between likes to 1.5 seconds
+- Fix panel favorites display style
+- Completely remove the old canvas code; fix new canvas detecting drawing contests
+- Fix panel favorites old links; fix username when faving from the panel page
+- Fix showing replay links for the new drawings
+
+1.131.2018.06
+- New canvas: fix viewing playback
+
+1.130.2018.06
+- Restore old, smaller font size; can be disabled in options
+
+1.129.2018.06
+- Dark style: fix game creation page
+- Fix script loading and working on the updated Drawception site
+
+1.128.2018.04
+- New canvas: prevent caching an error from GitHub
+- Prevent forum post anchor from appearing twice on deleted users
+- Remove subforum detection in user profile's forum posts as site no longer gives that information
+- Remove game length detection as it is now provided by the site
 1.173.2018.05
 - Merge changes from original version:
   1.128.2018.04

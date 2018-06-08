@@ -22,7 +22,6 @@ var SITE_VERSION = "2.8.4"; // Last seen site version
 
 var options =
 {
-  asyncSkip: 0, // Whether to try loading next game pages asynchronously when skipped
   enableWacom: 0, // Whether to enable Wacom plugin and thus pressure sensitivity support
   fixTabletPluginGoingAWOL: 1, // Fix pressure sensitivity disappearing in case of stupid/old Wacom plugin
   hideCross: 0, // Whether to hide the cross when drawing
@@ -54,6 +53,7 @@ var options =
   forumHiddenUsers: "",
   maxCommentHeight: 1000,
   useOldFont: true,
+  useOldFontSize: true,
   colorizeNavBar: true,
   checkForNotifications: true,
 };
@@ -73,21 +73,7 @@ General
 - An embedded chat
 - Automatically retry failed requests to reduce annoying error messages
 Canvas:
-- Wacom tablet eraser and smooth pressure support; doesn't conflict with mouse
-- Secondary color, used with right mouse button; palette right-clicking
-- Alt+click picks a color from the canvas
-- Brush cursor
-- Current colors indicator
-- X swaps primary and secondary colors
-- B selects last used color as primary
-- E selects eraser
-- [ ] and - = changes brush sizes
-- Shift+F fills with the current color
-- Confirm closing a page if it has a canvas and is painted on
-- Don't confirm clearing, but allow to undo it
-Sandbox
-- Add drawing time indicator
-- Upload directly to imgur
+- Completely new drawing canvas with ability to record and display the drawing process
 View game
 - Add reverse panels button
 - Add "like all" button
@@ -183,7 +169,7 @@ function setupNewCanvas(insandbox, url, origpage)
   var panelid = url.match(/sandbox\/#?([^\/]+)/);
 
   // Handle drawing contests only
-  var incontest = url.match(/contests\/play\//) && document.getElementById("drawingCanvas");
+  var incontest = url.match(/contests\/play\//) && document.getElementById("canvas-holder");
   // Disable built-in safety warning
   if (incontest) window.onbeforeunload = function(){};
 
@@ -243,64 +229,55 @@ function sendGet(url, onloadfunc, onerrorfunc, ontimeoutfunc)
   xhr.send();
 }
 
-function sendPost(url, params, onloadfunc, onerrorfunc, ontimeoutfunc)
+function sendPost(url, paramsobj, onloadfunc, onerrorfunc, ontimeoutfunc)
 {
   var xhr = new XMLHttpRequest();
   xhr.open('POST', url);
   xhr.timeout = 15000;
-  xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+  xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
   xhr.onload = onloadfunc;
   xhr.onerror = onerrorfunc || onloadfunc;
   xhr.ontimeout = ontimeoutfunc || onerrorfunc || onloadfunc;
-  xhr.send(params);
+  xhr.send(JSON.stringify(paramsobj));
 }
 
 
 
 function extractInfoFromHTML(html)
 {
-  // Warning, there's a caveat: the script can match against its own plaintext.
-  var extract = function(r)
+  var doc = document.implementation.createHTMLDocument("");
+  doc.body.innerHTML = html;
+  var el;
+  var drawapp = doc.querySelector("draw-app") || doc.querySelector("describe");
+  if (!drawapp) drawapp = {getAttribute: function() {return false}};
+  function getel(query)
   {
-    var m = html.match(r);
-    return m && m[1] || !!m;
-  };
-  var extractAll = function(r)
-  {
-    if (!r.global) return extract(r);
-    var m, res = [];
-    do
-    {
-      m = r.exec(html);
-      if (m) res.push(m[1]);
-    } while (m)
-    return res;
-  };
+    el = doc.querySelector(query);
+    return el;
+  }
   return {
-    error: extract(/<div class="error">\s+([^<]+)\s+<\/div>/),
-    gameid: extract(/name="which_game" value="([^"]+)"/),
-    blitz: extract(/BLITZ MODE<br ?\/?>/),
-    nsfw: extract(/<span[^>]+title="This is a Not Safe For Work/),
-    friend: extract(/<strong>[F]riend Game/),
-    drawfirst: extract(/value="Abort" onclick="DrawceptionPlay\.abortDrawFirst\(\)/),
-    timeleft: extract(/<play-timer :seconds="(\d+)"/),
-    timeleft2: extract(/<span[^>]+id="timeleft"[^>]+>[^:]+>(\d+:\d+)/),
-    caption: extract(/<p class="play-phrase">\s+([^<]+)\s+<\/p>/),
-    image: extract(/<img src="(data:image\/png;base64,[^"]*)"/),
-    palette: extract(/<tool-color-picker[^>]+theme_id="([^"]+)"/),
-    //colors: extractAll(/data-color=['"](#[0-9a-f]{3,6})['"]/gi),
-    bgbutton: extract(/<tool-bg-layer[^>]+:is_owned="(?:true|1)"/),
-    playerid: extract(/<a href="\/player\/(\d+)\//),
-    playerurl: extract(/<a href="(\/player\/\d+\/[^\/]+\/)"/),
-    avatar: extract(/<img src="(https:\/\/cdn\.drawception\.com\/images\/avatars\/[^"]+)"/),
-    coins: extract(/<span id="user-coins-value">(\d+)<\/span>/),
-    pubgames: extract(/id="btn-public-games-progress"[^>]+>[^>]+><\/span> (\d+\/\d+)/),
-    friendgames: extract(/id="btn-friend-games-progress"[^>]+>[^>]+><\/span> (\d+)/),
-    notifications: extract(/<span id="user-notify-count">(\d+)<\/span>/),
-    drawingbylink: extract(/drawing by (<a href="\/player\/\d+\/\S+\/">[^<]+<\/a>)/),
-    h1: extract(/<h1>([^<]+)<\/h1>/) || extract(/<title>([^<]+) \(drawing by .*\)<\/title>/),
-    notloggedin: extract(/>Login<\/a>/),
-    limitreached: extract(/>Check back soon![<]/),
+    error: getel(".error") ? el.textContent.trim() : false,
+    gameid: drawapp.getAttribute("game_token"),
+    blitz: drawapp.getAttribute(":seconds") * 1 == 60, // can't tell blitz games from regular ones with 60 s left
+    nsfw: drawapp.getAttribute(":nsfw") == "true",
+    friend: drawapp.getAttribute(":public") != "true",
+    drawfirst: drawapp.getAttribute(":draw_first") == "true",
+    timeleft: drawapp.getAttribute(":seconds") * 1,
+    caption: drawapp.getAttribute("phrase"),
+    image: drawapp.getAttribute("img_url"),
+    palette: drawapp.getAttribute("theme_id"),
+    bgbutton: drawapp.getAttribute(":bg_layer") == "1",
+    playerurl: "/profile/",
+    avatar: null,
+    coins: "-",
+    pubgames: "-",
+    friendgames: "-",
+    notifications: "-",
+    drawinglink: getel(".gamepanel img") ? el.getAttribute("src") : false,
+    drawingbylink: getel("#main p a") ? [el.textContent.trim(), el.getAttribute("href")] : false,
+    drawncaption: getel("h1.game-title") ? el.textContent.trim() : false,
+    notloggedin: getel("form.form-login") != null,
+    limitreached: false, // ??? appears to be redirecting to /play/limit/ which gives "game not found" error
     html: html,
   };
 }
@@ -351,14 +328,14 @@ function exitToSandbox()
 {
   if (window.incontext && !window.drawing_aborted)
   {
-    sendGet("/contests/exit.json", function()
+    sendPost("/contests/exit.json", {game_token: window.gameinfo.gameid}, function()
     {
       alert("You have missed your contest.");
     });
   }
   if (window.gameinfo.drawfirst && !window.drawing_aborted)
   {
-    sendGet("/play/abort-start.json?game_token=" + window.gameinfo.gameid, function()
+    sendPost("/play/abort-start.json", {game_token: window.gameinfo.gameid}, function()
     {
       alert("You have missed your Draw First game.\nIt has been aborted.");
     }, function()
@@ -403,13 +380,13 @@ function handleSandboxParameters()
 {
   if (gameinfo.drawingbylink)
   {
-    var playerid = gameinfo.drawingbylink.match(/\d+/);
-    var playername = gameinfo.drawingbylink.match(/>([^<]+)</);
+    var playername = gameinfo.drawingbylink[0];
+    var playerlink = gameinfo.drawingbylink[1];
     var replaylink = '<a href="http://grompe.org.ru/drawit/#drawception/' +
       location.hash.substr(1) + '" title="Public replay link for sharing">Drawing</a>';
-    ID("headerinfo").innerHTML = replaylink + ' by ' + gameinfo.drawingbylink;
-    if (playername) document.title = playername[1] + "'s drawing - Drawception";
-    ID("drawthis").innerHTML = '"' + gameinfo.h1 + '"';
+    ID("headerinfo").innerHTML = replaylink + ' by <a href="' + playerlink + '">' + playername + '</a>';
+    document.title = playername + "'s drawing - Drawception";
+    ID("drawthis").innerHTML = '"' + gameinfo.drawncaption + '"';
     ID("drawthis").classList.remove("onlyplay");
     ID("emptytitle").classList.add("onlyplay");
     if (options.autoplay) anbt.Play();
@@ -504,6 +481,7 @@ function handlePlayParameters()
     theme_coty_2017: ["Colors of 2017", "#5f7278"],
     theme_fire_ice: ["Fire and Ice", "#040526"],
     theme_coty_2018: ["Canyon Sunset", "#2e1b50"],
+    theme_juice: ["Juice", "#fced95"],
   };
   var pal = info.palette;
   var paldata;
@@ -553,12 +531,6 @@ function handlePlayParameters()
     ID("caption").value = "";
     ID("caption").focus();
     ID("usedchars").textContent = "46";
-  }
-
-  if (!info.timeleft && info.timeleft2)
-  {
-    var m = info.timeleft2.split(":");
-    info.timeleft = m[0] * 60 + m[1] * 1;
   }
 
   timerStart = Date.now() + 1000 * info.timeleft;
@@ -642,7 +614,7 @@ function bindCanvasEvents()
     {
       if (!confirm("Quit the contest? Entry coins will be lost!")) return;
       ID("exit").disabled = true;
-      sendGet("/contests/exit.json", function()
+      sendPost("/contests/exit.json", {game_token: window.gameinfo.gameid}, function()
       {
         ID("exit").disabled = false;
         window.drawing_aborted = true;
@@ -663,7 +635,7 @@ function bindCanvasEvents()
     {
       if (!confirm("Abort creating a draw first game?")) return;
       ID("exit").disabled = true;
-      sendGet("/play/abort-start.json?game_token=" + window.gameinfo.gameid, function()
+      sendPost("/play/abort-start.json", {game_token: window.gameinfo.gameid}, function()
       {
         ID("exit").disabled = false;
         window.drawing_aborted = true;
@@ -682,7 +654,7 @@ function bindCanvasEvents()
     }
     if (!confirm("Really exit?")) return;
     ID("exit").disabled = true;
-    sendGet("/play/exit.json?game_token=" + window.gameinfo.gameid, function()
+    sendPost("/play/exit.json", {game_token: window.gameinfo.gameid}, function()
     {
       ID("exit").disabled = false;
       exitToSandbox();
@@ -693,7 +665,7 @@ function bindCanvasEvents()
   {
     if (unsavedStopAction()) return;
     ID("skip").disabled = true;
-    sendGet("/play/skip.json?game_token=" + window.gameinfo.gameid, function()
+    sendPost("/play/skip.json", {game_token: window.gameinfo.gameid}, function()
     {
       // Postpone enabling skip until we get game info
       getParametersFromPlay();
@@ -714,7 +686,7 @@ function bindCanvasEvents()
   ID("report").addEventListener('click', function()
   {
     if (!confirm("Report this panel?")) return;
-    sendGet("/play/flag.json?game_token=" + window.gameinfo.gameid, function()
+    sendPost("/play/flag.json", {game_token: window.gameinfo.gameid}, function()
     {
       ID("report").disabled = false;
       getParametersFromPlay();
@@ -743,18 +715,14 @@ function bindCanvasEvents()
     }
     window.submitting = true;
 
-    var params, url, complete;
+    var url;
     if (window.incontest)
     {
-      params = "img=" + encodeURIComponent(anbt.pngBase64);
       url = "/contests/submit-drawing.json";
-      complete = "contestDrawingComplete";
     } else {
-      params = "game_token=" + window.gameinfo.gameid + "&panel=" + encodeURIComponent(anbt.pngBase64);
-      url = '/play/draw.json';
-      complete = "drawingComplete";
+      url = "/play/draw.json";
     }
-    sendPost(url, params, function()
+    sendPost(url, {game_token: window.gameinfo.gameid, panel: anbt.pngBase64}, function()
     {
       var o;
       try
@@ -775,15 +743,12 @@ function bindCanvasEvents()
         } else {
           alert(o.error);
         }
-      } else if (o.data && o.data.url)
-      {
-        window.onbeforeunload = function(){};
-        location.replace(o.data.url);
       } else if (o.message) {
         ID("submit").disabled = false;
         alert(o.message);
-      } else if (o.redirect) {
-        window.location.replace(o.redirect);
+      } else if (o.url) {
+        window.onbeforeunload = function(){};
+        location.replace(o.url);
       }
     }, function()
     {
@@ -815,9 +780,16 @@ function bindCanvasEvents()
       }
     };
     window.submitting = true;
-    var params = "game_token=" + window.gameinfo.gameid + "&title=" + encodeURIComponent(title);
     ID("submitcaption").disabled = true;
-    sendPost('/play/describe.json', params, function()
+
+    var url;
+    if (window.incontest)
+    {
+      url = "/contests/submit-caption.json";
+    } else {
+      url = "/play/describe.json";
+    }
+    sendPost(url, {game_token: window.gameinfo.gameid, title: title}, function()
     {
       var o;
       try
@@ -838,16 +810,12 @@ function bindCanvasEvents()
         } else {
           alert(o.error);
         }
-      } else if (o.callJS == "drawingComplete")
-      {
-        onCaptionSuccess();
-        location.replace(o.data.url);
       } else if (o.message) {
         ID("submitcaption").disabled = false;
         alert(o.message);
-      } else if (o.redirect) {
+      } else if (o.url) {
         onCaptionSuccess();
-        location.replace(o.redirect);
+        location.replace(o.url);
       }
     }, function()
     {
@@ -885,7 +853,7 @@ function bindCanvasEvents()
     if (window.gameinfo.friend)
     {
       ID("timeplus").disabled = true;
-      sendGet("/play/exit.json?game_token=" + window.gameinfo.gameid, function()
+      sendPost("/play/exit.json", {game_token: window.gameinfo.gameid}, function()
       {
         sendGet("/play/" + window.gameinfo.gameid + "/?" + Date.now(), function()
         {
@@ -917,7 +885,7 @@ function bindCanvasEvents()
       return;
     }
     ID("timeplus").disabled = true;
-    sendGet("/play/add-time.json?game_token=" + window.gameinfo.gameid, function()
+    sendPost("/play/add-time.json", {game_token: window.gameinfo.gameid}, function()
     {
       var o = JSON.parse(this.responseText);
       if (o.error)
@@ -1001,12 +969,15 @@ function deeper_main()
   {
     if (window.panelid)
     {
-      anbt.FromURL("/panel/drawing/" + window.panelid + "/");
       sendGet("/panel/drawing/" + window.panelid + "/-/", function()
       {
         window.gameinfo = extractInfoFromHTML(this.responseText);
+        anbt.FromURL(gameinfo.drawinglink + "?anbt"); // workaround for non-CORS cached image
         handleSandboxParameters();
-      }, function() {});
+      }, function()
+      {
+        alert("Error loading the panel page. Please try again.");
+      });
     } else {
       if (window.origpage)
       {
@@ -1078,866 +1049,13 @@ function linkifyNodeText(node)
 
 function enhanceCanvas(insandbox)
 {
-  var canvas = document.getElementById("drawingCanvas");
-  if (!canvas) return;
-
-  var drawCursor = document.getElementById("drawCursor");
-  if (!drawCursor)
-  {
-    drawCursor = document.createElement("span");
-    drawCursor.id = "drawCursor";
-    document.getElementById("main").appendChild(drawCursor);
-  }
-
-  $("#gameForm").after('<b>ANBT Note: old canvas is no longer actively supported. New canvas can be enabled on the <a href="/settings/"><span class="glyphicon glyphicon-cog" /> settings page</a>.</b>');
-  $(document.body).append('<object id="wtPlugin" type="application/x-wacomtabletplugin" width="1" height="1"></object>');
-  var wtPlugin = document.getElementById("wtPlugin");
-  var penAPI, strokeSize, dynSize, pressureUpdater, backupTimer;
-  var lastColor;
-  var operaLastPalette;
-
-  GM_addStyle(
-    "#primaryColor, #secondaryColor {width: 49px; height: 20px; float: left; border: 1px solid #AAA}" +
-    "#pscolorContainer {width: 98px; margin: auto}" +
-    ".selectable {-webkit-user-select: text; -moz-user-select: text; user-select: text}" +
-    "#drawCursor {display: none; position: absolute; pointer-events: none; border-radius: 50%}"
-  );
-  if (!prestoOpera)
-  {
-    GM_addStyle(
-      (options.hideCross ? "#drawingCanvas.active {cursor: none !important}" : "") +
-      "#drawCursor {display: block; z-index: 10; border: 1px solid #FFFFFF }"
-    );
-  }
-
-  function updateCursorColor(hexcolor)
-  {
-    drawCursor.style.background = hexcolor;
-    drawCursor.style.borderColor = invertColor(hexcolor);
-  }
-
-  var oldX, oldY, oldTabletX = 0, oldTabletY = 0, oldTabletPressure = 0, tabletActive = false;
-  usingTablet = function()
-  {
-    if (!options.enableWacom) return false;
-    if (!tabletActive) return false;
-    var result = false;
-    try
-    {
-      result = wtPlugin.penAPI;
-    } catch(e) {}
-    return result;
-  };
-
-  // Chrome: seems to be the slowest function
-  function updateTabletPos(moved)
-  {
-    if (!options.enableWacom) return false;
-    var result = false;
-    try
-    {
-      result = wtPlugin.penAPI;
-    } catch(e) {}
-    if (result)
-    {
-      var tabletMoved = (result.sysX !== oldTabletX) || (result.sysY !== oldTabletY) || (result.pressure !== oldTabletPressure);
-      if (tabletMoved) tabletActive = true;
-      else if (moved) tabletActive = false;
-      oldTabletX = result.sysX;
-      oldTabletY = result.sysY;
-      oldTabletPressure = result.pressure;
-    }
-  }
-
-  function isEraser()
-  {
-    var result = false;
-    try
-    {
-      result = wtPlugin.penAPI.isEraser;
-    } catch(e) {}
-    return result;
-  }
-
-  function getPressure()
-  {
-    var result = 1;
-    try
-    {
-      result = wtPlugin.penAPI.pressure;
-    } catch(e) {}
-    return result;
-  }
-
-  function updatePressure()
-  {
-    var goal = strokeSize * Math.pow(getPressure(), options.pressureExponent);
-    dynSize = (dynSize + goal) / 2;
-  }
-
-  function updateDrawCursor()
-  {
-    var s = drawApp.context.lineWidth;
-    drawCursor.style.width = s + "px";
-    drawCursor.style.height = s + "px";
-    drawCursor.style.marginLeft = "-" + (s / 2) + "px";
-    drawCursor.style.marginTop = "-" + (s / 2) + "px";
-  }
-
-  function nextSize(d)
-  {
-    var idx = 0, m = options.brushSizes.length - 1;
-    for (var i = m; i > 0; i--)
-    {
-      if (strokeSize >= options.brushSizes[i])
-      {
-        idx = i;
-        break;
-      }
-    }
-    idx = Math.min(Math.max(idx + d, 0), m);
-    strokeSize = options.brushSizes[idx];
-    drawApp.context.lineWidth = strokeSize;
-    cursorOffset = strokeSize / 2;
-    updateDrawCursor();
-    $('.btn-drawtool').has('input[id^=brush]').eq(idx).click();
-  }
-
-  function saveBackup()
-  {
-    if (!options.backup) return;
-    var o = {game: null, image: drawApp.toDataURL()};
-    var which_game = $('input[name=which_game]');
-    if (which_game.length) o.game = which_game.val();
-    localStorage.setItem("anbt_drawingbackup", JSON.stringify(o));
-  }
-
-  function gridHint()
-  {
-    var w = drawApp.context.canvas.width, h = drawApp.context.canvas.height;
-    var l;
-    var c = document.createElement('canvas');
-    c.width = w;
-    c.height = h;
-    var ctx = c.getContext("2d");
-    ctx.fillStyle = drawApp.primary_color;
-    for (var i = 1; i < 8; i++)
-    {
-      l = 4 + (i%4==0)*4 + (i%2==0)*4;
-      ctx.fillRect(0, Math.floor(i * h / 8), l, 1);
-      ctx.fillRect(w-l, Math.floor(i * h / 8), l, 1);
-      ctx.fillRect(Math.floor(i * w / 8), 0, 1, l);
-      ctx.fillRect(Math.floor(i * w / 8), h-l, 1, l);
-    }
-    $('#drawingCanvas').css('background-image', 'url("' + c.toDataURL("image/png") + '")');
-  }
-
-  // Make right-click draw secondary color and alt+click pick colors
-  var waitForDrawApp = setInterval(function()
-    {
-      if (typeof drawApp == "undefined") return;
-      clearInterval(waitForDrawApp);
-
-      // Remove backup when exiting (even if confirmation is cancelled)
-      if (options.backup)
-      {
-        var old_exitGame = DrawceptionPlay.exitGame;
-        DrawceptionPlay.exitGame = function()
-        {
-          localStorage.removeItem("anbt_drawingbackup");
-          old_exitGame();
-        };
-      }
-
-      // Workaround for a bug that skips drawing when undoing after timer
-      // expired: http://drawception.com/forums/suggestions/18533/-/
-      var old_undo = undo;
-      var old_redo = redo;
-      undo = function()
-      {
-        if (restorePoints !== 0) old_undo();
-      };
-      redo = function()
-      {
-        if (restorePoints !== 0) old_redo();
-      };
-
-      // Make resetting have no confirmation but undoable, and reset sandbox timer
-      drawApp.reset = function()
-      {
-        sandboxDrawingStart = Date.now();
-        drawApp.context.clearRect(0, 0, drawApp.context.canvas.width, drawApp.context.canvas.height);
-        save();
-        return false;
-      };
-
-      drawApp.old_setColor = drawApp.setColor;
-      drawApp.setPrimaryColor = function(color)
-      {
-        this.primary_color = color;
-        document.getElementById("primaryColor").style.background =
-          (color === null) ? "url(/img/draw_eraser.png)" : color;
-        updateCursorColor((color === null) ? defaultFill : color);
-        if (color) lastColor = color;
-      };
-      drawApp.setSecondaryColor = function(color)
-      {
-        this.secondary_color = color;
-        document.getElementById("secondaryColor").style.background =
-          (color === null) ? "url(/img/draw_eraser.png)" : color;
-        updateCursorColor((color === null) ? defaultFill : color);
-      };
-      drawApp.setColor = function(color, bypass)
-      {
-        if (!bypass) this.setPrimaryColor(color);
-        var disp = (color === null) ? defaultFill : color;
-        updateCursorColor(disp);
-        if (color === null)
-        {
-          this.context.globalCompositeOperation = "destination-out";
-          this.context.strokeStyle = "rgba(0,0,0,1.0)";
-          return;
-        }
-        return this.old_setColor(color);
-      };
-      var defaultColor = drawApp.context.strokeStyle;
-      drawApp.primary_color = defaultColor;
-      drawApp.secondary_color = null;
-      lastColor = defaultColor;
-
-      // Can't remove canvas event listeners, so need to clone the element without events
-      var oldcanvas = canvas;
-      canvas = oldcanvas.cloneNode(true);
-      oldcanvas.parentNode.replaceChild(canvas, oldcanvas);
-      drawApp.canvas = $(canvas);
-      drawApp.context = canvas.getContext("2d");
-      drawApp.canvas.bind("contextmenu", function() {return false;});
-
-      drawApp.old_setSize = drawApp.setSize;
-      drawApp.setSize = function(size)
-      {
-        strokeSize = size;
-        return this.old_setSize(size);
-      };
-      drawApp.context.lineWidth = 12;
-      drawApp.context.lineCap = "round";
-      strokeSize = drawApp.context.lineWidth;
-      cursorOffset = strokeSize / 2;
-      dynSize = 0;
-      if (insandbox)
-      {
-        drawApp.context.clearRect(0, 0, drawApp.context.canvas.width, drawApp.context.canvas.height);
-        restorePoints = [drawApp.context.getImageData(0, 0, drawApp.context.canvas.width, drawApp.context.canvas.height)];
-      }
-      //drawApp.context.putImageData = CanvasRenderingContext2D.prototype.putImageData;
-
-      var backup = localStorage.getItem("anbt_drawingbackup");
-      if (options.backup && backup)
-      {
-        backup = JSON.parse(backup);
-        var which_game = $('input[name=which_game]');
-        if (insandbox || which_game.length && (which_game.val() == backup.game))
-        {
-          var img = new Image();
-          img.onload = function()
-          {
-            drawApp.context.drawImage(this, 0, 0, drawApp.context.canvas.width, drawApp.context.canvas.height);
-            save();
-          };
-          img.src = backup.image;
-        }
-        // Delete backup if playing another game
-        if (which_game.length && (which_game.val() != backup.game))
-        {
-          localStorage.removeItem("anbt_drawingbackup");
-        }
-      }
-
-      drawApp.old_canvasMouseDown = drawApp.onCanvasMouseDown();
-      drawApp.canvas.on('mousedown', function(e)
-        {
-          clearTimeout(backupTimer);
-          $(canvas).addClass("active");
-          e.preventDefault();
-          var x, y;
-          if (typeof e.offsetX === "undefined")
-          {
-            var targetOffset = $(e.target).offset();
-            x = e.pageX - targetOffset.left;
-            y = e.pageY - targetOffset.top;
-          } else {
-            x = e.offsetX;
-            y = e.offsetY;
-          }
-          updateTabletPos((oldX != x) || (oldY != y));
-          oldX = x;
-          oldY = y;
-          var rightButton = (e.which === 3 || e.button === 2);
-          var leftButton = !rightButton;
-          if (e.altKey)
-          {
-            if (eyedropper(x, y) === null) return;
-            if (leftButton)
-            {
-              drawApp.setPrimaryColor(eyedropper(x, y));
-            } else {
-              drawApp.setSecondaryColor(eyedropper(x, y));
-            }
-          } else {
-            if (isEraser())
-            {
-              drawApp.setColor(null, 1);
-            } else {
-              if (leftButton)
-              {
-                drawApp.setColor(drawApp.primary_color, 1);
-              } else {
-                drawApp.setColor(drawApp.secondary_color, 1);
-              }
-            }
-            if (usingTablet())
-            {
-              dynSize = 0.1;
-              drawApp.context.lineWidth = dynSize;
-              //pressureUpdater = setInterval(updatePressure, 20);
-            }
-            // Prevent context menu when finishing drawing outside canvas.
-            $(window).on('contextmenu.drawing', false).one('mouseup', function () {
-              setTimeout(function () { $(window).off('contextmenu.drawing'); }, 0);
-            });
-            return drawApp.old_canvasMouseDown(e);
-          }
-        }
-      );
-      drawApp.canvas.on('mouseup', function(e)
-        {
-          backupTimer = setTimeout(saveBackup, 1000);
-          $(canvas).removeClass("active");
-          if (usingTablet())
-          {
-            dynSize = 0.1;
-            drawApp.context.lineWidth = 0;
-            //clearInterval(pressureUpdater);
-          }
-        }
-      );
-      $(window).keydown(function(e)
-        {
-          if (document.activeElement instanceof HTMLInputElement) return true;
-          if (e.keyCode == 18) // Alt
-          {
-            drawCursor.style.display = "none";
-          }
-          else if (e.keyCode == "Y".charCodeAt(0) && e.ctrlKey)
-          {
-            redo();
-          }
-          else if (e.keyCode == "B".charCodeAt(0))
-          {
-            e.preventDefault();
-            if (lastColor) drawApp.setPrimaryColor(lastColor);
-          }
-          else if (e.keyCode == "X".charCodeAt(0))
-          {
-            e.preventDefault();
-            var tmp = drawApp.secondary_color;
-            drawApp.setSecondaryColor(drawApp.primary_color);
-            drawApp.setPrimaryColor(tmp);
-          }
-          else if (e.keyCode == "E".charCodeAt(0))
-          {
-            e.preventDefault();
-            $(".eraserPicker").click();
-            drawApp.setPrimaryColor(null);
-          }
-          else if (!e.ctrlKey && (e.keyCode >= 48 && e.keyCode <= 57) && options.colorNumberShortcuts)
-          {
-            e.preventDefault();
-            var i = (e.keyCode == 48) ? 9 : e.keyCode - 49;
-            if (e.shiftKey) i += 8;
-            var el = $(".colorPicker").get(i);
-            if (el)
-            {
-              el = $(el);
-              el.click();
-              drawApp.setPrimaryColor(el.attr("data-color"));
-            }
-          }
-          else if (e.keyCode == "F".charCodeAt(0) && e.shiftKey)
-          {
-            e.preventDefault();
-            drawApp.context.fillStyle = drawApp.primary_color;
-            drawApp.context.fillRect(0, 0, drawApp.context.canvas.width, drawApp.context.canvas.height);
-            save();
-          }
-          else if (e.keyCode == "G".charCodeAt(0))
-          {
-            e.preventDefault();
-            gridHint();
-          }
-          else if (!e.ctrlKey && (e.keyCode == 109 || e.keyCode == 189 || e.keyCode == 219)) // Numpad - or - or [
-          {
-            e.preventDefault();
-            nextSize(-1);
-          }
-          else if (!e.ctrlKey && (e.keyCode == 107 || e.keyCode == 187 || e.keyCode == 221)) // Numpad + or = or ]
-          {
-            e.preventDefault();
-            nextSize(+1);
-          }
-        }
-      );
-      drawApp.canvas.mousemove(function(e)
-        {
-          updateTabletPos(true);
-          if (usingTablet())
-          {
-            var goal = strokeSize * Math.pow(getPressure(), options.pressureExponent);
-            dynSize = (dynSize + goal) / 2;
-            drawApp.context.lineWidth = dynSize;
-          } else {
-            drawApp.context.lineWidth = strokeSize;
-          }
-        }
-      );
-
-      // Brush-specific events
-      if (!prestoOpera)
-      {
-        $(window).keyup(function(e)
-          {
-            if (e.keyCode == 18) // Alt
-            {
-              drawCursor.style.display = "block";
-            }
-          }
-        );
-        drawApp.canvas.mousemove(function(e)
-          {
-            drawCursor.style.display = "block";
-            drawCursor.style.left = e.clientX + pageXOffset + "px";
-            drawCursor.style.top = e.clientY + pageYOffset + "px";
-            updateDrawCursor();
-          }
-        );
-        drawApp.canvas.mouseleave(function(e)
-          {
-            drawCursor.style.display = "none";
-          }
-        );
-        drawApp.canvas.mouseenter(function(e)
-          {
-            drawCursor.style.display = "block";
-          }
-        );
-      }
-
-      // Fix brush cursor location
-      $('#drawCursor').hide().prependTo($(document.body));
-
-      // Add primary and secondary color indicators
-      var pr = $('<div id="primaryColor" title="Primary color (left click)" style="background: ' + defaultColor +'">');
-      var se = $('<div id="secondaryColor" title="Secondary color (right click)" style="background: url(/img/draw_eraser.png)">');
-      var cont = $('<div id="pscolorContainer">');
-      cont.append(pr).append(se);
-      $(".btn-drawtool").first().before(cont);
-      $("#colorOptions").before(cont);
-
-      // Adjust palette buttons to handle left and right clicks
-      drawApp.eraser = function(){};
-      var newEraser = function(e)
-      {
-        e.preventDefault();
-        var rightButton = (e.which === 3 || e.button === 2);
-        var leftButton = !rightButton;
-        if (leftButton)
-        {
-          drawApp.setPrimaryColor(null);
-        } else {
-          drawApp.setSecondaryColor(null);
-        }
-      };
-      var colorPickerMousedown = function(e)
-      {
-        e.preventDefault();
-        var rightButton = (e.which === 3 || e.button === 2);
-        var leftButton = !rightButton;
-        var color;
-        if (this instanceof HTMLLabelElement)
-        {
-          // Old Drawception canvas
-          color = $(this).find(".colorPicker").attr("data-color");
-        } else {
-          color = e.target.getAttribute("data-color");
-          if (!color) return false;
-        }
-        if (leftButton)
-        {
-          drawApp.setPrimaryColor(color);
-        } else {
-          drawApp.setSecondaryColor(color);
-        }
-        return false;
-      };
-      $(".eraserPicker").parent().mousedown(newEraser);
-      $(".eraserPicker").parent().contextmenu(function(e){ return false; });
-      $(".colorPicker").parent().mousedown(colorPickerMousedown);
-      $(".colorPicker").parent().contextmenu(function(e){ return false; });
-      // New Drawception canvas
-      $("#tool-eraser").mousedown(newEraser);
-      $("#colorOptions").mousedown(colorPickerMousedown);
-      $("#tool-eraser,#colorOptions").contextmenu(function(e){ return false; });
-    }, 100
-  );
-
-  if (insandbox)
-  {
-    $(".drawingForm").before('<p class="text-muted">Your drawing time: <span id="drawingTime">00:00</span></p>');
-    var drawingTime = $("#drawingTime");
-    sandboxDrawingStart = Date.now();
-    setInterval(
-      function()
-      {
-        var s = Math.floor((Date.now() - sandboxDrawingStart) / 1000);
-        var minutes = Math.floor(s / 60);
-        var seconds = s - (minutes * 60);
-        if (minutes < 10) minutes = "0" + minutes;
-        if (seconds < 10) seconds = "0" + seconds;
-        drawingTime.text(minutes+':'+seconds);
-      }, 1000
-    );
-
-    // Add upload to imgur button
-    $(".drawingForm").append(
-      '&nbsp;' +
-      '<a id="imgurup" href="#" onclick="return uploadCanvasToImgur();" class="btn btn-info"><span class="glyphicon glyphicon-upload"></span> <b>Upload to imgur</b></a>' +
-      '<br><br><a id="imgurimgurl" class="selectable lead" href="#" style="display:none"></a>' +
-      '<a id="imgurdelurl" class="lead glyphicon glyphicon-remove btn btn-sm btn-danger" href="#" target="_blank" title="Delete from imgur" style="margin: -10px 0 0 10px; display:none"></a>'
-    );
-    // Help selecting for copying
-    $("#imgurimgurl").mousedown(
-      function(e)
-      {
-        if (window.getSelection)
-        {
-          var range = document.createRange();
-          range.selectNodeContents(e.target);
-          var selection = window.getSelection();
-          selection.removeAllRanges();
-          selection.addRange(range);
-        }
-      }
-    );
-  }
-
-  if (options.enableWacom && options.fixTabletPluginGoingAWOL)
-  {
-    window.onblur = function(e)
-    {
-      document.body.removeChild(wtPlugin);
-    };
-    window.onfocus = function(e)
-    {
-      document.body.appendChild(wtPlugin);
-    };
-  }
 }
 
-function documentReadyOnPlay() // Mostly copied from the $(document).ready function
+function empowerPlay()
 {
-  var timeleft = $("#timeleft").text();
-
-  if ($('#drawingCanvas').length)
-  {
-    defaultBgColor = $('#colorOptions').find('.defaultBgColor').attr('data-color');
-    $('#drawingCanvas').css('background', defaultBgColor ? defaultBgColor : defaultFill);
-
-    $('#btn-color').popover({
-      html: true,
-      content: function() {
-        return $('#colorOptions').html();
-      }
-    });
-
-    if ($('#btn-bglayer').html() != null) {
-      $('#btn-bglayer').popover({ html : true, placement: 'top' });
-      if (defaultBgColor) {
-        bglayer = defaultBgColor;
-        defaultFill = defaultBgColor;
-      } else {
-        bglayer = defaultFill;
-      }
-    } else {
-      bglayer = null;
-    }
-    $('#brush-default').button('toggle');
-
-    drawApp = new DrawApp("drawingCanvas");
-
-    var ctx = drawApp.context;
-    restorePoints = [ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height)];
-
-    $('#timeleft').countdown({until: +timeleft, compact: true, format: "MS", onTick: highlightCountdown, onExpiry: timesUpWarning});
-
-    $('#undo-button').click(function() {
-      undo();
-      return false;
-    });
-
-    $('#redo-button').click(function() {
-      redo();
-      return false;
-    });
-
-    // Fix broken submit button
-    if ($("#play-submit").parent().get(0).childNodes[2].textContent.match(/Submit!/))
-    {
-      $("#play-submit").text("Submit!");
-      $("#play-submit").parent().get(0).childNodes[2].textContent = "";
-    }
-
-  } else {
-    if (timeleft != "") {
-      $('#timeleft').countdown({until: +timeleft, compact: true, format: "MS", onTick: highlightCountdown, onExpiry: timesUp});
-    }
-  }
-}
-
-function loadNextGameAsync()
-{
-  if (document.location.href.indexOf("/play/") == -1)
-  {
-    console.log("loadNextGameAsync(): doesn't seem to be playing... o_O");
-    return;
-  }
-  $.ajax({
-    url: '/play/',
-    cache: false,
-    timeout: 15000,
-    success: function(s)
-    {
-      var beginning = '<div class="wrapper">';
-      var a = s.indexOf(beginning);
-      var b = s.indexOf('</div> <!-- ./wrapper -->');
-      if (a != -1 && b != -1)
-      {
-        var newContent = s.substring(a + beginning.length, b);
-        $(".wrapper").html(newContent);
-
-        // Kick-start the patient
-        $('[rel=tooltip]').tooltip();
-        documentReadyOnPlay();
-        empowerPlay(true);
-        enhanceCanvas(false);
-      } else {
-        // In case of mismatch, fallback
-        document.location.replace("/play/");
-      }
-    },
-    error: function()
-    {
-      // In case of error, fallback
-      document.location.replace("/play/");
-    }
-  });
-}
-
-
-function empowerPlay(noReload)
-{
-  if (!document.getElementById("gameForm")) return;
-
-  // Add options
-  var optionsButton = $('<input type="button" value="Options &#x25BC;" class="btn btn-primary btn-sm">');
-  var optionsDiv = $('<div>');
-  var playModeButton = $('<input id="playMode" type="button" onclick="return playModeClick();" class="btn btn-default btn-sm">');
-  playModeButton.attr("value", availablePlayModes[playMode]);
-  optionsDiv.prepend(playModeButton);
-
-  $(".play-options").prepend(optionsButton);
-  optionsButton.popover({container: "body", placement: "bottom", html: 1, content: optionsDiv});
-
-  // broken by site update
-  /*
-  if (!noReload)
-  {
-    // Show time remaining in document title
-    var origtitle = document.title;
-    var old_highlightCountdown1 = window.highlightCountdown;
-    window.highlightCountdown = function(p)
-    {
-      old_highlightCountdown1(p);
-      var m = ("0" + p[5]).slice(-2);
-      var s = ("0" + p[6]).slice(-2);
-      document.title = "[" + m + ":" + s + "] " + origtitle;
-    };
-    $(".playtimer").countdown('option', 'onTick', window.highlightCountdown);
-
-    // Add sound to timeout warning
-    var blitz = isBlitzInPlay();
-    if ((options.timeoutSound && !blitz) || (options.timeoutSoundBlitz && blitz))
-    {
-      window.playedWarningSound = false;
-      var alarm = new Audio(alarmSoundOgg);
-      alarm.volume = options.timeoutSoundVolume / 100;
-      var old_highlightCountdown2 = window.highlightCountdown;
-      window.highlightCountdown = function(p)
-      {
-        old_highlightCountdown2(p);
-        var seconds = $.countdown.periodsToSeconds(p);
-        if (!window.playedWarningSound && seconds <= (blitz ? 5 : 61))
-        {
-          alarm.play();
-          window.playedWarningSound = true;
-        }
-      };
-      $(".playtimer").countdown('option', 'onTick', window.highlightCountdown);
-    }
-  } else {
-    window.playedWarningSound = false;
-  }
-  */
-  // Remake skip function to async (disabled as it is broken by site update)
-  if (options.asyncSkip == 2)
-  {
-    DrawceptionPlay.skipPanel = function()
-    {
-      var skipButton = $('input[value="Skip"]');
-      if (skipButton.length) skipButton.attr("value", "Skipping...").attr("disabled", "disabled");
-      $.ajax({
-        url: '/play/skip.json',
-        data: { game_token: $('input[name=which_game]').val()},
-        type: 'post',
-        cache: false,
-        timeout: 15000,
-        success: function(o)
-        {
-          localStorage.removeItem("anbt_drawingbackup");
-          if (o.redirect)
-          {
-            loadNextGameAsync();
-          } else {
-            // Error: reload the page anyway
-            loadNextGameAsync();
-          }
-        },
-        error: function(o)
-        {
-          if (skipButton.length) skipButton.attr("value", "Skip").attr("disabled", null);
-          DrawceptionPlay.handleError(o);
-        }
-      });
-    };
-  } else {
-    // Remove backup in case skipping leads to same gameID, giving double extra time
-    DrawceptionPlay.skipPanel_old = DrawceptionPlay.skipPanel;
-    DrawceptionPlay.skipPanel = function()
-    {
-      localStorage.removeItem("anbt_drawingbackup");
-      DrawceptionPlay.skipPanel_old();
-    };
-  }
-
-  // Handle auto-skipping
-  var captioning = !document.getElementById("drawingCanvas");
-  if (captioning && playMode == MODE_DRAW_ONLY) autoSkip("Playing drawing-only mode");
-  else if (!captioning && playMode == MODE_CAPTION_ONLY) autoSkip("Playing caption-only mode");
-
-  // Make Enter work for submitting a caption
-  if (captioning)
-  {
-    var submitclick = $(".button-form[value='Submit!']").attr("onclick");
-    if (submitclick)
-    {
-      $("#gameForm").attr("action", "#");
-      if (options.enterToCaption)
-      {
-        $("#gameForm").attr("onsubmit", submitclick + "; return false;");
-      } else {
-        $("#gameForm").attr("onsubmit", "return false;");
-      }
-    }
-  }
-
-  // Add bookmark button
-  var bookmarkButton = $('<input type="button" value="Bookmark" class="btn btn-primary btn-sm">');
-  bookmarkButton.click(function(e)
-    {
-      e.preventDefault();
-      var games = localStorage.getItem("gpe_gameBookmarks");
-      games = games ? JSON.parse(games) : {};
-      var token = $('input[name="which_game"]').val();
-      var pp = $(".play-phrase");
-      var caption;
-      if (pp.length) caption = pp.first().text().trim();
-      games[token] = {time: Date.now(), caption: caption};
-      localStorage.setItem("gpe_gameBookmarks", JSON.stringify(games));
-      $(this).attr("value", "Bookmarked!").attr("disabled", "disabled").removeClass("btn-primary");
-    }
-  );
-  optionsButton.before(bookmarkButton).before(" ");
-
-  // Remove the temptation to judge
-  if (options.removeFlagging) $('input.btn[value="Report"]').remove();
 }
 
 // Event functions referred to in HTML must have unwrapped access
-
-window.playModeClick = playModeClick;
-function playModeClick()
-{
-  playMode = (playMode + 1) % availablePlayModes.length;
-  localStorage.setItem("gpe_playMode", playMode.toString());
-  $("#playMode").attr("value", availablePlayModes[playMode]);
-  return false;
-}
-
-window.uploadCanvasToImgur = uploadCanvasToImgur;
-function uploadCanvasToImgur()
-{
-  if ($("#imgurup b").text() == "Uploading...") return false;
-  $("#imgurup b").text("Uploading...");
-  $("#imgurimgurl").hide();
-  $("#imgurdelurl").hide();
-  var data, t = new Image();
-  t.onload = function()
-  {
-    var e = document.getElementById('drawingCanvas');
-    // TODO: add background handling when official sandbox canvas adds it
-    data = e.toDataURL("image/png").split(',')[1];
-    $.ajax(
-      {
-        url: 'https://api.imgur.com/3/image',
-        type: 'post',
-        headers: {Authorization: 'Client-ID dc1240eb1fddf64'},
-        data: {image: data},
-        dataType: 'json',
-        success: function(r)
-        {
-          $("#imgurup b").text("Upload to imgur");
-          $("#imgurimgurl").show();
-          if (r.success)
-          {
-            $("#imgurimgurl").attr({target: "_blank", href: r.data.link}).text("![Uploaded image](" + r.data.link + ")");
-            $("#imgurdelurl").show();
-            $("#imgurdelurl").attr("href", "http://imgur.com/delete/" + r.data.deletehash);
-          } else {
-            var err = r.status ? ("Imgur error: " + r.status) : ("Error: " + r.responseText);
-            $("#imgurimgurl").attr({target: "", href: "#"}).text(err);
-          }
-        },
-        error: function(e)
-        {
-          console.log(e);
-          $("#imgurup b").text("Upload to imgur");
-          $("#imgurimgurl").show().attr({target: "", href: "#"}).text(("Error: " + e.statusText));
-        }
-      }
-    );
-  };
-  t.src = drawApp.toDataURL();
-  return false;
-}
 
 window.reversePanels = reversePanels;
 function reversePanels()
@@ -1971,7 +1089,7 @@ function likeAll()
     if (likebuttons.length)
     {
       likebuttons.shift().click()
-      setTimeout(keepLiking, 3000);
+      setTimeout(keepLiking, 1500);
     }
   };
   keepLiking();
@@ -2054,7 +1172,7 @@ function betterGame()
 
   fixLocationToCanonical("/game/");
 
-  var drawings = $('img[src^="https://cdn.drawception.com/images/panels/"]');
+  var drawings = $('img[src^="https://cdn.drawception.com/images/panels/"],img[src^="https://cdn.drawception.com/drawings/"]');
 
   // Show each drawing make date
   drawings.each(function()
@@ -2131,9 +1249,17 @@ function betterGame()
       if (this.replayAdded) return;
       this.replayAdded = true;
       var panel = $(this).parent();
+      var src = this.src;
       checkForRecording(this.src, function()
       {
-        var id = scrambleID(panel.attr("id").slice(6));
+        var id;
+        var newid = src.match(/(\w+).png$/)[1];
+        if (newid.length > 8)
+        {
+          id = newid;
+        } else {
+          id = scrambleID(panel.attr("id").slice(6));
+        }
         var replayButton = $('<a href="/sandbox/#' + id + '" class="panel-number anbt_replaypanel glyphicon glyphicon-repeat text-muted" title="Replay"></span>');
         replayButton.click(function(e)
         {
@@ -2299,7 +1425,7 @@ function betterPanel()
       e.preventDefault();
       var panels = localStorage.getItem("gpe_panelFavorites");
       panels = panels ? JSON.parse(panels) : {};
-      var panel = {time: Date.now(), by: $(".lead a").text()};
+      var panel = {time: Date.now(), by: $(".gamepanel-holder + p a").text()};
       var id = document.location.href.match(/\/panel\/[^\/]+\/([^\/]+)\//)[1];
       var img = $(".gamepanel img");
       if (img.length)
@@ -2564,12 +1690,18 @@ function viewMyPanelFavorites()
   var panels = localStorage.getItem("gpe_panelFavorites");
   panels = panels ? JSON.parse(panels) : {};
   var result = "";
+  var needsupdate = false;
   for (var id in panels)
   {
+    if (panels[id].image && panels[id].image.match(/^\/pub\/panels\//))
+    {
+      needsupdate = true;
+      panels[id].image = panels[id].image.replace("/pub/panels/", "https://cdn.drawception.com/images/panels/");
+    }
     result += '<div id="' + id + '" class="col-xs-6 col-sm-4 col-md-2" style="min-width: 150px;">' +
-      '<div class="thumbnail" style="overflow:hidden"><a class="anbt_paneldel" href="#" title="Remove">X</a>' +
+      '<div class="thumbpanel-holder" style="overflow:hidden"><a class="anbt_paneldel" href="#" title="Remove">X</a>' +
       '<a href="/panel/-/' +
-      id + '/-/" class="thumbnail thumbpanel" rel="tooltip" title="' +
+      id + '/-/" class="thumbpanel" rel="tooltip" title="' +
       panels[id].caption + '">' +
       (panels[id].image
         ? '<img src="' + panels[id].image + '" width="125" height="104" alt="' + panels[id].caption + '" />'
@@ -2577,6 +1709,10 @@ function viewMyPanelFavorites()
       '</a><span class="text-muted" style="white-space:nowrap">by ' + panels[id].by +
       '</span><br><span class="text-muted"><span class="glyphicon glyphicon-heart"></span> ' +
       formatTimestamp(panels[id].time) + '</span></div></div>';
+  }
+  if (needsupdate)
+  {
+    localStorage.setItem("gpe_panelFavorites", JSON.stringify(panels));
   }
   if (!result) result = "You don't have any favorited panels.";
   $("#anbt_userpage").html(result);
@@ -2864,7 +2000,7 @@ function betterPlayer()
     }
 
   } else { // Not the current user's profile or not profile homepage
-    var drawings = $('img[src^="https://cdn.drawception.com/images/panels/"]');
+    var drawings = $('img[src^="https://cdn.drawception.com/images/panels/"],img[src^="https://cdn.drawception.com/drawings/"]');
     // Show replayable panels; links are not straightforward to make since there's no panel ID
     if (options.newCanvas)
     {
@@ -2873,9 +2009,23 @@ function betterPlayer()
         if (this.replayAdded) return;
         this.replayAdded = true;
         var panel = $(this).parent().parent();
+        var src = this.src;
         checkForRecording(this.src, function()
         {
-          var replaySign = $('<span class="pull-right glyphicon glyphicon-repeat" style="color:#8af;margin-right:4px" title="Replayable!"></span>');
+          var replaySign;
+          var newid = src.match(/(\w+).png$/)[1];
+          if (newid.length > 8)
+          {
+            replaySign = $('<a href="/sandbox/#' + newid + '" class="pull-right glyphicon glyphicon-repeat" style="color:#8af;margin-right:4px" title="Replay!"></a>');
+            replaySign.click(function(e)
+            {
+              if (e.which === 2) return;
+              e.preventDefault();
+              setupNewCanvas(true, "/sandbox/#" + newid);
+            });
+          } else {
+            replaySign = $('<span class="pull-right glyphicon glyphicon-repeat" style="color:#8af;margin-right:4px" title="Replayable!"></span>');
+          }
           panel.append(replaySign);
           replaySign.tooltip();
         });
@@ -3057,6 +2207,17 @@ function betterForum()
         var gameid = t.attr("src").match(/\/([^-]+)-\d+.png/)[1];
         var gameurl = "/game/" + gameid + "/-/";
         t.wrap('<a href="' + gameurl +'"></a>');
+      }
+    }
+  );
+  $('img[src*="/drawings/"]').each(function()
+    {
+      var t = $(this);
+      if (!t.parent().is("a"))
+      {
+        var panelid = t.attr("src").match(/(\w+).png$/)[1];
+        var panelurl = "/panel/drawing/" + panelid + "/-/";
+        t.wrap('<a href="' + panelurl +'"></a>');
       }
     }
   );
@@ -3299,15 +2460,14 @@ function addScriptSettings()
     [
       ["enableWacom", "boolean", "Enable Wacom plugin / pressure sensitivity support"],
       ["fixTabletPluginGoingAWOL", "boolean", "Try to prevent Wacom plugin from disappearing"],
-      ["pressureExponent", "number", "Pressure exponent (smaller = softer tablet response, bigger = sharper)"],
+      //["pressureExponent", "number", "Pressure exponent (smaller = softer tablet response, bigger = sharper)"],
     ]
   );
-  addGroup("Play",
+  addGroup("Play (most settings are for the new canvas only)",
     [
       ["newCanvas", "boolean", 'New drawing canvas (also allows <a href="http://grompe.org.ru/replayable-drawception/">watching playback</a>)'],
-      ["submitConfirm", "boolean", "Confirm submitting if more than a minute is left (New canvas only)"],
-      ["smoothening", "boolean", "Smoothing of strokes (New canvas only)"],
-      //["asyncSkip", "boolean", "Fast Async Skip (experimental, applies to old canvas only)"],
+      ["submitConfirm", "boolean", "Confirm submitting if more than a minute is left"],
+      ["smoothening", "boolean", "Smoothing of strokes"],
       ["hideCross", "boolean", "Hide the cross when drawing"],
       ["enterToCaption", "boolean", "Submit captions (and start games) by pressing Enter"],
       ["backup", "boolean", "Save the drawing in case of error and restore it in sandbox"],
@@ -3316,9 +2476,9 @@ function addScriptSettings()
       ["timeoutSoundVolume", "number", "Volume of the warning sound, in %"],
       ["rememberPosition", "boolean", "Show your panel position and track changes in unfinished games list"],
       ['colorNumberShortcuts', 'boolean', "Use 0-9 keys to select the color"],
-      ['colorUnderCursorHint', 'boolean', "Show the color under the cursor in the palette (New canvas only)"],
-      ['colorDoublePress', 'boolean', 'Double press 0-9 keys to select color without pressing shift (New canvas only)'],
-      ['bookmarkOwnCaptions', 'boolean', "Automatically bookmark your own captions in case of dustcatchers (New canvas only)"],
+      ['colorUnderCursorHint', 'boolean', "Show the color under the cursor in the palette"],
+      ['colorDoublePress', 'boolean', 'Double press 0-9 keys to select color without pressing shift'],
+      ['bookmarkOwnCaptions', 'boolean', "Automatically bookmark your own captions in case of dustcatchers"],
     ]
   );
   addGroup("Miscellaneous",
@@ -3333,6 +2493,7 @@ function addScriptSettings()
       ["markStalePosts", "boolean", "Mark stale forum posts"],
       ["maxCommentHeight", "number", "Maximum comments and posts height until directly linked (px, 0 = no limit)"],
       ["useOldFont", "boolean", "Use old Nunito font (which is usually bolder and less wiggly)"],
+      ["useOldFontSize", "boolean", "Use old, smaller font size"],
       ["colorizeNavBar", "boolean", "Change top bar color based on panel colors"],
       ["checkForNotifications", "boolean", "Check for notifications periodically while page is open"],
     ]
@@ -3471,13 +2632,28 @@ function pagodaBoxError()
   }
 }
 
+function hookIntoWebpack()
+{
+  webpackJsonp([0], // 0 is the "common" pack
+  {
+    65535: function(module, exports, __webpack_require__)
+    {
+      // obfuscated value. If this changes, then this will be an update hell...
+      var jQuery = __webpack_require__("7t+N");
+
+      window.$ = window.jQuery = jQuery;
+    },
+  }, [65535]);
+}
+
 function pageEnhancements()
 {
   var loc = document.location.href;
   loadScriptSettings();
 
-  if (typeof jQuery == "undefined") return; // Firefox Greasemonkey seems to call pageEnhancements() after document.write...
+  if (typeof DrawceptionPlay == "undefined") return; // Firefox Greasemonkey seems to call pageEnhancements() after document.write...
   if (document.getElementById("newcanvasyo")) return; // Chrome, I'm looking at you too...
+  hookIntoWebpack();
 
   __DEBUG__ = document.getElementById("_debug_");
   prestoOpera = navigator.userAgent.match(/\bPresto\b/);
@@ -3502,9 +2678,8 @@ function pageEnhancements()
   var inplay = loc.match(/drawception\.com\/(:?contests\/)?play\/(.*)/);
   if (options.newCanvas)
   {
-    var hasCanvas = document.getElementById("drawingCanvas");
     // If created a friend game, the link won't present playable canvas
-    var hasCanvasOrGameForm = document.getElementById("gameForm") || hasCanvas;
+    var hasCanvasOrGameForm = document.querySelector(".playtimer");
     var captioncontest = loc.match(/contests\/play\//) && !hasCanvas;
     if (!captioncontest && (insandbox || (inplay && hasCanvasOrGameForm) || __DEBUG__))
     {
@@ -3611,6 +2786,10 @@ function pageEnhancements()
         location.hash = "#p" + t.attr("id");
       }
     });
+  }
+  if (options.useOldFontSize)
+  {
+    document.body.style.fontSize = "14px";
   }
   if (options.useOldFont)
   {
@@ -4038,13 +3217,15 @@ function pageEnhancements()
   var versionDisplay;
   try
   {
-    // JS and CSS update simultaneously now
-    jsVersion = $('script[src^="/js/"]').attr("src").match(/\/js\/\w+\.js\?(.+)$/)[1];
-    versionDisplay = "ANBT v" + SCRIPT_VERSION + " | site " + jsVersion;
-    if (jsVersion != "v" + SITE_VERSION) versionDisplay += "*";
+    var appver = $('script[src^="/build/app"]').attr("src").match(/(\w+)\.js$/)[1];
+    var commonver = $('script[src^="/build/common"]').attr("src").match(/(\w+)\.js$/)[1];
+    versionDisplay = "ANBT v" + SCRIPT_VERSION + " | app " + appver;
+    if (appver != SITE_VERSION) versionDisplay += "*";
+    versionDisplay += " | common " + commonver;
+    if (commonver != "aa609409") versionDisplay += "*!!!";
   } catch(e)
   {
-    versionDisplay = "ANBT v" + SCRIPT_VERSION + " | js/css unknown";
+    versionDisplay = "ANBT v" + SCRIPT_VERSION;
   }
   $("#navbar-user").append('<div id="anbtver">' + versionDisplay + '</div>');
 
@@ -4133,7 +3314,7 @@ localStorage.setItem("gpe_darkCSS",
   ".navbar-dropdown{~#444$}a.list-group-item{~#444$;color:#fff$;border:1px solid #222$}a.list-group-item:hover,a.list-group-item:focus{~#222$}" +
   ".likebutton.btn-success{color:#050$;~#5A5$}.likebutton.btn-success:hover{~#494$}" +
   ".thumbnail[style*='background-color: rgb(255, 255, 255)']{~#555$}" +
-   ".popup,.v--modal{~#666$;border:1px solid #222$}.btn-reaction{~#666$;border:none$;color:#AAA$}" +
+   ".popup,.v--modal{~#666$;border:1px solid #222$}.btn-reaction{~#666$;border:none$;color:#AAA$}.create-game-wrapper{~#444$}" +
   ".gsc-control-cse{~#444$;border-color:#333$}.gsc-above-wrapper-area,.gsc-result{border:none$}.gs-snippet{color:#AAA$}.gs-visibleUrl{color:#8A8$}a.gs-title b,.gs-visibleUrl b{color:#EEE$}.gsc-adBlock{display:none$}.gsc-input{~#444$;border-color:#333$;color:#EEE$}" +
   // We have entered specificity hell...
   "a.anbt_replaypanel:hover{color:#8af$}" +
