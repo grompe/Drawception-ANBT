@@ -1348,15 +1348,11 @@ function betterGame()
         // Track comments from up to week ago
         if (ago.match(/just now|min|hour|a day| [1-7] day/))
         {
-          //if (!(seenComments[gameid] && seenComments[gameid].id >= commentid))
-          if (true)
+          if (!(seenComments[gameid] && seenComments[gameid].id >= commentid))
           {
             t.addClass("comment-new");
             if (maxseenid < commentid) maxseenid = commentid;
           }
-        } else {
-          console.log("ago doesn't match");
-          console.log(ago);
         }
         // Add game perticipation info
         var m = t.find(".text-bold a").attr("href").match(/\/player\/(\d+)\//);
