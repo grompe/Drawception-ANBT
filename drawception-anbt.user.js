@@ -2767,7 +2767,7 @@ function pageEnhancements()
   }
   if (options.useOldFontSize)
   {
-    document.body.style.fontSize = "14px";
+    document.body.style.fontSize = "15px";
   }
   if (options.useOldFont)
   {
