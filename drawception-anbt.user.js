@@ -1276,101 +1276,129 @@ function betterGame()
     });
   }
 
-  // Linkify the links
-  $('.comment-body').each(function()
-    {
-      linkifyNodeText(this);
-    }
-  );
-
-  // Interlink game panels and comments
-  var gamePlayers = [];
-  var playerdata = {};
-  $(".gamepanel-holder").each(function(i)
-    {
-      var t = $(this);
-      var det = t.find(".panel-details");
-      var gamepanel = t.find(".gamepanel");
-      var a = det.find(".panel-user a");
-      if (!a.length) return;
-      var id = a.attr("href").match(/\/player\/(\d+)\//)[1];
-      playerdata[id] =
-      {
-        panel_number: i + 1,
-        player_anchor: a.get(0),
-        panel_id: gamepanel.attr("id"),
-        drew: gamepanel.has("img").length != 0,
-        comments: 0
-      }
-      gamePlayers.push(id);
-    }
-  );
-
-  // Highlight new comments and remember seen comments
-  var seenComments = localStorage.getItem("gpe_seenComments");
-  seenComments = (seenComments === null) ? {} : JSON.parse(seenComments);
-  var gameid = document.location.href.match(/game\/([^\/]+)\//)[1];
-  var comments = $("#comments").parent();
-  var holders = comments.find(".comment-holder");
-  if (holders.length)
+  // Comments appear dynamically after the page is loaded now
+  function betterComments()
   {
-    // Clear old tracked comments
-    var hour = Math.floor(Date.now() / (1000 * 60*60)); // timestamp with 1 hour precision
-    for (var tempgame in seenComments)
-    {
-      // Store game entry for up to a week after last tracked comment
-      if (seenComments[tempgame].h + 24*7 < hour)
+    // Linkify the links and add ability to address comment holders again
+    $('.comment-body').each(function()
       {
-        delete seenComments[tempgame];
+        $(this).parent().parent().addClass("comment-holder");
+        linkifyNodeText(this);
       }
-    }
-    var maxseenid = 0;
-    holders.each(function()
-    {
-      var t = $(this);
-      var dateel = t.find(".text-muted").first();
-      var ago = dateel.text();
-      var commentid = parseInt(t.attr("id").slice(1), 10);
-      // Also allow linking to specific comment
-      dateel.wrap('<a title="Link to comment" href="#' + t.attr("id") + '"></a>');
-      // Track comments from up to week ago
-      if (ago.match(/just now|min|hour| [1-7] day/))
+    );
+
+    // Interlink game panels and comments
+    var gamePlayers = [];
+    var playerdata = {};
+    $(".gamepanel-holder").each(function(i)
       {
-        if (!(seenComments[gameid] && seenComments[gameid].id >= commentid))
+        var t = $(this);
+        var det = t.find(".panel-details");
+        var gamepanel = t.find(".gamepanel");
+        var a = det.find(".panel-user a");
+        if (!a.length) return;
+        var id = a.attr("href").match(/\/player\/(\d+)\//)[1];
+        playerdata[id] =
         {
-          t.addClass("comment-new");
-          if (maxseenid < commentid) maxseenid = commentid;
+          panel_number: i + 1,
+          player_anchor: a.get(0),
+          panel_id: gamepanel.attr("id"),
+          drew: gamepanel.has("img").length != 0,
+          comments: 0
+        }
+        gamePlayers.push(id);
+      }
+    );
+
+    // Highlight new comments and remember seen comments
+    var seenComments = localStorage.getItem("gpe_seenComments");
+    seenComments = (seenComments === null) ? {} : JSON.parse(seenComments);
+    var gameid = document.location.href.match(/game\/([^\/]+)\//)[1];
+    var holders = $(".comment-holder");
+    if (holders.length)
+    {
+      // Clear old tracked comments
+      var hour = Math.floor(Date.now() / (1000 * 60*60)); // timestamp with 1 hour precision
+      for (var tempgame in seenComments)
+      {
+        // Store game entry for up to a week after last tracked comment
+        if (seenComments[tempgame].h + 24*7 < hour)
+        {
+          delete seenComments[tempgame];
         }
       }
-      // Add game perticipation info
-      var m = t.find(".comment-user a").attr("href").match(/\/player\/(\d+)\//);
-      if (m)
+      var maxseenid = 0;
+      holders.each(function()
       {
-        var id = m[1];
-        if (gamePlayers.indexOf(id) != -1)
+        var t = $(this);
+        var dateel = t.find(".text-muted").first();
+        var vue = this.__vue__;
+        if (vue)
         {
-          var drew = 0;
-          var drew = playerdata[id].drew ? 'drew' : 'wrote';
-          dateel.parent().before('<a href="#' + playerdata[id].panel_id +
-            '">(' + drew + ' #' + playerdata[id].panel_number + ')</a> ');
-          playerdata[id].comments += 1;
+          var text = dateel.get(0).childNodes[0];
+          text.nodeValue = text.nodeValue.trim() + ', ' + formatTimestamp(vue.comment_date * 1000);
         }
-      }
-    });
-    if (maxseenid) seenComments[gameid] = {h: hour, id: maxseenid};
-    localStorage.setItem("gpe_seenComments", JSON.stringify(seenComments));
-  }
-  for (var i = 0; i < gamePlayers.length; i++)
-  {
-    var data = playerdata[gamePlayers[i]];
-    if (data.comments != 0)
+        var ago = dateel.text();
+        var anchordiv = t.find("div[id]").first();
+        anchordiv.addClass("comment-holder2"); // for highlighting targeted element
+        var anchorid = anchordiv.attr("id");
+        var commentid = parseInt(anchorid.slice(1), 10);
+        // Also allow linking to specific comment
+        dateel.after(' <a title="Link to comment" class="text-muted" href="#' + anchorid + '">#' + commentid + '</a>');
+        // Track comments from up to week ago
+        if (ago.match(/just now|min|hour|a day| [1-7] day/))
+        {
+          //if (!(seenComments[gameid] && seenComments[gameid].id >= commentid))
+          if (true)
+          {
+            t.addClass("comment-new");
+            if (maxseenid < commentid) maxseenid = commentid;
+          }
+        } else {
+          console.log("ago doesn't match");
+          console.log(ago);
+        }
+        // Add game perticipation info
+        var m = t.find(".text-bold a").attr("href").match(/\/player\/(\d+)\//);
+        if (m)
+        {
+          var id = m[1];
+          if (gamePlayers.indexOf(id) != -1)
+          {
+            var drew = 0;
+            var drew = playerdata[id].drew ? 'drew' : 'wrote';
+            dateel.before('<a href="#' + playerdata[id].panel_id +
+              '">(' + drew + ' #' + playerdata[id].panel_number + ')</a> ');
+            playerdata[id].comments += 1;
+          }
+        }
+      });
+      if (maxseenid) seenComments[gameid] = {h: hour, id: maxseenid};
+      localStorage.setItem("gpe_seenComments", JSON.stringify(seenComments));
+    }
+    for (var i = 0; i < gamePlayers.length; i++)
     {
-      var cmt = data.comments == 1 ? " comment" : " comments";
-      var cmt2 = 'Player left '+ data.comments + cmt;
-      data.player_anchor.title = cmt2;
-      $(data.player_anchor).after('<sup title="' + cmt2 + '">' + data.comments + '</sup>');
+      var data = playerdata[gamePlayers[i]];
+      if (data.comments != 0)
+      {
+        var cmt = data.comments == 1 ? " comment" : " comments";
+        var cmt2 = 'Player left '+ data.comments + cmt;
+        data.player_anchor.title = cmt2;
+        $(data.player_anchor).after('<sup title="' + cmt2 + '">' + data.comments + '</sup>');
+      }
     }
   }
+  function waitForComments()
+  {
+    if (document.querySelector('.comment-body'))
+    {
+      betterComments();
+    } else {
+      setTimeout(waitForComments, 1000);
+    }
+  }
+  setTimeout(waitForComments, 200);
+  
 }
 
 function checkForRecording(url, yesfunc, retrying)
@@ -2132,27 +2160,6 @@ function betterForum()
           }
         }
       }
-      else if (m = tx.match(/^\s*\[ ..., (...) (\d+).. (\d{4}) @ (\d+):(\d+)([ap]m) \]\s*$/))
-      {
-        hours = parseInt(m[4], 10) % 12;
-        minutes = parseInt(m[5], 10);
-        hours += (m[6] == 'pm') ? 12 : 0;
-        month = months.indexOf(m[1]);
-        day = parseInt(m[2], 10);
-        year = parseInt(m[3], 10);
-        t.text("[ " + convertForumTime(year, month, day, hours, minutes) + " ]");
-        ncPosts.push([this, day + month * 30 + (year - 1970) * 365]);
-      }
-      else if (m = tx.match(/^\s*edited: ..., (...) (\d+).. (\d{4}) @ (\d+):(\d+)([ap]m)\s*$/))
-      {
-        hours = parseInt(m[4], 10) % 12;
-        minutes = parseInt(m[5], 10);
-        hours += (m[6] == 'pm') ? 12 : 0;
-        month = months.indexOf(m[1]);
-        day = parseInt(m[2], 10);
-        year = parseInt(m[3], 10);
-        t.text("edited: " + convertForumTime(year, month, day, hours, minutes));
-      }
     }
   );
 
@@ -2262,15 +2269,16 @@ function betterForum()
     if (hideuserids != "")
     {
       GM_addStyle(
-        ".anbt_hideUserPost:not(:target) .comment-user {opacity: 0.4; margin-bottom: 10px}" +
+        ".anbt_hideUserPost:not(:target) {opacity: 0.4; margin-bottom: 10px}" +
         ".anbt_hideUserPost:not(:target) .comment-body, .anbt_hideUserPost:not(:target) .avatar {display: none}" +
         ""
       );
     }
     var lastid = 0;
-    $(".comment-holder").each(function()
+    $(".comment-avatar").parent().parent().parent().each(function()
       {
         var t = $(this), anch, id;
+        t.addClass("comment-holder"); // No identification for these anymore, this is unhelpful!
         try
         {
           anch = t.attr("id");
@@ -2278,14 +2286,29 @@ function betterForum()
         if (anch)
         {
           id = parseInt(anch.substring(1), 10);
-          var ts = t.find(".comment-user .text-muted:last-child").last();
+          var ts = t.find(".text-muted").first();
+          var vue = this.childNodes[0].__vue__;
+          if (vue)
+          {
+            var textNode = ts.get(0).childNodes[0];
+            var text = textNode.nodeValue.trim();
+            // change just the text, leave inline elements intact
+            textNode.nodeValue = text + ", " + formatTimestamp(vue.comment_date * 1000);
+            if (vue.edit_date > 0)
+            {
+              var el = ts.find('span[rel="tooltip"]');
+              text = el.attr('title');
+              text += ", " + formatTimestamp(vue.edit_date * 1000).replace(/ /g, "\u00A0"); // prevent the short tooltip width from breaking date apart
+              el.attr('title', text);
+            }
+          }
           if (id > lastid)
           {
             ts.after(' <a title="Link to post" class="text-muted" href="#' + anch + '">#' + id + '</a>');
           } else {
             ts.after(' <a title="Link to post" class="text-muted wrong-order" href="#' + anch + '">#' + id + '</a>');
           }
-          var h = t.find('.comment-user a[href^="/player/"]').attr('href');
+          var h = t.find('a[href^="/player/"]').first().attr('href');
           if (h)
           {
             var userid = h.match(/\d+/)[0];
@@ -2299,7 +2322,7 @@ function betterForum()
     // Warn about posting to another page
     if ($(".comment-holder").length == 20)
     {
-      $("#commentButton").after('<div>Note: posting to another page</div>');
+      $("#comment-form btn-primary").after('<div>Note: posting to another page</div>');
     }
   }
 
@@ -2754,8 +2777,8 @@ function pageEnhancements()
   {
     var h = options.maxCommentHeight;
     GM_addStyle(
-      ".comment-holder:not(:target)>.row .comment-body {max-height: " + h + "px; position:relative}" +
-      ".comment-holder:not(:target)>.row .comment-body:before" +
+      ".comment-holder:not(:target) .comment-body {overflow-y: hidden; max-height: " + h + "px; position:relative}" +
+      ".comment-holder:not(:target) .comment-body:before" +
       "{content: 'Click to read more'; position:absolute; width:100%; height:50px; left:0; top:" + (h-50) + "px;" +
       "text-align: center; font-weight: bold; color: #fff; text-shadow: 0 0 2px #000; padding-top: 20px; background:linear-gradient(transparent, rgba(0,0,0,0.4))}"
     );
@@ -2852,8 +2875,8 @@ function pageEnhancements()
   GM_addStyle(
     "#user-notify-list .list-group .list-group-item .glyphicon {color: #888}" +
     "#user-notify-list .list-group .list-group-item:nth-child(-n+" + num + ") .glyphicon {color: #2F5}" +
-    "a.wrong-order {color: #F99} div.comment-holder:target {background-color: #DFD}" +
-    ".comment-new .text-muted:after {content: 'New'; color: #2F5; font-weight: bold; background-color: #183; border-radius: 9px; display: inline-block; padding: 0px 6px; margin-left: 10px;}"
+    "a.wrong-order {color: #F99} div.comment-holder:target, div.comment-holder2:target {background-color: #DFD}" +
+    ".comment-new .text-muted:last-child:after {content: 'New'; color: #2F5; font-weight: bold; background-color: #183; border-radius: 9px; display: inline-block; padding: 0px 6px; margin-left: 10px;}"
   );
 
   // Show an error if it occurs instead of "loading forever"
@@ -2972,9 +2995,8 @@ localStorage.setItem("gpe_darkCSS",
   ".nav>li.disabled>a,.nav>li.disabled>a:hover,.nav>li.disabled>a:focus{color:#555$}.table-striped>tbody>tr:nth-child(2n+1)>td,.table-striped>tbody>tr:nth-child(2n+1)>th{~#333$}" +
   ".table-hover>tbody>tr:hover>td,.table-hover>tbody>tr:hover>th{~#555$}.table thead>tr>th,.table tbody>tr>th,.table tfoot>tr>th,.table thead>tr>td,.table tbody>tr>td,.table tfoot>tr>td{border-top:1px solid #333$}.news-alert{~#555$;border:2px solid #444$}" +
   ".btn-menu{~#2e2e2e$}.btn-menu:hover{~#232323$}.btn-yellow{~#8a874e$}.btn-yellow:hover{~#747034$}" +
-  "a.label{color:#fff$}.text-muted,a.text-muted{color:#999$}a.wrong-order{color:#F99$}div.comment-holder:target{~#454$}" +
+  "a.label{color:#fff$}.text-muted,a.text-muted{color:#999$}a.wrong-order{color:#F99$}div.comment-holder:target,div.comment-holder2:target{~#454$}" +
   ".popover{~#777$}.popover-title{~#666$;border-bottom:1px solid #444$}.popover.top .arrow:after{border-top-color:#777$}.popover.right .arrow:after{border-right-color:#777$}.popover.bottom .arrow:after{border-bottom-color:#777$}.popover.left .arrow:after{border-left-color:#777$}" +
-  ".comment-holder{border-bottom:1px solid #222$}" +
   ".label-fancy{~#444$;border-color:#333$;color:#FFF$}" +
   ".avatar,.profile-avatar{~#444$;border:1px solid #777$;}" +
   ".bg-lifesupport{~#444$}body{~#555$}.snap-content{~#333$}" +
