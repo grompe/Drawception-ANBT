@@ -1,3 +1,8 @@
+1.136.2018.06
+- Fix handling of forum and game comments broken with the site update; now shows exact timestaps for game comments
+- Don't try to show title when replaying Draw First panels
+- Increase old font size as it got tiny with the site update
+
 1.135.2018.06
 - Forum: linkify new embedded panel images to panel pages
 - Change Drawception calls from GET to POST+JSON, this should fix Draw First aborting and contests
