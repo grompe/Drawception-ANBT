@@ -382,9 +382,12 @@ function handleSandboxParameters()
       location.hash.substr(1) + '" title="Public replay link for sharing">Drawing</a>';
     ID("headerinfo").innerHTML = replaylink + ' by <a href="' + playerlink + '">' + playername + '</a>';
     document.title = playername + "'s drawing - Drawception";
-    ID("drawthis").innerHTML = '"' + gameinfo.drawncaption + '"';
-    ID("drawthis").classList.remove("onlyplay");
-    ID("emptytitle").classList.add("onlyplay");
+    if (gameinfo.drawncaption)
+    {
+      ID("drawthis").innerHTML = '"' + gameinfo.drawncaption + '"';
+      ID("drawthis").classList.remove("onlyplay");
+      ID("emptytitle").classList.add("onlyplay");
+    }
     if (options.autoplay) anbt.Play();
   } else {
     ID("headerinfo").innerHTML = 'Sandbox with ' + vertitle;
