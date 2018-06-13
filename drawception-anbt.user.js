@@ -2279,25 +2279,25 @@ function betterForum()
         {
           anch = t.attr("id");
         } catch(e) {}
+        var ts = t.find(".text-muted").first();
+        var vue = this.childNodes[0].__vue__;
+        if (vue)
+        {
+          var textNode = ts.get(0).childNodes[0];
+          var text = textNode.nodeValue.trim();
+          // change just the text, leave inline elements intact
+          textNode.nodeValue = text + ", " + formatTimestamp(vue.comment_date * 1000);
+          if (vue.edit_date > 0)
+          {
+            var el = ts.find('span[rel="tooltip"]');
+            text = el.attr('title');
+            text += ", " + formatTimestamp(vue.edit_date * 1000).replace(/ /g, "\u00A0"); // prevent the short tooltip width from breaking date apart
+            el.attr('title', text);
+          }
+        }
         if (anch)
         {
           id = parseInt(anch.substring(1), 10);
-          var ts = t.find(".text-muted").first();
-          var vue = this.childNodes[0].__vue__;
-          if (vue)
-          {
-            var textNode = ts.get(0).childNodes[0];
-            var text = textNode.nodeValue.trim();
-            // change just the text, leave inline elements intact
-            textNode.nodeValue = text + ", " + formatTimestamp(vue.comment_date * 1000);
-            if (vue.edit_date > 0)
-            {
-              var el = ts.find('span[rel="tooltip"]');
-              text = el.attr('title');
-              text += ", " + formatTimestamp(vue.edit_date * 1000).replace(/ /g, "\u00A0"); // prevent the short tooltip width from breaking date apart
-              el.attr('title', text);
-            }
-          }
           if (id > lastid)
           {
             ts.after(' <a title="Link to post" class="text-muted" href="#' + anch + '">#' + id + '</a>');
@@ -2773,8 +2773,8 @@ function pageEnhancements()
   {
     var h = options.maxCommentHeight;
     GM_addStyle(
-      ".comment-holder:not(:target) .comment-body {overflow-y: hidden; max-height: " + h + "px; position:relative}" +
-      ".comment-holder:not(:target) .comment-body:before" +
+      ".comment-holder[id]:not(:target) .comment-body {overflow-y: hidden; max-height: " + h + "px; position:relative}" +
+      ".comment-holder[id]:not(:target) .comment-body:before" +
       "{content: 'Click to read more'; position:absolute; width:100%; height:50px; left:0; top:" + (h-50) + "px;" +
       "text-align: center; font-weight: bold; color: #fff; text-shadow: 0 0 2px #000; padding-top: 20px; background:linear-gradient(transparent, rgba(0,0,0,0.4))}"
     );
