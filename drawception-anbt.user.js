@@ -1340,7 +1340,7 @@ function betterGame()
         }
         var ago = dateel.text();
         var anchordiv = t.find("div[id]").first();
-        anchordiv.addClass("comment-holder2"); // for highlighting targeted element
+        anchordiv.addClass("comment-holder"); // for highlighting targeted element
         var anchorid = anchordiv.attr("id");
         var commentid = parseInt(anchorid.slice(1), 10);
         // Also allow linking to specific comment
@@ -1382,6 +1382,18 @@ function betterGame()
         data.player_anchor.title = cmt2;
         $(data.player_anchor).after('<sup title="' + cmt2 + '">' + data.comments + '</sup>');
       }
+    }
+    if (options.maxCommentHeight)
+    {
+      var h = options.maxCommentHeight;
+      $(".comment-body").click(function()
+      {
+        var t = $(this);
+        if ((t.height() > h-50) && !$(location.hash).has(t).length)
+        {
+          location.hash = "#c" + t.attr("id");
+        }
+      });
     }
   }
   function waitForComments()
@@ -2871,7 +2883,7 @@ function pageEnhancements()
   GM_addStyle(
     "#user-notify-list .list-group .list-group-item .glyphicon {color: #888}" +
     "#user-notify-list .list-group .list-group-item:nth-child(-n+" + num + ") .glyphicon {color: #2F5}" +
-    "a.wrong-order {color: #F99} div.comment-holder:target, div.comment-holder2:target {background-color: #DFD}" +
+    "a.wrong-order {color: #F99} div.comment-holder:target {background-color: #DFD}" +
     ".comment-new .text-muted:last-child:after {content: 'New'; color: #2F5; font-weight: bold; background-color: #183; border-radius: 9px; display: inline-block; padding: 0px 6px; margin-left: 10px;}"
   );
 
@@ -2991,7 +3003,7 @@ localStorage.setItem("gpe_darkCSS",
   ".nav>li.disabled>a,.nav>li.disabled>a:hover,.nav>li.disabled>a:focus{color:#555$}.table-striped>tbody>tr:nth-child(2n+1)>td,.table-striped>tbody>tr:nth-child(2n+1)>th{~#333$}" +
   ".table-hover>tbody>tr:hover>td,.table-hover>tbody>tr:hover>th{~#555$}.table thead>tr>th,.table tbody>tr>th,.table tfoot>tr>th,.table thead>tr>td,.table tbody>tr>td,.table tfoot>tr>td{border-top:1px solid #333$}.news-alert{~#555$;border:2px solid #444$}" +
   ".btn-menu{~#2e2e2e$}.btn-menu:hover{~#232323$}.btn-yellow{~#8a874e$}.btn-yellow:hover{~#747034$}" +
-  "a.label{color:#fff$}.text-muted,a.text-muted{color:#999$}a.wrong-order{color:#F99$}div.comment-holder:target,div.comment-holder2:target{~#454$}" +
+  "a.label{color:#fff$}.text-muted,a.text-muted{color:#999$}a.wrong-order{color:#F99$}div.comment-holder:target{~#454$}" +
   ".popover{~#777$}.popover-title{~#666$;border-bottom:1px solid #444$}.popover.top .arrow:after{border-top-color:#777$}.popover.right .arrow:after{border-right-color:#777$}.popover.bottom .arrow:after{border-bottom-color:#777$}.popover.left .arrow:after{border-left-color:#777$}" +
   ".label-fancy{~#444$;border-color:#333$;color:#FFF$}" +
   ".avatar,.profile-avatar{~#444$;border:1px solid #777$;}" +
