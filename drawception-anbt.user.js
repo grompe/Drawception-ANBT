@@ -2068,36 +2068,21 @@ function betterPlayer()
 function betterForum()
 {
   var ncPosts = [];
-  $("span.muted, span.text-muted, small.text-muted").each(function(index)
-    {
-      var year, month, day, minutes, hours;
-      var m, t = $(this), tx = t.text();
-      // Don't touch relative times
-      if (tx.indexOf('ago') != -1) return;
-      if (m = tx.match(/^\s*\(last post (...) (\d+).. (\d+):(\d+)([ap]m)\)\s*$/))
+  // Track new posts at subforum list
+  if (location.href.match(/forums\/$/))
+  {
+    $("span.text-muted").each(function(index)
       {
-        var d = new Date();
-        month = months.indexOf(m[1]);
-        day = parseInt(m[2], 10);
-        hours = parseInt(m[3], 10) % 12;
-        minutes = parseInt(m[4], 10);
-        year = d.getFullYear();
-        if ((d.getMonth() < 6) && (month >= 6)) year--;
-        hours += (m[5] == 'pm') ? 12 : 0;
-        var time = convertForumTime(year, month, day, hours, minutes);
-        t.text("(last post " + time + ")");
-        // Track new posts at subforum list
-        if (location.href.match(/forums\/$/))
+        var t = $(this);
+        var time = t.text().trim();
+        if (time != localStorage.getItem("anbt_subforum" + index))
         {
-          if (time != localStorage.getItem("anbt_subforum" + index))
-          {
-            t.parent().prepend('<span class="label label-sm label-warning">NEW</span> ');
-            localStorage.setItem("anbt_subforum" + index, time);
-          }
+          t.parent().prepend('<span class="label label-sm label-warning">NEW</span> ');
+          localStorage.setItem("anbt_subforum" + index, time);
         }
       }
-    }
-  );
+    );
+  }
 
   if (options.markStalePosts)
   {
