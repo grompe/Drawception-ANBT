@@ -2691,7 +2691,7 @@ function pageEnhancements()
     ".anbt_favpanel {top: 20px; font-weight: normal; padding: 0 2px}" +
     ".anbt_favpanel:hover {color: #d9534f; cursor:pointer}" +
     ".anbt_favedpanel {color: #d9534f; border-color: #d9534f}" +
-    ".anbt_replaypanel {top: 50px; font-weight: normal; padding: 0 2px}" +
+    ".anbt_replaypanel {top: 55px; font-weight: normal; padding: 0 8px}" +
     ".anbt_replaypanel:hover {color: #8af; text-decoration: none}" +
     ".anbt_owncaption:before {content: ''; display: inline-block; background: #5C5; border: 1px solid #080; width: 10px; height: 10px; border-radius: 10px; margin-right: 10px;}" +
     ".gamepanel, .thumbpanel, .comment-body {word-wrap: break-word}" +
