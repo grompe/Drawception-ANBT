@@ -1401,7 +1401,7 @@ function betterGame()
         var t = $(this);
         if ((t.height() > h-50) && !$(location.hash).has(t).length)
         {
-          location.hash = "#c" + t.attr("id");
+          location.hash = "#p" + t.attr("id");
         }
       });
     }
