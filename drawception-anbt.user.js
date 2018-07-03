@@ -1742,7 +1742,7 @@ function viewMyPanelFavorites()
       needsupdate = true;
       panels[id].image = panels[id].image.replace("/pub/panels/", "https://cdn.drawception.com/images/panels/");
     }
-    result += '<div id="' + id + '" class="col-xs-6 col-sm-4 col-md-2" style="min-width: 150px;">' +
+    result += '<div id="' + id + '" style="float: left; position: relative; min-width: 150px;">' +
       '<div class="thumbpanel-holder" style="overflow:hidden"><a class="anbt_paneldel" href="#" title="Remove">X</a>' +
       '<a href="/panel/-/' +
       id + '/-/" class="thumbpanel" rel="tooltip" title="' +
@@ -1751,14 +1751,19 @@ function viewMyPanelFavorites()
         ? '<img src="' + panels[id].image + '" width="125" height="104" alt="' + panels[id].caption + '" />'
         : panels[id].caption) +
       '</a><span class="text-muted" style="white-space:nowrap">by ' + panels[id].by +
-      '</span><br><span class="text-muted"><span class="glyphicon glyphicon-heart"></span> ' +
-      formatTimestamp(panels[id].time) + '</span></div></div>';
+      '</span><br><small class="text-muted"><span class="glyphicon glyphicon-heart"></span> ' +
+      formatTimestamp(panels[id].time) + '</small></div></div>';
   }
   if (needsupdate)
   {
     localStorage.setItem("gpe_panelFavorites", JSON.stringify(panels));
   }
-  if (!result) result = "You don't have any favorited panels.";
+  if (result)
+  {
+    result += '<div style="clear:left"></div>';
+  } else {
+    result = "You don't have any favorited panels.";
+  }
   $("#anbt_userpage").html(result);
   $("#anbt_userpage").on("click", ".anbt_paneldel", function(e)
     {
@@ -1844,62 +1849,6 @@ function viewMyGameBookmarks()
   );
 }
 
-window.viewMyCover = viewMyCover;
-function viewMyCover()
-{
-  $("#anbt_userpage").html("Loading the cover creator...");
-  $.ajax(
-    {
-      url: '/player/cover-creator/',
-      cache: false,
-    }
-  ).success(function(html)
-  {
-    var doc = document.implementation.createHTMLDocument("");
-    doc.body.innerHTML = html;
-
-    var cookie = $.cookie('covercreatorids');
-    var panels = cookie ? JSON.parse(cookie) : [];
-    var result = "";
-    for (var i = 0; i < panels.length; i++)
-    {
-      var id = panels[i];
-      var image;
-      var caption;
-      var sid;
-      if (isNaN(id))
-      {
-        sid = "invalid";
-        image = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAH0AAABoAQMAAADmVW1OAAAABlBMVEWAQED///94jotxAAAAaUlEQVR4Xu3UUQqAMAwD0OQiev9bdRepIgFxv1lAP+wYG++jdKUMbEzhwMbajzvKhFGPjBawuQyAA+k6Ev0I9pRD2wSAumgbEKjjaz3FNf/tghrE0mlDfvh/wPSxGRANpe4lYGm9BIm3nLQcSKh4KcheAAAAAElFTkSuQmCC";
-        caption = "invalid";
-      } else {
-        sid = scrambleID(id);
-        var el = doc.querySelector('.thumbpanel[data-panelid="' + id + '"]');
-        var img = el.querySelector("img");
-        image = img.src;
-        caption = img.alt;
-      }
-      result += '<div id="' + id + '" class="col-xs-6 col-sm-4 col-md-2" style="min-width: 150px;">' +
-        '<div class="thumbnail" style="overflow:hidden"><a class="anbt_paneldel" href="#" title="Remove">X</a>' +
-        '<a href="/panel/-/' + sid + '/-/" class="thumbnail thumbpanel">' +
-        '<img src="' + image + '" width="125" height="104" alt="' + caption + '" />' +
-        '</a></div></div>';
-    }
-    if (!result) result = "You don't have any cover panels.";
-    $("#anbt_userpage").html(result);
-    $("#anbt_userpage").on("click", ".anbt_paneldel", function(e)
-      {
-        e.preventDefault();
-        var id = $(this).parent().parent().attr("id");
-        $("#" + id).fadeOut();
-        panels.remove(parseInt(id, 10));
-        panels.remove(id);
-        $.cookie('covercreatorids', JSON.stringify(panels), {expires: 365, path: '/'});
-      }
-    );
-  });
-}
-
 // Convert times
 // Forum time is Florida, GMT-6, to be +1 DST since 08 Mar 2015, 2:00
 // starts on the second Sunday in March and ends on the first Sunday in November
@@ -1953,28 +1902,15 @@ function betterPlayer()
   // If it's user's homepage, add new buttons in there
   if (loc.match(new RegExp('/player/' + userid + '/[^/]+/(?:$|#)')))
   {
-    var a = $("<h3>ANBT stuff: </h3>");
+    var a = $("<h2>ANBT stuff: </h2>");
     a.append('<a class="btn btn-primary" href="#anbt_panelfavorites" onclick="viewMyPanelFavorites();">Panel Favorites</a> ');
     a.append('<a class="btn btn-primary" href="#anbt_gamebookmarks" onclick="viewMyGameBookmarks();">Game Bookmarks</a> ');
-    a.append('<a class="btn btn-primary" href="#anbt_cover" onclick="viewMyCover();">Cover Panels</a> ');
-    var newrow = $('<div class="row"></div>');
-    newrow.append($('<div class="col-md-12"></div>').append(a).append('<div id="anbt_userpage">' + randomGreeting() + '</div>'));
-    $("div.col-md-8").first().parent().before(newrow);
+    var profilemain = $(".profile-owner-content-main").first();
+    profilemain.prepend('<p id="anbt_userpage">' + randomGreeting() + '</p>');
+    profilemain.prepend(a);
 
     if (document.location.hash.indexOf("#anbt_panelfavorites") != -1) viewMyPanelFavorites();
     if (document.location.hash.indexOf("#anbt_gamebookmarks") != -1) viewMyGameBookmarks();
-    if (document.location.hash.indexOf("#anbt_cover") != -1) viewMyCover();
-
-    // Make delete cover button safer
-    var old_deleteCover = DrawceptionPlay.deleteCover;
-    DrawceptionPlay.deleteCover = function()
-    {
-      apprise('Delete the whole cover, really?', {'verify': true}, function(r)
-        {
-          if (r) { old_deleteCover(); }
-        }
-      );
-    };
 
     if (options.rememberPosition)
     {
@@ -2126,12 +2062,6 @@ function betterPlayer()
       }
     );
   }
-
-  // Flatten the "more" dropdown
-  var nav = $(".nav-tabs");
-  var more = nav.find(">li:last-child");
-  nav.append(more.find("li"));
-  more.remove();
 }
 
 function betterForum()
