@@ -15,8 +15,8 @@
 function wrapped() {
 
 var SCRIPT_VERSION = "1.136.2018.06";
-var NEWCANVAS_VERSION = 39; // Increase to update the cached canvas
-var SITE_VERSION = "d41d8cd9"; // Last seen site version
+var NEWCANVAS_VERSION = 40; // Increase to update the cached canvas
+var SITE_VERSION = "ebeadbfe"; // Last seen site version
 
 // == DEFAULT OPTIONS ==
 
@@ -481,6 +481,7 @@ function handlePlayParameters()
     theme_fire_ice: ["Fire and Ice", "#040526"],
     theme_coty_2018: ["Canyon Sunset", "#2e1b50"],
     theme_juice: ["Juice", "#fced95"],
+    theme_tropical: ["Tropical", "#2f0946"],
   };
   var pal = info.palette;
   var paldata;
