@@ -1332,12 +1332,19 @@ function betterGame()
       holders.each(function()
       {
         var t = $(this);
-        var dateel = t.find(".text-muted").first();
+        var dateel = t.find("a.text-muted").first();
         var vue = this.__vue__;
         if (vue)
         {
-          var text = dateel.get(0).childNodes[0];
-          text.nodeValue = text.nodeValue.trim() + ', ' + formatTimestamp(vue.comment_date * 1000);
+          var text = dateel.text().trim();
+          dateel.text(text + ', ' + formatTimestamp(vue.comment_date * 1000));
+          if (vue.edit_date > 0)
+          {
+            var el = dateel.parent().find('span[rel="tooltip"]');
+            var text2 = el.attr('title');
+            text2 += ", " + formatTimestamp(vue.edit_date * 1000).replace(/ /g, "\u00A0"); // prevent the short tooltip width from breaking date apart
+            el.attr('title', text2);
+          }
         }
         var ago = dateel.text();
         var anchordiv = t.find("div[id]").first();
@@ -1345,7 +1352,8 @@ function betterGame()
         var anchorid = anchordiv.attr("id");
         var commentid = parseInt(anchorid.slice(1), 10);
         // Also allow linking to specific comment
-        dateel.after(' <a title="Link to comment" class="text-muted" href="#' + anchorid + '">#' + commentid + '</a>');
+        dateel.attr("title", "Link to comment");
+        dateel.text(dateel.text().trim() + " #" + commentid);
         // Track comments from up to week ago
         if (ago.match(/just now|min|hour|a day| [1-7] day/))
         {
@@ -2087,46 +2095,34 @@ function betterPlayer()
   // Convert timestamps in user profile's forum posts and game comments
   if (loc.match(/player\/\d+\/[^/]+\/(posts)|(comments)\//))
   {
-    $("span.text-muted, small.text-muted").each(function(index)
-      {
-        var year, month, day, minutes, hours;
-        var m, t = $(this), tx = t.text();
-
-        if (m = tx.match(/^\s*\[ ..., (...) (\d+).. (\d{4}) @ (\d+):(\d+)([ap]m) \]\s*$/))
-        {
-          hours = parseInt(m[4], 10) % 12;
-          minutes = parseInt(m[5], 10);
-          hours += (m[6] == 'pm') ? 12 : 0;
-          month = months.indexOf(m[1]);
-          day = parseInt(m[2], 10);
-          year = parseInt(m[3], 10);
-          t.text("[ " + convertForumTime(year, month, day, hours, minutes) + " ]");
-        }
-        else if (m = tx.match(/^\s*edited: (\d+):(\d+)([ap]m) (\d+)\/(\d+)\/(\d+)\s*$/))
-        {
-          hours = parseInt(m[1], 10) % 12;
-          minutes = parseInt(m[2], 10);
-          hours += (m[3] == 'pm') ? 12 : 0;
-          month = parseInt(m[4], 10) - 1;
-          day = parseInt(m[5], 10);
-          year = parseInt(m[6], 10) + 2000;
-          t.text("edited: " + convertForumTime(year, month, day, hours, minutes));
-        }
-      }
-    );
     // Show topic title at the top of the posts instead and display subforum
     // Show game title at the top of the posts
-    $(".comment-body>p:last-child").each(function()
+    $(".forum-thread-starter").each(function()
       {
         var t = $(this);
-        var created = t.text().match(/^\s*Created/);
-        var commented = t.text().match(/^\s*Commented/);
+        var vue = this.childNodes[0].__vue__;
+        if (vue)
+        {
+          var ts = t.find("a.text-muted").first();
+          var text = ts.text().trim();
+          ts.text(text + ", " + formatTimestamp(vue.comment_date * 1000));
+          if (vue.edit_date > 0)
+          {
+            var el = ts.parent().find('span[rel="tooltip"]');
+            var text2 = el.attr('title');
+            text2 += ", " + formatTimestamp(vue.edit_date * 1000).replace(/ /g, "\u00A0"); // prevent the short tooltip width from breaking date apart
+            el.attr('title', text2);
+          }
+        }
+        var postlink = t.find(".add-margin-top small.text-muted");
+        var created = postlink.text().match(/^\s*Created/);
+        var commented = postlink.text().match(/^\s*Commented/);
         var prefix = commented ? "Comment in the game" : created ? "New thread" : "Reply in";
         var n = $('<h4 class="anbt_threadtitle">' + prefix + ": </h4>");
-        var thread = t.find("a");
+        var thread = postlink.find("a");
         n.append(thread);
-        t.parents(".row").first().prepend(n);
-        t.remove();
+        t.prepend(n);
+        postlink.parent().remove();
       }
     );
   }
@@ -2292,30 +2288,29 @@ function betterForum()
         {
           anch = t.attr("id");
         } catch(e) {}
-        var ts = t.find(".text-muted").first();
+        var ts = t.find("a.text-muted").first();
         var vue = this.childNodes[0].__vue__;
         if (vue)
         {
-          var textNode = ts.get(0).childNodes[0];
-          var text = textNode.nodeValue.trim();
-          // change just the text, leave inline elements intact
-          textNode.nodeValue = text + ", " + formatTimestamp(vue.comment_date * 1000);
+          var text = ts.text().trim();
+          ts.text(text + ", " + formatTimestamp(vue.comment_date * 1000));
           if (vue.edit_date > 0)
           {
-            var el = ts.find('span[rel="tooltip"]');
-            text = el.attr('title');
-            text += ", " + formatTimestamp(vue.edit_date * 1000).replace(/ /g, "\u00A0"); // prevent the short tooltip width from breaking date apart
-            el.attr('title', text);
+            var el = ts.parent().find('span[rel="tooltip"]');
+            var text2 = el.attr('title');
+            text2 += ", " + formatTimestamp(vue.edit_date * 1000).replace(/ /g, "\u00A0"); // prevent the short tooltip width from breaking date apart
+            el.attr('title', text2);
           }
         }
         if (anch)
         {
           id = parseInt(anch.substring(1), 10);
-          if (id > lastid)
+          var text = ts.text().trim();
+          ts.text(text + " #" + id);
+          ts.attr("title", "Link to post");
+          if (id < lastid)
           {
-            ts.after(' <a title="Link to post" class="text-muted" href="#' + anch + '">#' + id + '</a>');
-          } else {
-            ts.after(' <a title="Link to post" class="text-muted wrong-order" href="#' + anch + '">#' + id + '</a>');
+            ts.addClass("wrong-order");
           }
           var h = t.find('a[href^="/player/"]').first().attr('href');
           if (h)
@@ -2777,7 +2772,7 @@ function pageEnhancements()
     ".anbt_hft:after {content: '[hide]'}" +
     ".anbt_hft, .anbt_unhidet {padding-left: 0.4em; cursor:pointer}" +
     ".forum-thread.anbt_hidden .anbt_hft:after {content: '[show]'}" +
-    ".anbt_threadtitle {margin: 0 20px 10px}" +
+    ".anbt_threadtitle {margin: 0 0 10px}" +
     ".avatar {box-sizing: content-box}" +
     ".pagination {margin: 0px}" +
     ""
