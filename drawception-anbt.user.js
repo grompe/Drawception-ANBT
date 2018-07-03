@@ -2810,7 +2810,7 @@ function pageEnhancements()
     "#user-notify-list .list-group .list-group-item .glyphicon {color: #888}" +
     "#user-notify-list .list-group .list-group-item:nth-child(-n+" + num + ") .glyphicon {color: #2F5}" +
     "a.wrong-order {color: #F99} div.comment-holder:target {background-color: #DFD}" +
-    ".comment-new .text-muted:last-child:after {content: 'New'; color: #2F5; font-weight: bold; background-color: #183; border-radius: 9px; display: inline-block; padding: 0px 6px; margin-left: 10px;}"
+    ".comment-new a.text-muted:last-child:after {content: 'New'; color: #2F5; font-weight: bold; background-color: #183; border-radius: 9px; display: inline-block; padding: 0px 6px; margin-left: 10px;}"
   );
 
   // Show an error if it occurs instead of "loading forever"
