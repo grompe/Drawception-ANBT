@@ -529,7 +529,8 @@ function handlePlayParameters()
     }
     ID("caption").value = "";
     ID("caption").focus();
-    ID("usedchars").textContent = "46";
+    ID("caption").setAttribute("maxlength", 45);
+    ID("usedchars").textContent = "45";
   }
 
   timerStart = Date.now() + 1000 * info.timeleft;
@@ -841,7 +842,7 @@ function bindCanvasEvents()
 
   var updateUsedChars = function(e)
   {
-    ID("usedchars").textContent = 46 - ID("caption").value.length;
+    ID("usedchars").textContent = 45 - ID("caption").value.length;
   };
   ID("caption").addEventListener('change', updateUsedChars);
   ID("caption").addEventListener('keydown', updateUsedChars);
