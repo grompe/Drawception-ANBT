@@ -254,9 +254,9 @@ function extractInfoFromHTML(html)
   return {
     error: getel(".error") ? el.textContent.trim() : false,
     gameid: drawapp.getAttribute("game_token"),
-    blitz: drawapp.getAttribute(":seconds") * 1 == 60, // can't tell blitz games from regular ones with 60 s left
+    blitz: drawapp.getAttribute(":blitz_mode") == "true",
     nsfw: drawapp.getAttribute(":nsfw") == "true",
-    friend: drawapp.getAttribute(":public") != "true",
+    friend: drawapp.getAttribute(":game_public") != "true",
     drawfirst: drawapp.getAttribute(":draw_first") == "true",
     timeleft: drawapp.getAttribute(":seconds") * 1,
     caption: drawapp.getAttribute("phrase"),
