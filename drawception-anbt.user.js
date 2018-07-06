@@ -1429,7 +1429,7 @@ function checkForRecording(url, yesfunc, retrying)
     var buffer = this.response;
     var dv = new DataView(buffer);
     var magic = dv.getUint32(0);
-    if (magic != 0x89504e47) return;
+    if (magic != 0x89504e47) return xhr.onerror(); // Drawception started hijacking XHR errors and putting HTML in there
     for (var i = 8; i < buffer.byteLength; i += 4 /* Skip CRC */)
     {
       var chunklen = dv.getUint32(i);
