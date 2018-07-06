@@ -1205,14 +1205,14 @@ function betterGame()
 
   // Reverse panels button and like all button
   $("#btn-copy-url")
-    .after(' <a href="#" class="btn btn-default" onclick="return reversePanels();" title="Reverse panels"><span class="glyphicon glyphicon-refresh"></span> Reverse</a>')
-    .after(' <a href="#" class="btn btn-default" onclick="return likeAll();" title="Like all panels"><span class="glyphicon glyphicon-thumbs-up"></span> Like all</a>');
+    .after(' <a href="#" class="btn btn-default" onclick="return reversePanels();" title="Reverse panels"><span class="fas fa-sort-amount-up"></span> Reverse</a>')
+    .after(' <a href="#" class="btn btn-default" onclick="return likeAll();" title="Like all panels"><span class="fas fa-thumbs-up"></span> Like all</a>');
 
   // Remove the temptation to judge
   if (options.removeFlagging) $(".flagbutton").remove();
 
   // Panel favorite buttons
-  var favButton = $('<span class="panel-number anbt_favpanel glyphicon glyphicon-heart text-muted" title="Favorite"></span>');
+  var favButton = $('<span class="panel-number anbt_favpanel fas fa-heart text-muted" title="Favorite"></span>');
   favButton.click(function(e)
     {
       e.preventDefault();
@@ -1261,7 +1261,7 @@ function betterGame()
         } else {
           id = scrambleID(panel.attr("id").slice(6));
         }
-        var replayButton = $('<a href="/sandbox/#' + id + '" class="panel-number anbt_replaypanel glyphicon glyphicon-repeat text-muted" title="Replay"></span>');
+        var replayButton = $('<a href="/sandbox/#' + id + '" class="panel-number anbt_replaypanel fas fa-redo-alt text-muted" title="Replay"></span>');
         replayButton.click(function(e)
         {
           if (e.which === 2) return;
@@ -1464,7 +1464,7 @@ function betterPanel()
 
   fixLocationToCanonical("/panel/");
 
-  var favButton = $('<button class="btn btn-info" style="margin-top: 20px"><span class="glyphicon glyphicon-heart"></span> <b>Favorite</b></button>');
+  var favButton = $('<button class="btn btn-info" style="margin-top: 20px"><span class="fas fa-heart"></span> <b>Favorite</b></button>');
   favButton.click(function(e)
     {
       e.preventDefault();
@@ -1505,7 +1505,7 @@ function betterPanel()
     {
       checkForRecording(img.attr("src"), function()
       {
-        var replayLink = $('<a class="btn btn-primary" style="margin-top: 20px" href="/sandbox/#' + panelId + '"><span class="glyphicon glyphicon-repeat"></span> <b>Replay</b></a> ');
+        var replayLink = $('<a class="btn btn-primary" style="margin-top: 20px" href="/sandbox/#' + panelId + '"><span class="fas fa-redo-alt"></span> <b>Replay</b></a> ');
         replayLink.click(function(e)
         {
           if (e.which === 2) return;
@@ -1520,7 +1520,7 @@ function betterPanel()
   if ($(".btn-primary").last().text() == "Play again")
   {
     // Allow adding to cover creator
-    var ccButton = $('<button class="btn btn-info" style="margin-top: 20px"><span class="glyphicon glyphicon-plus"></span> <b>Add to Cover Creator</b></button>');
+    var ccButton = $('<button class="btn btn-info" style="margin-top: 20px"><span class="fas fa-plus"></span> <b>Add to Cover Creator</b></button>');
     ccButton.click(function(e)
       {
         e.preventDefault();
@@ -1752,7 +1752,7 @@ function viewMyPanelFavorites()
         ? '<img src="' + panels[id].image + '" width="125" height="104" alt="' + panels[id].caption + '" />'
         : panels[id].caption) +
       '</a><span class="text-muted" style="white-space:nowrap">by ' + panels[id].by +
-      '</span><br><small class="text-muted"><span class="glyphicon glyphicon-heart"></span> ' +
+      '</span><br><small class="text-muted"><span class="fas fa-heart"></span> ' +
       formatTimestamp(panels[id].time) + '</small></div></div>';
   }
   if (needsupdate)
@@ -1780,7 +1780,7 @@ function viewMyPanelFavorites()
 window.viewMyGameBookmarks = viewMyGameBookmarks;
 function viewMyGameBookmarks()
 {
-  var removeButtonHTML = '<a class="anbt_gamedel pull-right lead glyphicon glyphicon-remove btn btn-sm btn-danger" href="#" title="Remove" style="margin-left: 10px"></a>';
+  var removeButtonHTML = '<a class="anbt_gamedel pull-right lead fas fa-times btn btn-sm btn-danger" href="#" title="Remove" style="margin-left: 10px"></a>';
   var games = localStorage.getItem("gpe_gameBookmarks");
   games = games ? JSON.parse(games) : {};
   var result = "";
@@ -1997,7 +1997,7 @@ function betterPlayer()
           var newid = src.match(/(\w+).png$/)[1];
           if (newid.length > 8)
           {
-            replaySign = $('<a href="/sandbox/#' + newid + '" class="pull-right glyphicon glyphicon-repeat" style="color:#8af;margin-right:4px" title="Replay!"></a>');
+            replaySign = $('<a href="/sandbox/#' + newid + '" class="pull-right fas fa-redo-alt" style="color:#8af;margin-right:4px" title="Replay!"></a>');
             replaySign.click(function(e)
             {
               if (e.which === 2) return;
@@ -2005,7 +2005,7 @@ function betterPlayer()
               setupNewCanvas(true, "/sandbox/#" + newid);
             });
           } else {
-            replaySign = $('<span class="pull-right glyphicon glyphicon-repeat" style="color:#8af;margin-right:4px" title="Replayable!"></span>');
+            replaySign = $('<span class="pull-right fas fa-redo-alt" style="color:#8af;margin-right:4px" title="Replayable!"></span>');
           }
           panel.append(replaySign);
           replaySign.tooltip();
@@ -2761,22 +2761,22 @@ function pageEnhancements()
   var p = $(".navbar-toggle").parent();
   //p.prepend('<a href="/" class="gpe-wide" style="float:left; margin-right:8px"><img src="/img/logo-sm.png" width="166" height="43" alt="drawception" /></a>');
   p.append('<span class="gpe-wide gpe-spacer">&nbsp</span>');
-  p.append('<a href="/sandbox/" title="Sandbox" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item" style="background:#5A5"><span class="glyphicon glyphicon-edit" style="color:#BFB" /></a>');
-  p.append('<a href="/browse/all-games/" title="Browse Games" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item"><span class="glyphicon glyphicon-folder-open" /></a>');
-  p.append('<a href="/contests/" title="Contests" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item"><span class="glyphicon glyphicon-tower" /></a>');
-  p.append('<a href="javascript:toggleLight()" title="Toggle light" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item" style="background:#AA5"><span class="glyphicon glyphicon-eye-open" style="color:#FFB" /></a>');
-  p.append('<a href="/leaderboard/" title="Leaderboards" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item"><span class="glyphicon glyphicon-fire" /></a>');
-  p.append('<a href="/faq/" title="FAQ" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item"><span class="glyphicon glyphicon-info-sign" /></a>');
-  p.append('<a href="/forums/" title="Forums" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item" style="background:#55A"><span class="glyphicon glyphicon-comment" style="color:#BBF" /></a>');
-  p.append('<a href="/search/" title="Search" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item"><span class="glyphicon glyphicon-search" /></a>');
-  p.append('<a id="menusettings" href="/settings/" title="Settings" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item"><span class="glyphicon glyphicon-cog" /></a>');
-  p.append('<a href="/logout" title="Log Out" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item" style="background:#A55"><span class="glyphicon glyphicon-log-out" style="color:#FBB" /></a>');
+  p.append('<a href="/sandbox/" title="Sandbox" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item" style="background:#5A5"><span class="fas fa-edit" style="color:#BFB" /></a>');
+  p.append('<a href="/browse/all-games/" title="Browse Games" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item"><span class="fas fa-folder-open" /></a>');
+  p.append('<a href="/contests/" title="Contests" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item"><span class="fas fa-trophy" /></a>');
+  p.append('<a href="javascript:toggleLight()" title="Toggle light" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item" style="background:#AA5"><span class="fas fa-eye" style="color:#FFB" /></a>');
+  p.append('<a href="/leaderboard/" title="Leaderboards" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item"><span class="fas fa-fire" /></a>');
+  p.append('<a href="/faq/" title="FAQ" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item"><span class="fas fa-question-circle " /></a>');
+  p.append('<a href="/forums/" title="Forums" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item" style="background:#55A"><span class="fas fa-comments" style="color:#BBF" /></a>');
+  p.append('<a href="/search/" title="Search" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item"><span class="fas fa-search" /></a>');
+  p.append('<a id="menusettings" href="/settings/" title="Settings" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item"><span class="fas fa-cog" /></a>');
+  p.append('<a href="/logout" title="Log Out" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item" style="background:#A55"><span class="fas fa-sign-out-alt" style="color:#FBB" /></a>');
   // Let users with screens narrow enough so top bar isn't visible still use toggle light function
-  $("#main-menu").prepend('<a href="javascript:toggleLight()" class="list-group-item"><span class="glyphicon glyphicon-eye-open"></span> Toggle light</a>');
+  $("#main-menu").prepend('<a href="javascript:toggleLight()" class="list-group-item"><span class="fas fa-eye"></span> Toggle light</a>');
 
   p = $("#navbar-user a[href^='/store/']").parent()
   var inventory = $('<a href="#myItems" class="btn btn-menu navbar-btn navbar-user-item" data-toggle="modal" rel="tooltip" title="Inventory">' +
-    '<span class="glyphicon glyphicon-book glyphicon-1pxtweak add-opacity"></span></a>');
+    '<span class="fas fa-toolbox add-opacity"></span></a>');
   p.before(inventory);
   inventory.wrap('<div class="pull-left navbar-userbar gpe-wide-block">');
   inventory.tooltip({placement: "bottom"});
@@ -2810,8 +2810,8 @@ function pageEnhancements()
   // Make new notifications actually discernable from the old ones
   var num = $("#user-notify-count").text().trim();
   GM_addStyle(
-    "#user-notify-list .list-group .list-group-item .glyphicon {color: #888}" +
-    "#user-notify-list .list-group .list-group-item:nth-child(-n+" + num + ") .glyphicon {color: #2F5}" +
+    "#user-notify-list .list-group .list-group-item .fas {color: #888}" +
+    "#user-notify-list .list-group .list-group-item:nth-child(-n+" + num + ") .fas {color: #2F5}" +
     "a.wrong-order {color: #F99} div.comment-holder:target {background-color: #DFD}" +
     ".comment-new a.text-muted:last-child:after {content: 'New'; color: #2F5; font-weight: bold; background-color: #183; border-radius: 9px; display: inline-block; padding: 0px 6px; margin-left: 10px;}"
   );
