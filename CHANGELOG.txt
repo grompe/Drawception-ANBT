@@ -1,3 +1,10 @@
+1.138.2018.07
+- Replace glyphicons with font-awesome icons
+- Fix identification of replayable drawings, broken due to XHR hijacking
+- Add 'Toggle light' as a menu item to make it accessible for mobile users
+- Fix the anchor link when expanding a limited height game comment
+- Add distance between favorite and replay buttons in game view. 'Literally unplayable!'
+
 1.137.2018.07
 - Add support for the new palette: Tropical
 - Fix double marking on new game comments
