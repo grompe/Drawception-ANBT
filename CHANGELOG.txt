@@ -1,3 +1,7 @@
+1.176.2018.07
+- Fix broken navbar buttons
+- Remove duplicate menu items
+
 1.175.2018.07
 - Merge changes from original version:
   1.138.2018.07
