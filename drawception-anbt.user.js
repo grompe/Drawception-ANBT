@@ -258,9 +258,9 @@ function extractInfoFromHTML(html)
   return {
     error: getel(".error") ? el.textContent.trim() : false,
     gameid: drawapp.getAttribute("game_token"),
-    blitz: drawapp.getAttribute(":seconds") * 1 == 60, // can't tell blitz games from regular ones with 60 s left
+    blitz: drawapp.getAttribute(":blitz_mode") == "true",
     nsfw: drawapp.getAttribute(":nsfw") == "true",
-    friend: drawapp.getAttribute(":public") != "true",
+    friend: drawapp.getAttribute(":game_public") != "true",
     drawfirst: drawapp.getAttribute(":draw_first") == "true",
     timeleft: drawapp.getAttribute(":seconds") * 1,
     caption: drawapp.getAttribute("phrase"),
@@ -386,9 +386,12 @@ function handleSandboxParameters()
       location.hash.substr(1) + '" title="Public replay link for sharing">Drawing</a>';
     ID("headerinfo").innerHTML = replaylink + ' by <a href="' + playerlink + '">' + playername + '</a>';
     document.title = playername + "'s drawing - Drawception";
-    ID("drawthis").innerHTML = '"' + gameinfo.drawncaption + '"';
-    ID("drawthis").classList.remove("onlyplay");
-    ID("emptytitle").classList.add("onlyplay");
+    if (gameinfo.drawncaption)
+    {
+      ID("drawthis").innerHTML = '"' + gameinfo.drawncaption + '"';
+      ID("drawthis").classList.remove("onlyplay");
+      ID("emptytitle").classList.add("onlyplay");
+    }
     if (options.autoplay) anbt.Play();
   } else {
     ID("headerinfo").innerHTML = 'Sandbox with ' + vertitle;
@@ -482,6 +485,7 @@ function handlePlayParameters()
     theme_fire_ice: ["Fire and Ice", "#040526"],
     theme_coty_2018: ["Canyon Sunset", "#2e1b50"],
     theme_juice: ["Juice", "#fced95"],
+    theme_tropical: ["Tropical", "#2f0946"],
   };
   var pal = info.palette;
   var paldata;
@@ -530,7 +534,8 @@ function handlePlayParameters()
     }
     ID("caption").value = "";
     ID("caption").focus();
-    ID("usedchars").textContent = "46";
+    ID("caption").setAttribute("maxlength", 45);
+    ID("usedchars").textContent = "45";
   }
 
   timerStart = Date.now() + 1000 * info.timeleft;
@@ -842,7 +847,7 @@ function bindCanvasEvents()
 
   var updateUsedChars = function(e)
   {
-    ID("usedchars").textContent = 46 - ID("caption").value.length;
+    ID("usedchars").textContent = 45 - ID("caption").value.length;
   };
   ID("caption").addEventListener('change', updateUsedChars);
   ID("caption").addEventListener('keydown', updateUsedChars);
@@ -1204,14 +1209,14 @@ function betterGame()
 
   // Reverse panels button and like all button
   $("#btn-copy-url")
-    .after(' <a href="#" class="btn btn-default" onclick="return reversePanels();" title="Reverse panels"><span class="glyphicon glyphicon-refresh"></span> Reverse</a>')
-    .after(' <a href="#" class="btn btn-default" onclick="return likeAll();" title="Like all panels"><span class="glyphicon glyphicon-thumbs-up"></span> Like all</a>');
+    .after(' <a href="#" class="btn btn-default" onclick="return reversePanels();" title="Reverse panels"><span class="fas fa-sort-amount-up"></span> Reverse</a>')
+    .after(' <a href="#" class="btn btn-default" onclick="return likeAll();" title="Like all panels"><span class="fas fa-thumbs-up"></span> Like all</a>');
 
   // Remove the temptation to judge
   if (options.removeFlagging) $(".flagbutton").remove();
 
   // Panel favorite buttons
-  var favButton = $('<span class="panel-number anbt_favpanel glyphicon glyphicon-heart text-muted" title="Favorite"></span>');
+  var favButton = $('<span class="panel-number anbt_favpanel fas fa-heart text-muted" title="Favorite"></span>');
   favButton.click(function(e)
     {
       e.preventDefault();
@@ -1260,7 +1265,7 @@ function betterGame()
         } else {
           id = scrambleID(panel.attr("id").slice(6));
         }
-        var replayButton = $('<a href="/sandbox/#' + id + '" class="panel-number anbt_replaypanel glyphicon glyphicon-repeat text-muted" title="Replay"></span>');
+        var replayButton = $('<a href="/sandbox/#' + id + '" class="panel-number anbt_replaypanel fas fa-redo-alt text-muted" title="Replay"></span>');
         replayButton.click(function(e)
         {
           if (e.which === 2) return;
@@ -1277,101 +1282,145 @@ function betterGame()
     });
   }
 
-  // Linkify the links
-  $('.comment-body').each(function()
-    {
-      linkifyNodeText(this);
-    }
-  );
-
-  // Interlink game panels and comments
-  var gamePlayers = [];
-  var playerdata = {};
-  $(".gamepanel-holder").each(function(i)
-    {
-      var t = $(this);
-      var det = t.find(".panel-details");
-      var gamepanel = t.find(".gamepanel");
-      var a = det.find(".panel-user a");
-      if (!a.length) return;
-      var id = a.attr("href").match(/\/player\/(\d+)\//)[1];
-      playerdata[id] =
-      {
-        panel_number: i + 1,
-        player_anchor: a.get(0),
-        panel_id: gamepanel.attr("id"),
-        drew: gamepanel.has("img").length != 0,
-        comments: 0
-      }
-      gamePlayers.push(id);
-    }
-  );
-
-  // Highlight new comments and remember seen comments
-  var seenComments = localStorage.getItem("gpe_seenComments");
-  seenComments = (seenComments === null) ? {} : JSON.parse(seenComments);
-  var gameid = document.location.href.match(/game\/([^\/]+)\//)[1];
-  var comments = $("#comments").parent();
-  var holders = comments.find(".comment-holder");
-  if (holders.length)
+  // Comments appear dynamically after the page is loaded now
+  function betterComments()
   {
-    // Clear old tracked comments
-    var hour = Math.floor(Date.now() / (1000 * 60*60)); // timestamp with 1 hour precision
-    for (var tempgame in seenComments)
-    {
-      // Store game entry for up to a week after last tracked comment
-      if (seenComments[tempgame].h + 24*7 < hour)
+    // Linkify the links and add ability to address comment holders again
+    $('.comment-body').each(function()
       {
-        delete seenComments[tempgame];
+        $(this).parent().parent().addClass("comment-holder");
+        linkifyNodeText(this);
       }
-    }
-    var maxseenid = 0;
-    holders.each(function()
-    {
-      var t = $(this);
-      var dateel = t.find(".text-muted").first();
-      var ago = dateel.text();
-      var commentid = parseInt(t.attr("id").slice(1), 10);
-      // Also allow linking to specific comment
-      dateel.wrap('<a title="Link to comment" href="#' + t.attr("id") + '"></a>');
-      // Track comments from up to week ago
-      if (ago.match(/just now|min|hour| [1-7] day/))
+    );
+
+    // Interlink game panels and comments
+    var gamePlayers = [];
+    var playerdata = {};
+    $(".gamepanel-holder").each(function(i)
       {
-        if (!(seenComments[gameid] && seenComments[gameid].id >= commentid))
+        var t = $(this);
+        var det = t.find(".panel-details");
+        var gamepanel = t.find(".gamepanel");
+        var a = det.find(".panel-user a");
+        if (!a.length) return;
+        var id = a.attr("href").match(/\/player\/(\d+)\//)[1];
+        playerdata[id] =
         {
-          t.addClass("comment-new");
-          if (maxseenid < commentid) maxseenid = commentid;
+          panel_number: i + 1,
+          player_anchor: a.get(0),
+          panel_id: gamepanel.attr("id"),
+          drew: gamepanel.has("img").length != 0,
+          comments: 0
+        }
+        gamePlayers.push(id);
+      }
+    );
+
+    // Highlight new comments and remember seen comments
+    var seenComments = localStorage.getItem("gpe_seenComments");
+    seenComments = (seenComments === null) ? {} : JSON.parse(seenComments);
+    var gameid = document.location.href.match(/game\/([^\/]+)\//)[1];
+    var holders = $(".comment-holder");
+    if (holders.length)
+    {
+      // Clear old tracked comments
+      var hour = Math.floor(Date.now() / (1000 * 60*60)); // timestamp with 1 hour precision
+      for (var tempgame in seenComments)
+      {
+        // Store game entry for up to a week after last tracked comment
+        if (seenComments[tempgame].h + 24*7 < hour)
+        {
+          delete seenComments[tempgame];
         }
       }
-      // Add game perticipation info
-      var m = t.find(".comment-user a").attr("href").match(/\/player\/(\d+)\//);
-      if (m)
+      var maxseenid = 0;
+      holders.each(function()
       {
-        var id = m[1];
-        if (gamePlayers.indexOf(id) != -1)
+        var t = $(this);
+        var dateel = t.find("a.text-muted").first();
+        var vue = this.__vue__;
+        if (vue)
         {
-          var drew = 0;
-          var drew = playerdata[id].drew ? 'drew' : 'wrote';
-          dateel.parent().before('<a href="#' + playerdata[id].panel_id +
-            '">(' + drew + ' #' + playerdata[id].panel_number + ')</a> ');
-          playerdata[id].comments += 1;
+          var text = dateel.text().trim();
+          dateel.text(text + ', ' + formatTimestamp(vue.comment_date * 1000));
+          if (vue.edit_date > 0)
+          {
+            var el = dateel.parent().find('span[rel="tooltip"]');
+            var text2 = el.attr('title');
+            text2 += ", " + formatTimestamp(vue.edit_date * 1000).replace(/ /g, "\u00A0"); // prevent the short tooltip width from breaking date apart
+            el.attr('title', text2);
+          }
         }
-      }
-    });
-    if (maxseenid) seenComments[gameid] = {h: hour, id: maxseenid};
-    localStorage.setItem("gpe_seenComments", JSON.stringify(seenComments));
-  }
-  for (var i = 0; i < gamePlayers.length; i++)
-  {
-    var data = playerdata[gamePlayers[i]];
-    if (data.comments != 0)
+        var ago = dateel.text();
+        var anchordiv = t.find("div[id]").first();
+        anchordiv.addClass("comment-holder"); // for highlighting targeted element
+        var anchorid = anchordiv.attr("id");
+        var commentid = parseInt(anchorid.slice(1), 10);
+        // Also allow linking to specific comment
+        dateel.attr("title", "Link to comment");
+        dateel.text(dateel.text().trim() + " #" + commentid);
+        // Track comments from up to week ago
+        if (ago.match(/just now|min|hour|a day| [1-7] day/))
+        {
+          if (!(seenComments[gameid] && seenComments[gameid].id >= commentid))
+          {
+            t.addClass("comment-new");
+            if (maxseenid < commentid) maxseenid = commentid;
+          }
+        }
+        // Add game perticipation info
+        var m = t.find(".text-bold a").attr("href").match(/\/player\/(\d+)\//);
+        if (m)
+        {
+          var id = m[1];
+          if (gamePlayers.indexOf(id) != -1)
+          {
+            var drew = 0;
+            var drew = playerdata[id].drew ? 'drew' : 'wrote';
+            dateel.before('<a href="#' + playerdata[id].panel_id +
+              '">(' + drew + ' #' + playerdata[id].panel_number + ')</a> ');
+            playerdata[id].comments += 1;
+          }
+        }
+      });
+      if (maxseenid) seenComments[gameid] = {h: hour, id: maxseenid};
+      localStorage.setItem("gpe_seenComments", JSON.stringify(seenComments));
+    }
+    for (var i = 0; i < gamePlayers.length; i++)
     {
-      var cmt = data.comments == 1 ? " comment" : " comments";
-      var cmt2 = 'Player left '+ data.comments + cmt;
-      data.player_anchor.title = cmt2;
-      $(data.player_anchor).after('<sup title="' + cmt2 + '">' + data.comments + '</sup>');
+      var data = playerdata[gamePlayers[i]];
+      if (data.comments != 0)
+      {
+        var cmt = data.comments == 1 ? " comment" : " comments";
+        var cmt2 = 'Player left '+ data.comments + cmt;
+        data.player_anchor.title = cmt2;
+        $(data.player_anchor).after('<sup title="' + cmt2 + '">' + data.comments + '</sup>');
+      }
+    }
+    if (options.maxCommentHeight)
+    {
+      var h = options.maxCommentHeight;
+      $(".comment-body").click(function()
+      {
+        var t = $(this);
+        if ((t.height() > h-50) && !$(location.hash).has(t).length)
+        {
+          location.hash = "#p" + t.attr("id");
+        }
+      });
     }
   }
+  function waitForComments()
+  {
+    if (document.querySelector('.comment-body'))
+    {
+      betterComments();
+    } else {
+      setTimeout(waitForComments, 1000);
+    }
+  }
+  setTimeout(waitForComments, 200);
+  
 }
 
 function checkForRecording(url, yesfunc, retrying)
@@ -1384,7 +1433,7 @@ function checkForRecording(url, yesfunc, retrying)
     var buffer = this.response;
     var dv = new DataView(buffer);
     var magic = dv.getUint32(0);
-    if (magic != 0x89504e47) return;
+    if (magic != 0x89504e47) return xhr.onerror(); // Drawception started hijacking XHR errors and putting HTML in there
     for (var i = 8; i < buffer.byteLength; i += 4 /* Skip CRC */)
     {
       var chunklen = dv.getUint32(i);
@@ -1419,7 +1468,7 @@ function betterPanel()
 
   fixLocationToCanonical("/panel/");
 
-  var favButton = $('<button class="btn btn-info" style="margin-top: 20px"><span class="glyphicon glyphicon-heart"></span> <b>Favorite</b></button>');
+  var favButton = $('<button class="btn btn-info" style="margin-top: 20px"><span class="fas fa-heart"></span> <b>Favorite</b></button>');
   favButton.click(function(e)
     {
       e.preventDefault();
@@ -1460,7 +1509,7 @@ function betterPanel()
     {
       checkForRecording(img.attr("src"), function()
       {
-        var replayLink = $('<a class="btn btn-primary" style="margin-top: 20px" href="/sandbox/#' + panelId + '"><span class="glyphicon glyphicon-repeat"></span> <b>Replay</b></a> ');
+        var replayLink = $('<a class="btn btn-primary" style="margin-top: 20px" href="/sandbox/#' + panelId + '"><span class="fas fa-redo-alt"></span> <b>Replay</b></a> ');
         replayLink.click(function(e)
         {
           if (e.which === 2) return;
@@ -1475,7 +1524,7 @@ function betterPanel()
   if ($(".btn-primary").last().text() == "Play again")
   {
     // Allow adding to cover creator
-    var ccButton = $('<button class="btn btn-info" style="margin-top: 20px"><span class="glyphicon glyphicon-plus"></span> <b>Add to Cover Creator</b></button>');
+    var ccButton = $('<button class="btn btn-info" style="margin-top: 20px"><span class="fas fa-plus"></span> <b>Add to Cover Creator</b></button>');
     ccButton.click(function(e)
       {
         e.preventDefault();
@@ -1698,7 +1747,7 @@ function viewMyPanelFavorites()
       needsupdate = true;
       panels[id].image = panels[id].image.replace("/pub/panels/", "https://cdn.drawception.com/images/panels/");
     }
-    result += '<div id="' + id + '" class="col-xs-6 col-sm-4 col-md-2" style="min-width: 150px;">' +
+    result += '<div id="' + id + '" style="float: left; position: relative; min-width: 150px;">' +
       '<div class="thumbpanel-holder" style="overflow:hidden"><a class="anbt_paneldel" href="#" title="Remove">X</a>' +
       '<a href="/panel/-/' +
       id + '/-/" class="thumbpanel" rel="tooltip" title="' +
@@ -1707,14 +1756,19 @@ function viewMyPanelFavorites()
         ? '<img src="' + panels[id].image + '" width="125" height="104" alt="' + panels[id].caption + '" />'
         : panels[id].caption) +
       '</a><span class="text-muted" style="white-space:nowrap">by ' + panels[id].by +
-      '</span><br><span class="text-muted"><span class="glyphicon glyphicon-heart"></span> ' +
-      formatTimestamp(panels[id].time) + '</span></div></div>';
+      '</span><br><small class="text-muted"><span class="fas fa-heart"></span> ' +
+      formatTimestamp(panels[id].time) + '</small></div></div>';
   }
   if (needsupdate)
   {
     localStorage.setItem("gpe_panelFavorites", JSON.stringify(panels));
   }
-  if (!result) result = "You don't have any favorited panels.";
+  if (result)
+  {
+    result += '<div style="clear:left"></div>';
+  } else {
+    result = "You don't have any favorited panels.";
+  }
   $("#anbt_userpage").html(result);
   $("#anbt_userpage").on("click", ".anbt_paneldel", function(e)
     {
@@ -1730,7 +1784,7 @@ function viewMyPanelFavorites()
 window.viewMyGameBookmarks = viewMyGameBookmarks;
 function viewMyGameBookmarks()
 {
-  var removeButtonHTML = '<a class="anbt_gamedel pull-right lead glyphicon glyphicon-remove btn btn-sm btn-danger" href="#" title="Remove" style="margin-left: 10px"></a>';
+  var removeButtonHTML = '<a class="anbt_gamedel pull-right lead fas fa-times btn btn-sm btn-danger" href="#" title="Remove" style="margin-left: 10px"></a>';
   var games = localStorage.getItem("gpe_gameBookmarks");
   games = games ? JSON.parse(games) : {};
   var result = "";
@@ -1800,62 +1854,6 @@ function viewMyGameBookmarks()
   );
 }
 
-window.viewMyCover = viewMyCover;
-function viewMyCover()
-{
-  $("#anbt_userpage").html("Loading the cover creator...");
-  $.ajax(
-    {
-      url: '/player/cover-creator/',
-      cache: false,
-    }
-  ).success(function(html)
-  {
-    var doc = document.implementation.createHTMLDocument("");
-    doc.body.innerHTML = html;
-
-    var cookie = $.cookie('covercreatorids');
-    var panels = cookie ? JSON.parse(cookie) : [];
-    var result = "";
-    for (var i = 0; i < panels.length; i++)
-    {
-      var id = panels[i];
-      var image;
-      var caption;
-      var sid;
-      if (isNaN(id))
-      {
-        sid = "invalid";
-        image = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAH0AAABoAQMAAADmVW1OAAAABlBMVEWAQED///94jotxAAAAaUlEQVR4Xu3UUQqAMAwD0OQiev9bdRepIgFxv1lAP+wYG++jdKUMbEzhwMbajzvKhFGPjBawuQyAA+k6Ev0I9pRD2wSAumgbEKjjaz3FNf/tghrE0mlDfvh/wPSxGRANpe4lYGm9BIm3nLQcSKh4KcheAAAAAElFTkSuQmCC";
-        caption = "invalid";
-      } else {
-        sid = scrambleID(id);
-        var el = doc.querySelector('.thumbpanel[data-panelid="' + id + '"]');
-        var img = el.querySelector("img");
-        image = img.src;
-        caption = img.alt;
-      }
-      result += '<div id="' + id + '" class="col-xs-6 col-sm-4 col-md-2" style="min-width: 150px;">' +
-        '<div class="thumbnail" style="overflow:hidden"><a class="anbt_paneldel" href="#" title="Remove">X</a>' +
-        '<a href="/panel/-/' + sid + '/-/" class="thumbnail thumbpanel">' +
-        '<img src="' + image + '" width="125" height="104" alt="' + caption + '" />' +
-        '</a></div></div>';
-    }
-    if (!result) result = "You don't have any cover panels.";
-    $("#anbt_userpage").html(result);
-    $("#anbt_userpage").on("click", ".anbt_paneldel", function(e)
-      {
-        e.preventDefault();
-        var id = $(this).parent().parent().attr("id");
-        $("#" + id).fadeOut();
-        panels.remove(parseInt(id, 10));
-        panels.remove(id);
-        $.cookie('covercreatorids', JSON.stringify(panels), {expires: 365, path: '/'});
-      }
-    );
-  });
-}
-
 // Convert times
 // Forum time is Florida, GMT-6, to be +1 DST since 08 Mar 2015, 2:00
 // starts on the second Sunday in March and ends on the first Sunday in November
@@ -1909,28 +1907,15 @@ function betterPlayer()
   // If it's user's homepage, add new buttons in there
   if (loc.match(new RegExp('/player/' + userid + '/[^/]+/(?:$|#)')))
   {
-    var a = $("<h3>ANBT stuff: </h3>");
+    var a = $("<h2>ANBT stuff: </h2>");
     a.append('<a class="btn btn-primary" href="#anbt_panelfavorites" onclick="viewMyPanelFavorites();">Panel Favorites</a> ');
     a.append('<a class="btn btn-primary" href="#anbt_gamebookmarks" onclick="viewMyGameBookmarks();">Game Bookmarks</a> ');
-    a.append('<a class="btn btn-primary" href="#anbt_cover" onclick="viewMyCover();">Cover Panels</a> ');
-    var newrow = $('<div class="row"></div>');
-    newrow.append($('<div class="col-md-12"></div>').append(a).append('<div id="anbt_userpage">' + randomGreeting() + '</div>'));
-    $("div.col-md-8").first().parent().before(newrow);
+    var profilemain = $(".profile-owner-content-main").first();
+    profilemain.prepend('<p id="anbt_userpage">' + randomGreeting() + '</p>');
+    profilemain.prepend(a);
 
     if (document.location.hash.indexOf("#anbt_panelfavorites") != -1) viewMyPanelFavorites();
     if (document.location.hash.indexOf("#anbt_gamebookmarks") != -1) viewMyGameBookmarks();
-    if (document.location.hash.indexOf("#anbt_cover") != -1) viewMyCover();
-
-    // Make delete cover button safer
-    var old_deleteCover = DrawceptionPlay.deleteCover;
-    DrawceptionPlay.deleteCover = function()
-    {
-      apprise('Delete the whole cover, really?', {'verify': true}, function(r)
-        {
-          if (r) { old_deleteCover(); }
-        }
-      );
-    };
 
     if (options.rememberPosition)
     {
@@ -2016,7 +2001,7 @@ function betterPlayer()
           var newid = src.match(/(\w+).png$/)[1];
           if (newid.length > 8)
           {
-            replaySign = $('<a href="/sandbox/#' + newid + '" class="pull-right glyphicon glyphicon-repeat" style="color:#8af;margin-right:4px" title="Replay!"></a>');
+            replaySign = $('<a href="/sandbox/#' + newid + '" class="pull-right fas fa-redo-alt" style="color:#8af;margin-right:4px" title="Replay!"></a>');
             replaySign.click(function(e)
             {
               if (e.which === 2) return;
@@ -2024,7 +2009,7 @@ function betterPlayer()
               setupNewCanvas(true, "/sandbox/#" + newid);
             });
           } else {
-            replaySign = $('<span class="pull-right glyphicon glyphicon-repeat" style="color:#8af;margin-right:4px" title="Replayable!"></span>');
+            replaySign = $('<span class="pull-right fas fa-redo-alt" style="color:#8af;margin-right:4px" title="Replayable!"></span>');
           }
           panel.append(replaySign);
           replaySign.tooltip();
@@ -2051,55 +2036,37 @@ function betterPlayer()
   // Convert timestamps in user profile's forum posts and game comments
   if (loc.match(/player\/\d+\/[^/]+\/(posts)|(comments)\//))
   {
-    $("span.text-muted, small.text-muted").each(function(index)
-      {
-        var year, month, day, minutes, hours;
-        var m, t = $(this), tx = t.text();
-
-        if (m = tx.match(/^\s*\[ ..., (...) (\d+).. (\d{4}) @ (\d+):(\d+)([ap]m) \]\s*$/))
-        {
-          hours = parseInt(m[4], 10) % 12;
-          minutes = parseInt(m[5], 10);
-          hours += (m[6] == 'pm') ? 12 : 0;
-          month = months.indexOf(m[1]);
-          day = parseInt(m[2], 10);
-          year = parseInt(m[3], 10);
-          t.text("[ " + convertForumTime(year, month, day, hours, minutes) + " ]");
-        }
-        else if (m = tx.match(/^\s*edited: (\d+):(\d+)([ap]m) (\d+)\/(\d+)\/(\d+)\s*$/))
-        {
-          hours = parseInt(m[1], 10) % 12;
-          minutes = parseInt(m[2], 10);
-          hours += (m[3] == 'pm') ? 12 : 0;
-          month = parseInt(m[4], 10) - 1;
-          day = parseInt(m[5], 10);
-          year = parseInt(m[6], 10) + 2000;
-          t.text("edited: " + convertForumTime(year, month, day, hours, minutes));
-        }
-      }
-    );
     // Show topic title at the top of the posts instead and display subforum
     // Show game title at the top of the posts
-    $(".comment-body>p:last-child").each(function()
+    $(".forum-thread-starter").each(function()
       {
         var t = $(this);
-        var created = t.text().match(/^\s*Created/);
-        var commented = t.text().match(/^\s*Commented/);
+        var vue = this.childNodes[0].__vue__;
+        if (vue)
+        {
+          var ts = t.find("a.text-muted").first();
+          var text = ts.text().trim();
+          ts.text(text + ", " + formatTimestamp(vue.comment_date * 1000));
+          if (vue.edit_date > 0)
+          {
+            var el = ts.parent().find('span[rel="tooltip"]');
+            var text2 = el.attr('title');
+            text2 += ", " + formatTimestamp(vue.edit_date * 1000).replace(/ /g, "\u00A0"); // prevent the short tooltip width from breaking date apart
+            el.attr('title', text2);
+          }
+        }
+        var postlink = t.find(".add-margin-top small.text-muted");
+        var created = postlink.text().match(/^\s*Created/);
+        var commented = postlink.text().match(/^\s*Commented/);
         var prefix = commented ? "Comment in the game" : created ? "New thread" : "Reply in";
         var n = $('<h4 class="anbt_threadtitle">' + prefix + ": </h4>");
-        var thread = t.find("a");
+        var thread = postlink.find("a");
         n.append(thread);
-        t.parents(".row").first().prepend(n);
-        t.remove();
+        t.prepend(n);
+        postlink.parent().remove();
       }
     );
   }
-
-  // Flatten the "more" dropdown
-  var nav = $(".nav-tabs");
-  var more = nav.find(">li:last-child");
-  nav.append(more.find("li"));
-  more.remove();
 }
 
 function betterForum()
@@ -2132,27 +2099,6 @@ function betterForum()
             localStorage.setItem("anbt_subforum" + index, time);
           }
         }
-      }
-      else if (m = tx.match(/^\s*\[ ..., (...) (\d+).. (\d{4}) @ (\d+):(\d+)([ap]m) \]\s*$/))
-      {
-        hours = parseInt(m[4], 10) % 12;
-        minutes = parseInt(m[5], 10);
-        hours += (m[6] == 'pm') ? 12 : 0;
-        month = months.indexOf(m[1]);
-        day = parseInt(m[2], 10);
-        year = parseInt(m[3], 10);
-        t.text("[ " + convertForumTime(year, month, day, hours, minutes) + " ]");
-        ncPosts.push([this, day + month * 30 + (year - 1970) * 365]);
-      }
-      else if (m = tx.match(/^\s*edited: ..., (...) (\d+).. (\d{4}) @ (\d+):(\d+)([ap]m)\s*$/))
-      {
-        hours = parseInt(m[4], 10) % 12;
-        minutes = parseInt(m[5], 10);
-        hours += (m[6] == 'pm') ? 12 : 0;
-        month = months.indexOf(m[1]);
-        day = parseInt(m[2], 10);
-        year = parseInt(m[3], 10);
-        t.text("edited: " + convertForumTime(year, month, day, hours, minutes));
       }
     }
   );
@@ -2263,30 +2209,45 @@ function betterForum()
     if (hideuserids != "")
     {
       GM_addStyle(
-        ".anbt_hideUserPost:not(:target) .comment-user {opacity: 0.4; margin-bottom: 10px}" +
+        ".anbt_hideUserPost:not(:target) {opacity: 0.4; margin-bottom: 10px}" +
         ".anbt_hideUserPost:not(:target) .comment-body, .anbt_hideUserPost:not(:target) .avatar {display: none}" +
         ""
       );
     }
     var lastid = 0;
-    $(".comment-holder").each(function()
+    $(".comment-avatar").parent().parent().parent().each(function()
       {
         var t = $(this), anch, id;
+        t.addClass("comment-holder"); // No identification for these anymore, this is unhelpful!
         try
         {
           anch = t.attr("id");
         } catch(e) {}
+        var ts = t.find("a.text-muted").first();
+        var vue = this.childNodes[0].__vue__;
+        if (vue)
+        {
+          var text = ts.text().trim();
+          ts.text(text + ", " + formatTimestamp(vue.comment_date * 1000));
+          if (vue.edit_date > 0)
+          {
+            var el = ts.parent().find('span[rel="tooltip"]');
+            var text2 = el.attr('title');
+            text2 += ", " + formatTimestamp(vue.edit_date * 1000).replace(/ /g, "\u00A0"); // prevent the short tooltip width from breaking date apart
+            el.attr('title', text2);
+          }
+        }
         if (anch)
         {
           id = parseInt(anch.substring(1), 10);
-          var ts = t.find(".comment-user .text-muted:last-child").last();
-          if (id > lastid)
+          var text = ts.text().trim();
+          ts.text(text + " #" + id);
+          ts.attr("title", "Link to post");
+          if (id < lastid)
           {
-            ts.after(' <a title="Link to post" class="text-muted" href="#' + anch + '">#' + id + '</a>');
-          } else {
-            ts.after(' <a title="Link to post" class="text-muted wrong-order" href="#' + anch + '">#' + id + '</a>');
+            ts.addClass("wrong-order");
           }
-          var h = t.find('.comment-user a[href^="/player/"]').attr('href');
+          var h = t.find('a[href^="/player/"]').first().attr('href');
           if (h)
           {
             var userid = h.match(/\d+/)[0];
@@ -2300,7 +2261,7 @@ function betterForum()
     // Warn about posting to another page
     if ($(".comment-holder").length == 20)
     {
-      $("#commentButton").after('<div>Note: posting to another page</div>');
+      $("#comment-form btn-primary").after('<div>Note: posting to another page</div>');
     }
   }
 
@@ -2736,7 +2697,7 @@ function pageEnhancements()
     ".anbt_favpanel {top: 20px; font-weight: normal; padding: 0 2px}" +
     ".anbt_favpanel:hover {color: #d9534f; cursor:pointer}" +
     ".anbt_favedpanel {color: #d9534f; border-color: #d9534f}" +
-    ".anbt_replaypanel {top: 50px; font-weight: normal; padding: 0 2px}" +
+    ".anbt_replaypanel {top: 55px; font-weight: normal; padding: 0 8px}" +
     ".anbt_replaypanel:hover {color: #8af; text-decoration: none}" +
     ".anbt_owncaption:before {content: ''; display: inline-block; background: #5C5; border: 1px solid #080; width: 10px; height: 10px; border-radius: 10px; margin-right: 10px;}" +
     ".gamepanel, .thumbpanel, .comment-body {word-wrap: break-word}" +
@@ -2748,7 +2709,7 @@ function pageEnhancements()
     ".anbt_hft:after {content: '[hide]'}" +
     ".anbt_hft, .anbt_unhidet {padding-left: 0.4em; cursor:pointer}" +
     ".forum-thread.anbt_hidden .anbt_hft:after {content: '[show]'}" +
-    ".anbt_threadtitle {margin: 0 20px 10px}" +
+    ".anbt_threadtitle {margin: 0 0 10px}" +
     ".avatar {box-sizing: content-box}" +
     ".pagination {margin: 0px}" +
     ".navbar {position: fixed; width: 100%; top: 0; left: 0; z-index: 1060}" + //floating navbar
@@ -2773,8 +2734,8 @@ function pageEnhancements()
   {
     var h = options.maxCommentHeight;
     GM_addStyle(
-      ".comment-holder:not(:target)>.row .comment-body {max-height: " + h + "px; position:relative}" +
-      ".comment-holder:not(:target)>.row .comment-body:before" +
+      ".comment-holder[id]:not(:target) .comment-body {overflow-y: hidden; max-height: " + h + "px; position:relative}" +
+      ".comment-holder[id]:not(:target) .comment-body:before" +
       "{content: 'Click to read more'; position:absolute; width:100%; height:50px; left:0; top:" + (h-50) + "px;" +
       "text-align: center; font-weight: bold; color: #fff; text-shadow: 0 0 2px #000; padding-top: 20px; background:linear-gradient(transparent, rgba(0,0,0,0.4))}"
     );
@@ -2789,7 +2750,7 @@ function pageEnhancements()
   }
   if (options.useOldFontSize)
   {
-    document.body.style.fontSize = "14px";
+    document.body.style.fontSize = "15px";
   }
   if (options.useOldFont)
   {
@@ -2822,16 +2783,19 @@ function pageEnhancements()
   var p = $(".navbar-toggle").parent();
   //p.prepend('<a href="/" class="gpe-wide" style="float:left; margin-right:8px"><img src="/img/logo-sm.png" width="166" height="43" alt="drawception" /></a>');
   p.append('<span class="gpe-wide gpe-spacer">&nbsp</span>');
-  p.append('<a href="/sandbox/" title="Sandbox" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item" style="border-radius: 5px 0px 0px 5px;"><span class="glyphicon glyphicon-edit" /></a>');
-  p.append('<a href="/browse/all-games/" title="Browse Games" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item" style="border-radius: 0px;"><span class="glyphicon glyphicon-folder-open" /></a>');
-  p.append('<a href="/contests/" title="Contests" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item" style="border-radius: 0px;"><span class="glyphicon glyphicon-tower" /></a>');
-  p.append('<a href="javascript:toggleLight()" title="Toggle light" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item" style="border-radius: 0px;"><span class="glyphicon glyphicon-eye-open" /></a>');
-  p.append('<a href="/leaderboard/" title="Leaderboards" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item" style="border-radius: 0px;"><span class="glyphicon glyphicon-fire" /></a>');
-  p.append('<a href="/faq/" title="FAQ" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item" style="border-radius: 0px;"><span class="glyphicon glyphicon-info-sign" /></a>');
-  p.append('<a href="/forums/" title="Forums" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item" style="border-radius: 0px;"><span class="glyphicon glyphicon-comment" /></a>');
-  p.append('<a href="/search/" title="Search" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item" style="border-radius: 0px;"><span class="glyphicon glyphicon-search" /></a>');
   p.append('<a id="menusettings" href="/settings/" title="Settings" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item" style="border-radius: 0px;"><span class="glyphicon glyphicon-cog" /></a>');
-  p.append('<a href="/logout" title="Log Out" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item logout-item" style="border-radius: 0px 5px 5px 0px;"><span class="glyphicon glyphicon-log-out" /></a>');
+  p.append('<a href="/sandbox/" title="Sandbox" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item" style="background:#5A5"><span class="fas fa-edit" style="color:#BFB" /></a>');
+  p.append('<a href="/browse/all-games/" title="Browse Games" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item"><span class="fas fa-folder-open" /></a>');
+  p.append('<a href="/contests/" title="Contests" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item"><span class="fas fa-trophy" /></a>');
+  p.append('<a href="javascript:toggleLight()" title="Toggle light" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item" style="background:#AA5"><span class="fas fa-eye" style="color:#FFB" /></a>');
+  p.append('<a href="/leaderboard/" title="Leaderboards" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item"><span class="fas fa-fire" /></a>');
+  p.append('<a href="/faq/" title="FAQ" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item"><span class="fas fa-question-circle " /></a>');
+  p.append('<a href="/forums/" title="Forums" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item" style="background:#55A"><span class="fas fa-comments" style="color:#BBF" /></a>');
+  p.append('<a href="/search/" title="Search" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item"><span class="fas fa-search" /></a>');
+  p.append('<a id="menusettings" href="/settings/" title="Settings" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item"><span class="fas fa-cog" /></a>');
+  p.append('<a href="/logout" title="Log Out" class="gpe-wide gpe-btn btn btn-menu navbar-btn navbar-user-item" style="background:#A55"><span class="fas fa-sign-out-alt" style="color:#FBB" /></a>');
+  // Let users with screens narrow enough so top bar isn't visible still use toggle light function
+  $("#main-menu").prepend('<a href="javascript:toggleLight()" class="list-group-item"><span class="fas fa-eye"></span> Toggle light</a>');
 
   //add menu items
   var p = $("#main-menu");
@@ -2839,8 +2803,8 @@ function pageEnhancements()
   p.append('<a href="/browse/all-games/" class="list-group-item"><span class="glyphicon glyphicon-folder-open"></span> Browse Games</a>');
 
   p = $("#navbar-user a[href^='/store/']").parent()
-  var inventory = $('<a href="#myItems" class="btn btn-menu navbar-btn navbar-user-item" data-toggle="modal" rel="tooltip" title="Inventory" style="border-radius: 5px 0px 0px 5px; border-style: none solid none none; border-width: 1px; border-color: rgb(0,0,0,.3);">' +
-    '<span class="glyphicon glyphicon-book glyphicon-1pxtweak add-opacity"></span></a>');
+  var inventory = $('<a href="#myItems" class="btn btn-menu navbar-btn navbar-user-item" data-toggle="modal" rel="tooltip" title="Inventory">' +
+    '<span class="fas fa-toolbox add-opacity"></span></a>');
   p.before(inventory);
   inventory.wrap('<div class="pull-left navbar-userbar gpe-wide-block " style="padding-right: 0px;">');
   inventory.tooltip({placement: "bottom"});
@@ -2887,10 +2851,10 @@ function pageEnhancements()
   // Make new notifications actually discernable from the old ones
   var num = $("#user-notify-count").text().trim();
   GM_addStyle(
-    "#user-notify-list .list-group .list-group-item .glyphicon {color: #888}" +
-    "#user-notify-list .list-group .list-group-item:nth-child(-n+" + num + ") .glyphicon {color: #2F5}" +
+    "#user-notify-list .list-group .list-group-item .fas {color: #888}" +
+    "#user-notify-list .list-group .list-group-item:nth-child(-n+" + num + ") .fas {color: #2F5}" +
     "a.wrong-order {color: #F99} div.comment-holder:target {background-color: #DFD}" +
-    ".comment-new .text-muted:after {content: 'New'; color: #2F5; font-weight: bold; background-color: #183; border-radius: 9px; display: inline-block; padding: 0px 6px; margin-left: 10px;}"
+    ".comment-new a.text-muted:last-child:after {content: 'New'; color: #2F5; font-weight: bold; background-color: #183; border-radius: 9px; display: inline-block; padding: 0px 6px; margin-left: 10px;}"
   );
 
   // Show an error if it occurs instead of "loading forever"
@@ -3222,7 +3186,7 @@ function pageEnhancements()
     versionDisplay = "ANBT v" + SCRIPT_VERSION + " | app " + appver;
     if (appver != SITE_VERSION) versionDisplay += "*";
     versionDisplay += " | common " + commonver;
-    if (commonver != "aa609409") versionDisplay += "*!!!";
+    if (commonver != "6daa7d0a") versionDisplay += "*!!!"; // didn't break with one update, hurray
   } catch(e)
   {
     versionDisplay = "ANBT v" + SCRIPT_VERSION;
@@ -3306,7 +3270,6 @@ localStorage.setItem("gpe_darkCSS",
   ".btn-menu{~#2e2e2e$}.logout-item{~#c93232$}.btn-menu:hover{~#232323$}.btn-yellow{~#8a874e$}.btn-yellow:hover{~#747034$}" +
   "a.label{color:#fff$}.text-muted,a.text-muted{color:#999$}a.wrong-order{color:#F99$}div.comment-holder:target{~#454$}" +
   ".popover{~#777$}.popover-title{~#666$;border-bottom:1px solid #444$}.popover.top .arrow:after{border-top-color:#777$}.popover.right .arrow:after{border-right-color:#777$}.popover.bottom .arrow:after{border-bottom-color:#777$}.popover.left .arrow:after{border-left-color:#777$}" +
-  ".comment-holder{border-bottom:1px solid #222$}" +
   ".label-fancy{~#444$;border-color:#333$;color:#FFF$}" +
   ".avatar,.profile-avatar{~#444$;border:1px solid #777$;}" +
   ".bg-lifesupport{~#444$}body{~#555$}.snap-content{~#333$}" +
@@ -3314,7 +3277,8 @@ localStorage.setItem("gpe_darkCSS",
   ".navbar-dropdown{~#444$}a.list-group-item{~#444$;color:#fff$;border:1px solid #222$}a.list-group-item:hover,a.list-group-item:focus{~#222$}" +
   ".likebutton.btn-success{color:#050$;~#5A5$}.likebutton.btn-success:hover{~#494$}" +
   ".thumbnail[style*='background-color: rgb(255, 255, 255)']{~#555$}" +
-   ".popup,.v--modal{~#666$;border:1px solid #222$}.btn-reaction{~#666$;border:none$;color:#AAA$}.create-game-wrapper{~#444$}" +
+  ".popup,.v--modal{~#666$;border:1px solid #222$}.btn-reaction{~#666$;border:none$;color:#AAA$}.create-game-wrapper{~#444$}" +
+  ".profile-header{~#555$}.profile-nav > li > a{~#333$}.profile-nav>li.active>a,.profile-nav>li>a:hover{~#555$}" + 
   ".gsc-control-cse{~#444$;border-color:#333$}.gsc-above-wrapper-area,.gsc-result{border:none$}.gs-snippet{color:#AAA$}.gs-visibleUrl{color:#8A8$}a.gs-title b,.gs-visibleUrl b{color:#EEE$}.gsc-adBlock{display:none$}.gsc-input{~#444$;border-color:#333$;color:#EEE$}" +
   // We have entered specificity hell...
   "a.anbt_replaypanel:hover{color:#8af$}" +
