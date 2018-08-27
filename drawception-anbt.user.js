@@ -2765,14 +2765,6 @@ function pageEnhancements()
   // Let users with screens narrow enough so top bar isn't visible still use toggle light function
   $("#main-menu").prepend('<a href="javascript:toggleLight()" class="list-group-item"><span class="fas fa-eye"></span> Toggle light</a>');
 
-  p = $("#navbar-user a[href^='/store/']").parent()
-  var inventory = $('<a href="#myItems" class="btn btn-menu navbar-btn navbar-user-item" data-toggle="modal" rel="tooltip" title="Inventory">' +
-    '<span class="fas fa-toolbox add-opacity"></span></a>');
-  p.before(inventory);
-  inventory.wrap('<div class="pull-left navbar-userbar gpe-wide-block">');
-  inventory.tooltip({placement: "bottom"});
-  inventory.click(getItems);
-
   p = $(".btn-menu-player").parent();
   var userlink = $('.player-dropdown a[href^="/player/"]').attr("href");
   var useravatar = $('.btn-menu-player').html();
