@@ -1344,9 +1344,7 @@ function betterGame()
           }
         }
         var ago = dateel.text();
-        var anchordiv = t.find("div[id]").first();
-        anchordiv.addClass("comment-holder"); // for highlighting targeted element
-        var anchorid = anchordiv.attr("id");
+        var anchorid = t.attr("id");
         var commentid = parseInt(anchorid.slice(1), 10);
         // Also allow linking to specific comment
         dateel.attr("title", "Link to comment");
