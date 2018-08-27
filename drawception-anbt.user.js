@@ -29,7 +29,6 @@ var options =
   pressureExponent: 0.5, // Smaller = softer tablet response, bigger = sharper
   brushSizes: [2, 5, 12, 35], // Brush sizes for choosing via keyboard
   chatAutoConnect: 0, // Whether to automatically connect to the chat
-  removeFlagging: 1, // Whether to remove flagging buttons
   ownPanelLikesSecret: 0,
   backup: 1,
   timeoutSound: 0,
@@ -1208,9 +1207,6 @@ function betterGame()
     .after(' <a href="#" class="btn btn-default" onclick="return reversePanels();" title="Reverse panels"><span class="fas fa-sort-amount-up"></span> Reverse</a>')
     .after(' <a href="#" class="btn btn-default" onclick="return likeAll();" title="Like all panels"><span class="fas fa-thumbs-up"></span> Like all</a>');
 
-  // Remove the temptation to judge
-  if (options.removeFlagging) $(".flagbutton").remove();
-
   // Panel favorite buttons
   var favButton = $('<span class="panel-number anbt_favpanel fas fa-heart text-muted" title="Favorite"></span>');
   favButton.click(function(e)
@@ -1889,9 +1885,6 @@ function convertForumTime(year, month, day, hours, minutes)
 
 function betterPlayer()
 {
-  // Remove the temptation to judge
-  if (options.removeFlagging) $('a.btn:contains("Report")').remove();
-
   // Linkify the links in location
   var pubinfo = $('.profile-user-header div>b:contains("Location")').parent();
   if (pubinfo.length)
@@ -2441,7 +2434,6 @@ function addScriptSettings()
   addGroup("Miscellaneous",
     [
       ["localeTimestamp", "boolean", "Format timestamps as your system locale (" + (new Date()).toLocaleString() +")"],
-      ["removeFlagging", "boolean", "Remove flagging buttons"],
       ["ownPanelLikesSecret", "boolean", "Hide your own panels' number of Likes (in game only)"],
       ["proxyImgur", "boolean", "Replace imgur.com links to filmot.com to load, in case your ISP blocks them"],
       ["ajaxRetry", "boolean", "Retry failed AJAX requests"],
