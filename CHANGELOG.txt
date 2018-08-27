@@ -1,3 +1,13 @@
+1.139.2018.08
+- Fix ANBT version display
+The following changes are made by EnderDragonneau:
+- Dark Theme: fix comment highlight, dashboard, profile, store, game creation, settings, search section, emote border when click, white ducks (they're invisible if they're gray)...
+- Remove "Inventory" button (this fix the user link)
+- Adding support for Beach 2 palette, change Valentin and Neon palette
+- Fix "Click to read more" link in comment
+- Fix game comments ID with post date
+- remove the "remove flag button" option
+
 1.138.2018.07
 - Replace glyphicons with font-awesome icons
 - Fix identification of replayable drawings, broken due to XHR hijacking
