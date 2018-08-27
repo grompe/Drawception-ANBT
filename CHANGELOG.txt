@@ -1,3 +1,6 @@
+1.140.2018.08
+- Correct the beach theme
+
 1.139.2018.08
 - Fix ANBT version display
 The following changes are made by EnderDragonneau:
