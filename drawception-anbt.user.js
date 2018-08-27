@@ -474,7 +474,7 @@ function handlePlayParameters()
     theme_blues: ["the blues", "#295c6f"],
     theme_spring: ["Spring", "#ffffff"],
     theme_beach: ["Beach classic", "#f7dca2"],
-	theme_beach_2: ["Beach","#2271a2"],
+    theme_beach_2: ["Beach","#2271a2"],
     theme_coty_2016: ["Colors of 2016", "#648589"],
     theme_bee: ["Bee", "#ffffff"],
     theme_coty_2017: ["Colors of 2017", "#5f7278"],
@@ -1109,15 +1109,17 @@ function toggleLight()
       css.id = "darkgraycss";
       css.type = "text/css";
       css.appendChild(document.createTextNode(localStorage.getItem("gpe_darkCSS")));
-	  Array.from(document.querySelectorAll("img[src='/img/duck-gray.svg']")).forEach(function (x) {
-	    x.setAttribute("src", "/img/duck.svg");
+      Array.from(document.querySelectorAll("img[src='/img/duck-gray.svg']")).forEach(function (x)
+      {
+        x.setAttribute("src", "/img/duck.svg");
       });
     }
     document.head.appendChild(css);
     inDark = 1;
   } else {
-	Array.from(document.querySelectorAll("img[src='/img/duck.svg']:not([alt='duck']),img[title='Quack'],img[src='/img/duck.svg'][rel='tooltip']")).forEach(function (x) {
-	  x.setAttribute("src", "/img/duck-gray.svg");
+    Array.from(document.querySelectorAll("img[src='/img/duck.svg']:not([alt='duck']),img[title='Quack'],img[src='/img/duck.svg'][rel='tooltip']")).forEach(function (x)
+    {
+      x.setAttribute("src", "/img/duck-gray.svg");
     });
     document.head.removeChild(css);
     inDark = 0;
@@ -2878,7 +2880,8 @@ mark.style = "display:none";
 document.body.appendChild(mark);
 if (parseInt(localStorage.getItem("gpe_inDark"), 10) == 1)
 {
-  Array.from(document.querySelectorAll("img[src='/img/duck-gray.svg']")).forEach(function (x) {
+  Array.from(document.querySelectorAll("img[src='/img/duck-gray.svg']")).forEach(function (x)
+  {
     x.setAttribute("src", "/img/duck.svg");
   });
 }
