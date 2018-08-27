@@ -2684,7 +2684,7 @@ function pageEnhancements()
     ".gpe-spacer {margin-right: 7px; float:left}" +
     "@media (min-width:992px) {.navbar-toggle,.btn-menu-player {display: none} .gpe-wide {display: inline} .gpe-wide-block {display: block}}" +
     "@media (min-width:1200px) {.gpe-btn {padding: 5px 16px;} .gpe-spacer {margin-right: 20px;} .panel-number {left: -30px}}" +
-    "#anbtver {font-size: 10px; position:absolute; opacity:0.3; right:10px; top:50px}" +
+    "#anbtver {font-size: 10px; position:absolute; opacity:0.3; right:10px}" +
     ".anbt_paneldel {position:absolute; padding:1px 6px; color:#FFF; background:#d9534f; text-decoration: none !important; right: 18px; border-radius: 5px}" +
     ".anbt_paneldel:hover {background:#d2322d}" +
     ".anbt_favpanel {top: 20px; font-weight: normal; padding: 0 2px}" +
@@ -2846,7 +2846,7 @@ function pageEnhancements()
   {
     versionDisplay = "ANBT v" + SCRIPT_VERSION;
   }
-  $("#navbar-user").append('<div id="anbtver">' + versionDisplay + '</div>');
+  $("#header-bar-container").append('<div id="anbtver">' + versionDisplay + '</div>');
 
   $(".footer-main .list-unstyled").eq(0).append('<li><a href="/forums/general/11830/anbt-script/?page=9999">ANBT script</a></li>');
   $(".footer-main .list-unstyled").eq(1).append('<li><a href="http://drawception.wikia.com/">Wiki</a></li>');
