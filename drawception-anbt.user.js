@@ -1109,10 +1109,16 @@ function toggleLight()
       css.id = "darkgraycss";
       css.type = "text/css";
       css.appendChild(document.createTextNode(localStorage.getItem("gpe_darkCSS")));
+	  Array.from(document.querySelectorAll("img[src='/img/duck-gray.svg']")).forEach(function (x) {
+	    x.setAttribute("src", "/img/duck.svg");
+      });
     }
     document.head.appendChild(css);
     inDark = 1;
   } else {
+	Array.from(document.querySelectorAll("img[src='/img/duck.svg']:not([alt='duck']),img[title='Quack'],img[src='/img/duck.svg'][rel='tooltip']")).forEach(function (x) {
+	  x.setAttribute("src", "/img/duck-gray.svg");
+    });
     document.head.removeChild(css);
     inDark = 0;
   }
@@ -2870,7 +2876,12 @@ var mark = document.createElement("b");
 mark.id = "_anbt_";
 mark.style = "display:none";
 document.body.appendChild(mark);
-
+if (parseInt(localStorage.getItem("gpe_inDark"), 10) == 1)
+{
+  Array.from(document.querySelectorAll("img[src='/img/duck-gray.svg']")).forEach(function (x) {
+    x.setAttribute("src", "/img/duck.svg");
+  });
+}
 if (pagodaBoxError()) return;
 
 if (typeof DrawceptionPlay == "undefined")
@@ -2927,6 +2938,7 @@ localStorage.setItem("gpe_darkCSS",
   ".popup,.v--modal{~#666$;border:1px solid #222$}.btn-reaction{~#666$;border:none$;color:#AAA$}.create-game-wrapper{~#444$}" +
   ".profile-header{~#555$}.profile-nav > li > a{~#333$}.profile-nav>li.active>a,.profile-nav>li>a:hover{~#555$}" + 
   ".gsc-control-cse{~#444$;border-color:#333$}.gsc-above-wrapper-area,.gsc-result{border:none$}.gs-snippet{color:#AAA$}.gs-visibleUrl{color:#8A8$}a.gs-title b,.gs-visibleUrl b{color:#EEE$}.gsc-adBlock{display:none$}.gsc-input{~#444$;border-color:#333$;color:#EEE$}" +
+   ".highlight{border:none$;background:#454$}#header-emotes{~#555$}#header-bar-container{border:none$}.paypal-button-tag-content{color:#EEE$}.numlikes{color:#EEE$}.gsc-input-box{~#444$;border-color:#333$}.gsc-completion-container{~#333$;border-color:#000$}.gsc-completion-selected{~#222$}.gsc-completion-container b{color:#AAA$}.alert-nice{~#4a4a4a$}.store-buy-coins{~#777$}.store-buy-coins:hover{~#666$}.store-buy-coins>h2,.store-buy-coins>h2>small{color:#EEE$}.store-package-selector{~#888$}.store-package-selector>label{color:#EEE$}.label-stat{~#444$;color:#EEE$;border:1px solid #555$}.label-stat.disabled{~#333$}.option{~#2e2e2e$;color:#EEE$;border-color:#2e2e2e$}.option.selected{border-color:#e2e2e2$}.sleek-select{~#2e2e2e$}select{color:#EEE$}.modal-note{color:#EEE$}.vue-dialog-button{~#555$;border:none$}.vue-dialog-button:hover{~#5a5a5a$}.vue-dialog-buttons{border-top:1px solid #222$}.dashboard-item{~#333$}legend{color:#EEE$}.list-group-item{~#444$;color:#EEE$;border:1px solid #222$}.alert-warning{color:#EEE$;~#555$;border-color:#555$}.btn-reaction.active{border:1px solid #EEE$}.bg-shadow-box{~#333$}.btn-gray{~#222$;border:none$}.btn-gray:hover{color:#EEE$;~#1a1a1a$}.btn-bright{~#333$;color:#EEE$}" +
   // We have entered specificity hell...
   "a.anbt_replaypanel:hover{color:#8af$}" +
   ".anbt_favedpanel{color:#d9534f$}" +
