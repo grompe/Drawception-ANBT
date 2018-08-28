@@ -2632,6 +2632,7 @@ function pageEnhancements()
   var inplay = loc.match(/drawception\.com\/(:?contests\/)?play\/(.*)/);
   if (options.newCanvas)
   {
+    var hasCanvas = document.getElementById("canvas-holder");
     // If created a friend game, the link won't present playable canvas
     var hasCanvasOrGameForm = document.querySelector(".playtimer");
     var captioncontest = loc.match(/contests\/play\//) && !hasCanvas;
