@@ -1,3 +1,7 @@
+1.142.2018.09
+The following changes are made by EnderDragonneau:
+- Palette revamped: Grayscale, new name for Beach classic and Beach, new palette: Grimby Grays
+
 1.141.2018.08
 - New canvas: fix loading for drawing contests (thanks EnderDragonneau)
 
