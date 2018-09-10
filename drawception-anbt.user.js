@@ -474,7 +474,7 @@ function handlePlayParameters()
     theme_blues: ["the blues", "#295c6f"],
     theme_spring: ["Spring", "#ffffff"],
     theme_beach: ["Beach", "#f7dca2"],
-    theme_beach_2: ["Tile pool","#2271a2"],
+    theme_beach_2: ["Tide Pool","#2271a2"],
     theme_coty_2016: ["Colors of 2016", "#648589"],
     theme_bee: ["Bee", "#ffffff"],
     theme_coty_2017: ["Colors of 2017", "#5f7278"],
