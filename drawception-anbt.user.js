@@ -482,7 +482,8 @@ function handlePlayParameters()
     theme_coty_2018: ["Canyon Sunset", "#2e1b50"],
     theme_juice: ["Juice", "#fced95"],
     theme_tropical: ["Tropical", "#2f0946"],
-    theme_grimby_grays: ["Grimby Grays", "#f0efeb"]
+    theme_grimby_grays: ["Grimby Grays", "#f0efeb"],
+    theme_fury_road: ["Fury Road", "#893f1d"]
   };
   var pal = info.palette;
   var paldata;
