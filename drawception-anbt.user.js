@@ -1908,7 +1908,7 @@ function betterPlayer()
     var a = $("<h2>ANBT stuff: </h2>");
     a.append('<a class="btn btn-primary" href="#anbt_panelfavorites" onclick="viewMyPanelFavorites();">Panel Favorites</a> ');
     a.append('<a class="btn btn-primary" href="#anbt_gamebookmarks" onclick="viewMyGameBookmarks();">Game Bookmarks</a> ');
-    var profilemain = $(".profile-owner-content-main").first();
+    var profilemain = $(".profile-layout-content").first();
     profilemain.prepend('<p id="anbt_userpage">' + randomGreeting() + '</p>');
     profilemain.prepend(a);
 
