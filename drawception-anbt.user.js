@@ -1253,8 +1253,10 @@ function betterGame()
   $(".gamepanel").each(function(){
     var t = $(this).parent();
     if (t.find(".gamepanel-tools>a:last-child").length === 0) return;
+    var panels = localStorage.getItem("gpe_panelFavorites");
+    panels = panels ? JSON.parse(panels) : {};
     var id = t.find(".gamepanel-tools>a:last-child")[0].href.match(/\/panel\/[^\/]+\/([^\/]+)\/[^\/]+\//)[1];
-    if (JSON.parse(localStorage.getItem("gpe_panelFavorites"))[id] !== undefined) {
+    if (panels[id] !== undefined) {
       t.find(".anbt_favpanel").addClass("anbt_favedpanel");
     } else {
       t.find(".anbt_favpanel").removeClass("anbt_favedpanel");
@@ -1506,7 +1508,9 @@ function betterPanel()
       $(this).attr("disabled", "disabled").find("b").text("Favorited!");
     }
   );
-  if (JSON.parse(localStorage.getItem("gpe_panelFavorites"))[document.location.href.match(/\/panel\/[^\/]+\/([^\/]+)\//)[1]] !== undefined) favButton.attr("disabled","disabled").find("b").text("Favorited!");
+  var panels = localStorage.getItem("gpe_panelFavorites");
+  panels = panels ? JSON.parse(panels) : {};
+  if (panels[document.location.href.match(/\/panel\/[^\/]+\/([^\/]+)\//)[1]] !== undefined) favButton.attr("disabled","disabled").find("b").text("Favorited!");
   $(".panel-caption-display>.flex,.gamepanel-holder>.gamepanel").after(favButton);
 
   var d, img = $(".gamepanel img");
