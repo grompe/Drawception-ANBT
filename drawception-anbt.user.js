@@ -296,7 +296,7 @@ function extractInfoFromHTML(html)
     caption: drawapp.getAttribute("phrase"),
     image: drawapp.getAttribute("img_url"),
     palette: drawapp.getAttribute("theme_id"),
-    bgbutton: drawapp.getAttribute(":bg_layer") == "1",
+    bgbutton: drawapp.getAttribute(":bg_layer") == "true",
     playerurl: "/profile/",
     avatar: null,
     coins: "-",
