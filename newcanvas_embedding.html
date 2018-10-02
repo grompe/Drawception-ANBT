@@ -655,7 +655,7 @@ button:disabled {
   <div id="myheader">
     <div id="headercont">
       <div class="headerleft">
-        <a href="/" title="Home"><img src="/img/logo-d.png"></a>
+        <a href="/" title="Home" id="quit"><img src="/img/logo-d.png"></a>
         <span id="headerinfo" class="hideonsmall">New Canvas v43</span>
       </div>
       <div class="headerright">
@@ -2727,6 +2727,7 @@ function bindEvents()
         ID("imgururl").childNodes[0].nodeValue = "Uploaded image";
         ID("imgurdelete").href = "http://imgur.com/delete/" + r.data.deletehash;
         ID("imgurerror").childNodes[0].nodeValue = "";
+        if (window.inforum) window.frameElement.ownerDocument.getElementById("input-comment").value += "![](http://i.imgur.com/" + r.data.id + ".png)";
       } else {
         var err = r.data ? ("Imgur error: " + r.data.error) : ("Error: " + r);
         ID("imgurerror").childNodes[0].nodeValue = err;

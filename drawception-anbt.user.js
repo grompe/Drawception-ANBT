@@ -15,7 +15,7 @@
 function wrapped() {
 
 var SCRIPT_VERSION = "1.142.2018.09";
-var NEWCANVAS_VERSION = 43; // Increase to update the cached canvas
+var NEWCANVAS_VERSION = 45; // Increase to update the cached canvas
 var SITE_VERSION = "a84e6c5f"; // Last seen site version
 
 // == DEFAULT OPTIONS ==
@@ -160,6 +160,7 @@ function setupNewCanvas(insandbox, url, origpage)
     //localStorage.setItem("anbt_canvasHTML", atob(""));
     return;
   }
+  var inforum = url.match(/forums\//);
   // Save friend game id if any
   var friendgameid = url.match(/play\/(.+)\//);
 
@@ -175,12 +176,14 @@ function setupNewCanvas(insandbox, url, origpage)
 
   // Show normal address
   var normalurl;
-  if (insandbox)
+  if (insandbox && !inforum)
   {
     normalurl = "/sandbox/";
     if (panelid) normalurl += "#" + panelid[1];
   } else if (incontest) {
     normalurl = "/contests/play/";
+  } else if (inforum) {
+    normalurl = url.match(/\/forums\/?.+/);
   } else {
     normalurl = "/play/";
     if (friendgameid) normalurl += friendgameid[1] + "/";
@@ -190,11 +193,43 @@ function setupNewCanvas(insandbox, url, origpage)
     if (location.pathname + location.hash != normalurl) history.pushState({}, document.title, normalurl);
   } catch(e) {};
 
+  if (inforum) {
+    if (document.querySelector(".v--modal-overlay")) document.querySelector(".v--modal-overlay").outerHTML = "";
+    var div = document.querySelector(".wrapper").children[1];
+    var iframe = document.createElement("iframe");
+    var modalOverlay = document.createElement("div");
+    modalOverlay.setAttribute("class", "v--modal-overlay")
+    iframe.id = "iframe";
+    iframe.setAttribute("class", "v--modal-background-click");
+    modalOverlay.append(iframe);
+    div.append(modalOverlay);
+    iframe = iframe.contentWindow;
+    iframe.document.open();
+    iframe.anbtReady = function() {
+      iframe.inforum = inforum;
+      iframe.insandbox = insandbox;
+      iframe.incontest = incontest;
+      iframe.options = options;
+      iframe.alarmSoundOgg = sound;
+      iframe.vertitle = vertitle;
+    }
+    iframe.document.write(canvasHTML);
+    iframe.document.close();
+    var iframeFinish = setInterval(function() {
+      if (typeof document.getElementById("iframe").contentWindow.ID === "undefined") return;
+      var script = document.createElement("script");
+      script.textContent = "(" + needToGoDeeper.toString() + ")();";
+      iframe.document.body.append(script);
+      clearInterval(iframeFinish);
+    }, 100);
+    return;
+  }
   document.open();
   window.anbtReady = function()
   {
     if (friendgameid) window.friendgameid = friendgameid[1];
     if (panelid) window.panelid = panelid[1];
+    window.inforum = inforum;
     window.insandbox = insandbox;
     window.incontest = incontest;
     window.options = options;
@@ -369,6 +404,9 @@ function handleCommonParameters()
   ID("infogames").innerHTML = gameinfo.pubgames;
   ID("infofriendgames").innerHTML = gameinfo.friendgames || 0;
   ID("infonotifications").innerHTML = gameinfo.notifications;
+  if (inforum) {
+    document.querySelector(".headerright").hidden = true;
+  }
 }
 
 function handleSandboxParameters()
@@ -611,6 +649,22 @@ function bindCanvasEvents()
     return anbt.unsaved && !confirm("You haven't saved the drawing. Abandon?");
   };
 
+  if (window.inforum) {
+    ID("quit").addEventListener("click", function (e) {
+      e.preventDefault;
+      window.top.location.href = "https://drawception.com/";
+    })
+    var backForum = document.createElement("button");
+    backForum.href = "/";
+    backForum.setAttribute("class", "submit exit");
+    backForum.title = "Exit";
+    backForum.textContent = "Exit";
+    backForum.addEventListener("click", function (e) {
+      e.preventDefault;
+      window.frameElement.ownerDocument.querySelector(".v--modal-overlay").outerHTML = "";
+    })
+    ID("submit").parentNode.insertBefore(backForum, ID("submit").nextSibling);
+  }
   ID("exit").addEventListener('click', function()
   {
     if (window.incontest)
@@ -2150,7 +2204,9 @@ function betterForum()
       ".anbt_necropost1:after {background: none}" +
       ".anbt_necropost2:after {background-repeat: no-repeat; background-position: center}" +
       ".anbt_necropost3:after {}" +
-      ".anbt_necropost span.muted:after {content: ' (old post)'}"
+      ".anbt_necropost span.muted:after {content: ' (old post)'}" +
+      "iframe {border: none}" +
+      ".v--modal-overlay .v--modal-background-click {padding-bottom: 0}"
     );
   }
   // Linkify the links
@@ -2353,6 +2409,19 @@ function betterForum()
     if (!hidden) tempUnhideLink.hide();
     $(".forum-thread").first().before(tempUnhideLink);
   }
+  $(".btn.btn-default").click(function(e){
+    if ($(this).text().match(/Draw/)) {
+      if (!$(this).hasClass("click")) {
+        var delModal = setInterval(function () {
+          if (!document.querySelector(".v--modal-overlay")) return;
+          document.querySelector(".v--modal-overlay").outerHTML = "";
+          clearInterval(delModal);
+        }, 100)
+        $(this).addClass("click")
+      }
+      setupNewCanvas(true, document.location.href);
+    }
+  });
 }
 
 function loadScriptSettings()
