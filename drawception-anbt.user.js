@@ -2,7 +2,7 @@
 // @name         Bertrand's Drawception ANBT
 // @author       Bertrand the Healer
 // @namespace    https://bertrandthehealer.github.io/
-// @version      1.176.2018.07
+// @version      1.177.2018.12
 // @description  Enhancement script for Drawception.com - Artists Need Better Tools
 // @downloadURL  https://raw.github.com/bertrandthehealer/Drawception-ANBT/master/drawception-anbt.user.js
 // @match        http://drawception.com/*
@@ -14,9 +14,9 @@
 
 function wrapped() {
 
-var SCRIPT_VERSION = "1.176.2018.07";
-var NEWCANVAS_VERSION = 37; // Increase to update the cached canvas
-var SITE_VERSION = "2.8.4"; // Last seen site version
+var SCRIPT_VERSION = "1.177.2018.12";
+var NEWCANVAS_VERSION = 43; // Increase to update the cached canvas
+var SITE_VERSION = "a84e6c5f"; // Last seen site version
 
 // == DEFAULT OPTIONS ==
 
@@ -29,7 +29,6 @@ var options =
   pressureExponent: 0.5, // Smaller = softer tablet response, bigger = sharper
   brushSizes: [2, 5, 12, 35], // Brush sizes for choosing via keyboard
   chatAutoConnect: 0, // Whether to automatically connect to the chat
-  removeFlagging: 1, // Whether to remove flagging buttons
   ownPanelLikesSecret: 0,
   backup: 1,
   timeoutSound: 0,
@@ -470,7 +469,7 @@ function handlePlayParameters()
     theme_thanksgiving: ["Thanksgiving", "#f5e9ce"],
     halloween: ["Halloween", "#444444"],
     theme_cga: ["CGA", "#ffff55"],
-    shades_of_grey: ["Grayscale", "#eeeeee"],
+    shades_of_grey: ["Grayscale", "#e9e9e9"],
     theme_bw: ["Black and white", "#ffffff"],
     theme_gameboy: ["Gameboy", "#9bbc0f"],
     theme_neon: ["Neon", "#00abff"],
@@ -479,6 +478,7 @@ function handlePlayParameters()
     theme_blues: ["the blues", "#295c6f"],
     theme_spring: ["Spring", "#ffffff"],
     theme_beach: ["Beach", "#f7dca2"],
+    theme_beach_2: ["Tile pool","#2271a2"],
     theme_coty_2016: ["Colors of 2016", "#648589"],
     theme_bee: ["Bee", "#ffffff"],
     theme_coty_2017: ["Colors of 2017", "#5f7278"],
@@ -486,6 +486,7 @@ function handlePlayParameters()
     theme_coty_2018: ["Canyon Sunset", "#2e1b50"],
     theme_juice: ["Juice", "#fced95"],
     theme_tropical: ["Tropical", "#2f0946"],
+    theme_grimby_grays: ["Grimby Grays", "#f0efeb"]
   };
   var pal = info.palette;
   var paldata;
@@ -1113,10 +1114,18 @@ function toggleLight()
       css.id = "darkgraycss";
       css.type = "text/css";
       css.appendChild(document.createTextNode(localStorage.getItem("gpe_darkCSS")));
+      Array.from(document.querySelectorAll("img[src='/img/duck-gray.svg']")).forEach(function (x)
+      {
+        x.setAttribute("src", "/img/duck.svg");
+      });
     }
     document.head.appendChild(css);
     inDark = 1;
   } else {
+    Array.from(document.querySelectorAll("img[src='/img/duck.svg']:not([alt='duck']),img[title='Quack'],img[src='/img/duck.svg'][rel='tooltip']")).forEach(function (x)
+    {
+      x.setAttribute("src", "/img/duck-gray.svg");
+    });
     document.head.removeChild(css);
     inDark = 0;
   }
@@ -1211,9 +1220,6 @@ function betterGame()
   $("#btn-copy-url")
     .after(' <a href="#" class="btn btn-default" onclick="return reversePanels();" title="Reverse panels"><span class="fas fa-sort-amount-up"></span> Reverse</a>')
     .after(' <a href="#" class="btn btn-default" onclick="return likeAll();" title="Like all panels"><span class="fas fa-thumbs-up"></span> Like all</a>');
-
-  // Remove the temptation to judge
-  if (options.removeFlagging) $(".flagbutton").remove();
 
   // Panel favorite buttons
   var favButton = $('<span class="panel-number anbt_favpanel fas fa-heart text-muted" title="Favorite"></span>');
@@ -1352,9 +1358,7 @@ function betterGame()
           }
         }
         var ago = dateel.text();
-        var anchordiv = t.find("div[id]").first();
-        anchordiv.addClass("comment-holder"); // for highlighting targeted element
-        var anchorid = anchordiv.attr("id");
+        var anchorid = t.attr("id");
         var commentid = parseInt(anchorid.slice(1), 10);
         // Also allow linking to specific comment
         dateel.attr("title", "Link to comment");
@@ -1405,7 +1409,7 @@ function betterGame()
         var t = $(this);
         if ((t.height() > h-50) && !$(location.hash).has(t).length)
         {
-          location.hash = "#p" + t.attr("id");
+          location.hash = "#" + t.parent().parent().attr("id");
         }
       });
     }
@@ -1893,9 +1897,6 @@ function convertForumTime(year, month, day, hours, minutes)
 
 function betterPlayer()
 {
-  // Remove the temptation to judge
-  if (options.removeFlagging) $('a.btn:contains("Report")').remove();
-
   // Linkify the links in location
   var pubinfo = $('.profile-user-header div>b:contains("Location")').parent();
   if (pubinfo.length)
@@ -2445,7 +2446,6 @@ function addScriptSettings()
   addGroup("Miscellaneous",
     [
       ["localeTimestamp", "boolean", "Format timestamps as your system locale (" + (new Date()).toLocaleString() +")"],
-      ["removeFlagging", "boolean", "Remove flagging buttons"],
       ["ownPanelLikesSecret", "boolean", "Hide your own panels' number of Likes (in game only)"],
       ["proxyImgur", "boolean", "Replace imgur.com links to filmot.com to load, in case your ISP blocks them"],
       ["ajaxRetry", "boolean", "Retry failed AJAX requests"],
@@ -2639,6 +2639,7 @@ function pageEnhancements()
   var inplay = loc.match(/drawception\.com\/(:?contests\/)?play\/(.*)/);
   if (options.newCanvas)
   {
+    var hasCanvas = document.getElementById("canvas-holder");
     // If created a friend game, the link won't present playable canvas
     var hasCanvasOrGameForm = document.querySelector(".playtimer");
     var captioncontest = loc.match(/contests\/play\//) && !hasCanvas;
@@ -2691,7 +2692,7 @@ function pageEnhancements()
     ".gpe-spacer {margin-right: 7px; float:left}" +
     "@media (min-width:992px) {.navbar-toggle,.btn-menu-player {display: none} .gpe-wide {display: inline} .gpe-wide-block {display: block}}" +
     "@media (min-width:1200px) {.gpe-btn {padding: 5px 16px;} .gpe-spacer {margin-right: 20px;} .panel-number {left: -30px}}" +
-    "#anbtver {font-size: 10px; position:absolute; opacity:0.3; right:10px; top:50px}" +
+    "#anbtver {font-size: 10px; position:absolute; opacity:0.3; right:10px}" +
     ".anbt_paneldel {position:absolute; padding:1px 6px; color:#FFF; background:#d9534f; text-decoration: none !important; right: 18px; border-radius: 5px}" +
     ".anbt_paneldel:hover {background:#d2322d}" +
     ".anbt_favpanel {top: 20px; font-weight: normal; padding: 0 2px}" +
@@ -2744,7 +2745,7 @@ function pageEnhancements()
       var t = $(this);
       if ((t.height() > h-50) && !$(location.hash).has(t).length)
       {
-        location.hash = "#p" + t.attr("id");
+        location.hash = "#" + t.parent().parent().attr("id");
       }
     });
   }
@@ -2798,27 +2799,6 @@ function pageEnhancements()
   var p = $("#main-menu");
   p.append('<a href="javascript:toggleLight()" class="list-group-item"><span class="glyphicon glyphicon-eye-open"></span> Toggle Light</a>');
   p.append('<a href="/browse/all-games/" class="list-group-item"><span class="glyphicon glyphicon-folder-open"></span> Browse Games</a>');
-
-  p = $("#navbar-user a[href^='/store/']").parent()
-  var inventory = $('<a href="#myItems" class="btn btn-menu navbar-btn navbar-user-item" data-toggle="modal" rel="tooltip" title="Inventory">' +
-    '<span class="fas fa-toolbox add-opacity"></span></a>');
-  p.before(inventory);
-  inventory.wrap('<div class="pull-left navbar-userbar gpe-wide-block " style="padding-right: 0px;">');
-  inventory.tooltip({placement: "bottom"});
-  inventory.click(getItems);
-
-  //Change inventory button
-  document.getElementById("user-coins-value").parentElement.style.borderRadius = "0px 5px 5px 0px";
-
-  //change tab appearance in profile page
-  try{
-    document.getElementsByClassName("active")[0].firstChild.style.border = "none";
-    document.getElementsByClassName("active")[0].firstChild.style.backgroundColor = "rgb(0,0,0,.2)";
-    document.getElementsByClassName("active")[0].firstChild.style.borderRadius = "5px";
-  }catch{
-
-  }
-  
 
   p = $(".btn-menu-player").parent();
   var userlink = $('.player-dropdown a[href^="/player/"]').attr("href");
@@ -3188,7 +3168,7 @@ function pageEnhancements()
   {
     versionDisplay = "ANBT v" + SCRIPT_VERSION;
   }
-  $("#navbar-user").append('<div id="anbtver">' + versionDisplay + '</div>');
+  $("#header-bar-container").append('<div id="anbtver">' + versionDisplay + '</div>');
 
   $(".footer-main .list-unstyled").eq(0).append('<li><a href="/forums/general/11830/anbt-script/?page=9999">ANBT script</a></li>');
   $(".footer-main .list-unstyled").eq(1).append('<li><a href="http://drawception.wikia.com/">Wiki</a></li>');
@@ -3220,7 +3200,13 @@ var mark = document.createElement("b");
 mark.id = "_anbt_";
 mark.style = "display:none";
 document.body.appendChild(mark);
-
+if (parseInt(localStorage.getItem("gpe_inDark"), 10) == 1)
+{
+  Array.from(document.querySelectorAll("img[src='/img/duck-gray.svg']")).forEach(function (x)
+  {
+    x.setAttribute("src", "/img/duck.svg");
+  });
+}
 if (pagodaBoxError()) return;
 
 if (typeof DrawceptionPlay == "undefined")
@@ -3253,7 +3239,7 @@ localStorage.setItem("gpe_darkCSS",
   ".btn-info:hover,.btn-info:focus,.btn-info:active,.btn-info.active,.open .dropdown-toggle.btn-info{~#1c5454$;border-bottom-color:#133939$;border-left-color:#133939$;border-right-color:#133939$;border-top-color:#133939$;color:#DDD$}" +
   ".navbar-default .navbar-toggle:hover,.navbar-default .navbar-toggle:focus{~#3b3b3b$}.navbar-toggle{~#393939$}.navbar{border-bottom:1px solid #000$}.forum-thread-starter,.breadcrumb,.regForm{~#555$}" +
   ".form-control{~#555$;border:1px solid #000$;color:#EEE$}code,pre{~#656$;color:#FCC$}body{color:#EEE$}footer{~#333$;border-top:1px solid #000$}" +
-  ".pagination>li>a:hover,.pagination>li>span:hover,.pagination>li>a:focus,.pagination>li>span:focus{~#444$}.pagination>li>a,.pagination>li>span{~#555$;border:1px solid #000$}" +
+  ".pagination>li:not(.disabled):not(.active),.pagination>li:not(.disabled):not(.active)>a:hover,.pagination>li:not(.disabled):not(.active)>span:hover,.pagination>li:not(.disabled):not(.active)>a:focus,.pagination>li:not(.disabled):not(.active)>span:focus{~#444$}.pagination>li>a,.pagination>li>span{~#555$;border:1px solid #000$}" +
   ".pagination>.active>a,.pagination>.active>span,.pagination>.active>a:hover,.pagination>.active>span:hover,.pagination>.active>a:focus,.pagination>.active>span:focus{~#666$;border-top:1px solid #444$;border-bottom:1px solid #444$}" +
   ".drawingForm{~#555$}.well{~#666$;border:1px solid #333$}#timeleft{color:#AAA$}legend{border-bottom:1px solid #000$}.thumbpanel{color:#EEE;~#555$}.thumbpanel img{~#fffdc9$}.panel-number,.modal-content,.profile-user-header{~#555$}" +
   "#commentForm{~#555$;border:1px solid #000$}.modal-header,.nav-tabs{border-bottom:1px solid #000$}hr,.modal-footer{border-top:1px solid #000$}" +
@@ -3277,6 +3263,7 @@ localStorage.setItem("gpe_darkCSS",
   ".popup,.v--modal{~#666$;border:1px solid #222$}.btn-reaction{~#666$;border:none$;color:#AAA$}.create-game-wrapper{~#444$}" +
   ".profile-header{~#555$}.profile-nav > li > a{~#333$}.profile-nav>li.active>a,.profile-nav>li>a:hover{~#555$}" + 
   ".gsc-control-cse{~#444$;border-color:#333$}.gsc-above-wrapper-area,.gsc-result{border:none$}.gs-snippet{color:#AAA$}.gs-visibleUrl{color:#8A8$}a.gs-title b,.gs-visibleUrl b{color:#EEE$}.gsc-adBlock{display:none$}.gsc-input{~#444$;border-color:#333$;color:#EEE$}" +
+   ".highlight{border:none$;background:#454$}#header-emotes{~#555$}#header-bar-container{border:none$}.paypal-button-tag-content{color:#EEE$}.numlikes{color:#EEE$}.gsc-input-box{~#444$;border-color:#333$}.gsc-completion-container{~#333$;border-color:#000$}.gsc-completion-selected{~#222$}.gsc-completion-container b{color:#AAA$}.alert-nice{~#4a4a4a$}.store-buy-coins{~#777$}.store-buy-coins:hover{~#666$}.store-buy-coins>h2,.store-buy-coins>h2>small{color:#EEE$}.store-package-selector{~#888$}.store-package-selector>label{color:#EEE$}.label-stat{~#444$;color:#EEE$;border:1px solid #555$}.label-stat.disabled{~#333$}.option{~#2e2e2e$;color:#EEE$;border-color:#2e2e2e$}.option.selected{border-color:#e2e2e2$}.sleek-select{~#2e2e2e$}select{color:#EEE$}.modal-note{color:#EEE$}.vue-dialog-button{~#555$;border:none$}.vue-dialog-button:hover{~#5a5a5a$}.vue-dialog-buttons{border-top:1px solid #222$}.dashboard-item{~#333$}legend{color:#EEE$}.list-group-item{~#444$;color:#EEE$;border:1px solid #222$}.alert-warning{color:#EEE$;~#555$;border-color:#555$}.btn-reaction.active{border:1px solid #EEE$}.bg-shadow-box{~#333$}.btn-gray{~#222$;border:none$}.btn-gray:hover{color:#EEE$;~#1a1a1a$}.btn-bright{~#333$;color:#EEE$}" +
   // We have entered specificity hell...
   "a.anbt_replaypanel:hover{color:#8af$}" +
   ".anbt_favedpanel{color:#d9534f$}" +

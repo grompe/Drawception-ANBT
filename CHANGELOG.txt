@@ -1,3 +1,117 @@
+1.177.2018.07
+- Merge changes from original version:
+  1.142.2018.09
+  The following changes are made by EnderDragonneau:
+  - Palette revamped: Grayscale, new name for Beach classic and Beach, new palette: Grimby Grays
+
+  1.141.2018.08
+  - New canvas: fix loading for drawing contests (thanks EnderDragonneau)
+
+  1.140.2018.08
+  - Correct the beach theme
+
+  1.139.2018.08
+  - Fix ANBT version display
+  The following changes are made by EnderDragonneau:
+  - Dark Theme: fix comment highlight, dashboard, profile, store, game creation, settings, search section, emote border when click, white ducks (they're invisible if they're gray)...
+  - Remove "Inventory" button (this fix the user link)
+  - Adding support for Beach 2 palette, change Valentin and Neon palette
+  - Fix "Click to read more" link in comment
+  - Fix game comments ID with post date
+  - remove the "remove flag button" option
+
+  1.138.2018.07
+  - Replace glyphicons with font-awesome icons
+  - Fix identification of replayable drawings, broken due to XHR hijacking
+  - Add 'Toggle light' as a menu item to make it accessible for mobile users
+  - Fix the anchor link when expanding a limited height game comment
+  - Add distance between favorite and replay buttons in game view. 'Literally unplayable!'
+
+  1.137.2018.07
+  - Add support for the new palette: Tropical
+  - Fix double marking on new game comments
+  - Fix user profile ANBT stuff, display of favorites; remove old cover code, remove old dropdown removal
+  - Dark theme: fix user profiles
+  - Fix timestamp and post handling in forum, games, profiles
+  - Change caption limit to 45
+  - Fix detection of friend games; add proper detection of blitz games as now that is possible
+  - Fix post height limit so it applies to game comments
+  - Prevent first forum post from collapsing due to max height; also display proper timestamp on it
+
+  1.136.2018.06
+  - Fix handling of forum and game comments broken with the site update; now shows exact timestaps for game comments
+  - Don't try to show title when replaying Draw First panels
+  - Increase old font size as it got tiny with the site update
+
+  1.135.2018.06
+  - Forum: linkify new embedded panel images to panel pages
+  - Change Drawception calls from GET to POST+JSON, this should fix Draw First aborting and contests
+
+  1.134.2018.06
+  - Add support for the new palette: Juice
+
+  1.133.2018.06
+  - Allow replaying right from the player's gallery for the new drawings
+  - Fix viewing playback on newer drawings from the game page as their panel links got changed
+
+  1.132.2018.06
+  - Reduce 'Like all' button delay between likes to 1.5 seconds
+  - Fix panel favorites display style
+  - Completely remove the old canvas code; fix new canvas detecting drawing contests
+  - Fix panel favorites old links; fix username when faving from the panel page
+  - Fix showing replay links for the new drawings
+
+  1.131.2018.06
+  - New canvas: fix viewing playback
+
+  1.130.2018.06
+  - Restore old, smaller font size; can be disabled in options
+
+  1.129.2018.06
+  - Dark style: fix game creation page
+  - Fix script loading and working on the updated Drawception site
+
+  1.128.2018.04
+  - New canvas: prevent caching an error from GitHub
+  - Prevent forum post anchor from appearing twice on deleted users
+  - Remove subforum detection in user profile's forum posts as site no longer gives that information
+  - Remove game length detection as it is now provided by the site
+
+  1.127.2018.04
+  - New canvas: fix background tool availability extraction as it got changed again
+  - New canvas: disallow drawing if palette couldn't be extracted
+
+  1.126.2018.04
+  - Fix handling forum 'edited' timestamps
+  - New canvas: fix palette extraction
+
+  1.125.2018.04
+  - New canvas: fix background tool availability extraction
+
+  1.124.2018.04
+  - Increase 'Like all' button delay between likes to 3 seconds
+  - New canvas: fix typo
+
+  1.123.2018.04
+  - New canvas: hopefully improve touchscreen support for some people
+  - 'Like all' button now waits 2 seconds before each like, the site seems to have a hard limit on how quickly you can like now.
+  - Dark style: fix popups and reactions a bit
+  - Fix missing forum anchors and 'show more' broken with the site update
+  - Restore forum warning about posting to another page
+
+  1.122.2018.03
+  - Old canvas: fix loading errors, but warning sound and timer in title are missing for now
+  - New canvas: fix timer extraction
+
+  1.121.2018.03
+  - Update Discord chat link to point to introduction channel, as per request
+  - Force update cached canvas
+
+  1.120.2018.03
+  - Remove the embedded chat
+  - New canvas: fix drawing submission broken with the site update
+  - Fix error in Firefox 59+ due to partial removal of SVGPathSegList API
+  - Update Discord chat link
 1.176.2018.07
 - Fix broken navbar buttons
 - Remove duplicate menu items
@@ -155,6 +269,7 @@
 - Sticky top menu
 - Top menu color changes to match game theme
 - Modified top menu UI
+
 
 1.119.2018.03
 - Flatten 'more' submenu on userpages for fewer clicks in navigation
